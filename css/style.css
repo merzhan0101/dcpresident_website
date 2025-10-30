@@ -587,13 +587,14 @@ button.active:hover {
 
 /* ================= SECTION LINKS ================= */
 .events-link,
-.achievements-link {
+.achievements-link,
+.news-link {
   text-align: center;
   margin: 30px 0 40px 0;
 }
 
-.news-link {
-  margin: 30px 0 40px 0;
+a.news-link {
+  text-align: left;
 }
 
 .text-main-color {
