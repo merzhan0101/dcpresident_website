@@ -1,15 +1,33 @@
 <?php
-if ($_POST) {
+
+// Подключаем базу данных
+include 'php/database.php';
+
+// Устанавливаем кодировку
+header('Content-Type: text/html; charset=utf-8');
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Получаем данные
     $name = htmlspecialchars($_POST['name']);
     $email = htmlspecialchars($_POST['email']);
+    $message = htmlspecialchars($_POST['message']);
     
-    // Здесь можно:
-    // 1. Сохранить в файл
-    // 2. Отправить на email
-    // 3. Сохранить в базу данных
+    // Проверяем обязательные поля
+    if (empty($name) || empty($email) || empty($message)) {
+        echo "Пожалуйста, заполните все поля";
+        exit;
+    }
     
-    file_put_contents('applications.txt', "$name | $email\n", FILE_APPEND);
+    // Сохраняем в файл
+    $data = date('Y-m-d H:i:s') . " | $name | $email | $message\n";
+    file_put_contents('applications.txt', $data, FILE_APPEND);
     
-    echo "Заявка отправлена! Мы свяжемся с вами в течение 24 часов.";
+    // Перенаправляем на успех
+    header("Location: application-success.php");
+    exit;
+} else {
+    header("Location: index.php");
+    exit;
 }
+
 ?>

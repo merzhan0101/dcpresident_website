@@ -15,6 +15,7 @@
         <li><a href="events.php">Мероприятия</a></li>
         <li><a href="achievements.php">Достижения</a></li>
         <li><a href="news.php">Новости</a></li>
+        <li><a href="members.php">Участники</a></li>
         <li><a href="contact.php">Контакты</a></li>
       </ul>
     </div>

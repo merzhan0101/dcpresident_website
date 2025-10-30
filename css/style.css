@@ -492,7 +492,7 @@ button.active:hover {
   font-weight: 600;
   transition: color 0.3s;
   margin-top: 10px;
-  display: inline-block;
+  /* display: inline-block; */
 }
 
 .news-link:hover {
@@ -581,6 +581,141 @@ button.active:hover {
 
   .apply-form {
     width: 90%;
+  }
+}
+
+
+/* ================= SECTION LINKS ================= */
+.events-link,
+.achievements-link {
+  text-align: center;
+  margin: 30px 0 40px 0;
+}
+
+.news-link {
+  margin: 30px 0 40px 0;
+}
+
+.text-main-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--red);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 12px 24px;
+  border: 2px solid var(--red);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(to right, transparent 50%, var(--red) 50%);
+  background-size: 200% 100%;
+  background-position: right bottom;
+}
+
+.text-main-color::before {
+  content: '→';
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+.text-main-color:hover {
+  color: white;
+  background-position: left bottom;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(181, 0, 0, 0.3);
+}
+
+.text-main-color:hover::before {
+  transform: translateX(3px);
+}
+
+.text-main-color:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(181, 0, 0, 0.3);
+}
+
+/* Альтернативный вариант с иконкой */
+.text-main-color.alternative {
+  border: none;
+  background: var(--red);
+  color: white;
+  padding: 12px 30px;
+  box-shadow: 0 4px 12px rgba(181, 0, 0, 0.2);
+}
+
+.text-main-color.alternative::before {
+  content: '👁️';
+}
+
+.text-main-color.alternative:hover {
+  background: #9b0000;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(181, 0, 0, 0.4);
+}
+
+/* Вариант с подчеркиванием */
+.text-main-color.underline-style {
+  border: none;
+  background: transparent;
+  padding: 8px 0;
+  position: relative;
+}
+
+.text-main-color.underline-style::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--red);
+  transition: width 0.3s ease;
+}
+
+.text-main-color.underline-style:hover::after {
+  width: 100%;
+}
+
+.text-main-color.underline-style::before {
+  content: '📋';
+}
+
+/* Для конкретных секций */
+.events-link .text-main-color::before {
+  content: '📅';
+}
+
+.achievements-link .text-main-color::before {
+  content: '🏆';
+}
+
+.news-link .text-main-color::before {
+  content: '📰';
+}
+
+/* ================= АДАПТИВНОСТЬ ================= */
+@media (max-width: 768px) {
+  .events-link,
+  .achievements-link,
+  .news-link {
+    margin: 25px 0 35px 0;
+  }
+  
+  .text-main-color {
+    padding: 10px 20px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .text-main-color {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+    padding: 12px 20px;
   }
 }
 
@@ -677,4 +812,36 @@ footer {
     align-items: center;
     text-align: center;
   }
+}
+
+
+/* redirect to members */
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--red);
+    color: var(--red);
+    margin-left: 15px;
+}
+
+.btn-outline:hover {
+    background: var(--red);
+    color: white;
+}
+
+.about-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .about-buttons {
+        flex-direction: column;
+    }
+    
+    .btn-outline {
+        margin-left: 0;
+        margin-top: 10px;
+    }
 }

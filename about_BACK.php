@@ -28,7 +28,7 @@
           <p>Основанный в 2018 году, наш клуб стал площадкой для развития критического мышления, ораторского мастерства и лидерских качеств. Мы верим, что каждый студент может стать уверенным спикером и эффективным коммуникатором.</p>
         </div>
         <div class="about-hero-image">
-          <img src="images/all_members.jpg" alt="Участники дебатного клуба President">
+          <img src="images/about-hero.jpg" alt="Участники дебатного клуба President">
         </div>
       </div>
 
@@ -63,85 +63,49 @@
       <div class="team-section">
         <h3>Руководство клуба</h3>
         <div class="team-grid">
-          <?php 
-          $leadership = getClubLeadership();
-          if (empty($leadership)): ?>
-            <p class="no-members">Информация о руководстве скоро появится</p>
-          <?php else: ?>
-            <?php foreach ($leadership as $member): ?>
-            <div class="team-member">
-              <img src="<?= $member['image_path'] ?: 'images/avatar-default.jpg' ?>" 
-                   alt="<?= htmlspecialchars($member['full_name']) ?>">
-              <h4><?= htmlspecialchars($member['full_name']) ?></h4>
-              <p class="position"><?= ucfirst($member['role']) ?></p>
-              <p class="faculty"><?= htmlspecialchars($member['faculty']) ?></p>
-              <p class="generation">Поколение: <?= $member['generation'] ?></p>
-              <?php if ($member['birth_day'] && $member['birth_month']): ?>
-                <p class="birthday">🎂 <?= $member['birth_day'] ?> <?= getRussianMonthName($member['birth_month']) ?></p>
-              <?php endif; ?>
-              <?php if ($member['bio']): ?>
-                <p class="bio"><?= htmlspecialchars($member['bio']) ?></p>
-              <?php endif; ?>
-            </div>
-            <?php endforeach; ?>
-          <?php endif; ?>
-        </div>
-        <div class="text-center" style="margin-top: 40px;">
-            <a href="members.php" class="text-main-color">Посмотреть всех участников →</a>
+          <div class="team-member">
+            <img src="images/team1.jpg" alt="Президент клуба">
+            <h4>Айгерім Қасымова</h4>
+            <p class="position">Президент клуба</p>
+            <p class="bio">Студентка 3 курса факультета международных отношений</p>
+          </div>
+          <div class="team-member">
+            <img src="images/team2.jpg" alt="Вице-президент">
+            <h4>Қайрат Жүнісов</h4>
+            <p class="position">Вице-президент</p>
+            <p class="bio">Студент 2 курса факультета журналистики</p>
+          </div>
+          <div class="team-member">
+            <img src="images/team3.jpg" alt="Тренер">
+            <h4>Алия Әбдірова</h4>
+            <p class="position">Главный тренер</p>
+            <p class="bio">Чемпионка республиканских дебатов 2023</p>
+          </div>
         </div>
       </div>
 
-        <!-- Статистика динамическая -->
-        <div class="stats-section">
-            <h3>Мы в цифрах</h3>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-number"><?= count(getAllActiveMembers()) ?>+</div>
-                    <div class="stat-label">Участников</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">25+</div>
-                    <div class="stat-label">Турниров проведено</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">15+</div>
-                    <div class="stat-label">Побед в турнирах</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">3</div>
-                    <div class="stat-label">Года работы</div>
-                </div>
-            </div>
-        </div>
-
       <!-- Статистика -->
-      <!-- <div class="stats-section">
+      <div class="stats-section">
         <h3>Мы в цифрах</h3>
         <div class="stats-grid">
-
           <div class="stat-item">
             <div class="stat-number">150+</div>
             <div class="stat-label">Участников</div>
           </div>
-
           <div class="stat-item">
             <div class="stat-number">25+</div>
             <div class="stat-label">Турниров проведено</div>
           </div>
-          
           <div class="stat-item">
             <div class="stat-number">15+</div>
             <div class="stat-label">Побед в турнирах</div>
           </div>
-          
           <div class="stat-item">
             <div class="stat-number">3</div>
             <div class="stat-label">Года работы</div>
           </div>
-
         </div>
-      </div> -->
-
+      </div>
     </div>
   </section>
 </main>

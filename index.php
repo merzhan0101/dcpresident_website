@@ -36,7 +36,9 @@
           Мы — студенческий дебатный клуб Торайгыров Университета, объединяющий активных, умных и
           амбициозных студентов. Наша цель — развивать культуру дебатов и критического мышления.
         </p>
-        <button class="btn">Отправить заявку</button>
+        <!-- <button class="btn">Отправить заявку</button> -->
+        <a href="index.php#apply" class="join-btn">Отправить заявку</a>
+        <a href="members.php" class="btn btn-outline">Наши участники</a>
       </div>
     </div>
   </section>
@@ -45,10 +47,13 @@
     <section class="events">
         <div class="container">
             <h2>Мероприятия</h2>
-            <div class="tabs">
+            <div class="events-link">
+              <a href="events.php" class="text-main-color">Все мероприятия</a>
+            </div>
+            <!-- <div class="tabs">
                 <button class="tab-btn active" data-tab="upcoming">Предстоящие</button>
                 <button class="tab-btn" data-tab="past">Прошедшие</button>
-            </div>
+            </div> -->
             
             <div class="events-grid" id="upcoming-events">
                 <?php 
@@ -89,30 +94,13 @@
         </div>
     </section>
 
-  <!--<section class="events">
-    <div class="container">
-      <h2>Мероприятия</h2>
-      <div class="tabs">
-        <button class="active">Предстоящие</button>
-        <button>Прошедшие</button>
-      </div>
-      <div class="events-grid">
-        <\?php for ($i = 0; $i < 6; $i++): ?>
-        <div class="event-card">
-          <img src="images/school_debate.jpg" alt="Event image">
-          <h3>World Cup 2025</h3>
-          <p>22.12.2025 — 22:00</p>
-          <span class="tag">Регистрация</span>
-        </div>
-        <\?php endfor; ?>
-      </div>
-    </div>
-  </section>-->
-
     <!-- achievements -->
     <section class="achievements">
         <div class="container">
             <h2 class="section-title">Достижения</h2>
+            <div class="achievements-link">
+              <a href="achievements.php" class="text-main-color">Все достижения</a>
+            </div>
             <div class="achievements-grid">
                 <?php 
                 $achievements = getAchievements(3);
@@ -132,6 +120,9 @@
                         <?php if ($achievement['achievement_date']): ?>
                             <p class="date"><?= date('d.m.Y', strtotime($achievement['achievement_date'])) ?></p>
                         <?php endif; ?>
+
+                        <a href="achievement-single.php?id=<?= $achievement['id'] ?>" class="achievement-link">Подробнее →</a>
+
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -139,91 +130,40 @@
         </div>
     </section>
 
-    <!--<section class="achievements">
-        <div class="container">
-            <h2 class="section-title">Достижения</h2>
-            <div class="achievements-grid">
-            <div class="achievement-item">
-                <div class="achievement-icon">🏆</div>
-                <h3>Лучший дебатный клуб 2024</h3>
-                <p>Национальный рейтинг дебатных сообществ</p>
-            </div>
-            <div class="achievement-item">
-                <div class="achievement-icon">🥇</div>
-                <h3>Победа на World Cup 2025</h3>
-                <p>1 место среди 50 клубов мира</p>
-            </div>
-            <div class="achievement-item">
-                <div class="achievement-icon">📊</div>
-                <h3>Организация President Cup</h3>
-                <p>300+ участников ежегодно</p>
-            </div>
-            </div>
-        </div>
-    </section>-->
-
   <!-- NEWS -->
-<section class="news">
-    <div class="container">
-        <h2 class="section-title">Новости</h2>
-        <div class="news-list">
-            <?php 
-            $news = getNews(6); // Берем больше новостей
-            foreach ($news as $newsItem): 
-                $newsDate = new DateTime($newsItem['news_date']);
-            ?>
-            <article class="news-item">
-                <div class="news-date-block">
-                    <span class="day"><?= $newsDate->format('d') ?></span>
-                    <span class="month"><?= getRussianMonth($newsDate->format('n')) ?></span>
-                </div>
-                <img src="<?= $newsItem['image_path'] ?: 'images/news.jpg' ?>" 
-                    alt="<?= htmlspecialchars($newsItem['title']) ?>">
-                <div class="news-content">
-                    <h4><?= htmlspecialchars($newsItem['title']) ?></h4>
-                    <p><?= htmlspecialchars($newsItem['content']) ?></p>
-                    <a href="#" class="news-link">Читать далее →</a>
-                </div>
-            </article>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-
-    <!--<section class="news">
-    <div class="container">
-        <h2 class="section-title">Новости</h2>
-        <div class="news-grid">
-        <article class="news-card">
-            <div class="news-date">
-            <span class="day">15</span>
-            <span class="month">Янв</span>
-            </div>
-            <div class="news-content">
-            <h3>Новый сезон дебатов открыт!</h3>
-            <p>DC President объявляет старт регистрации на новый сезон 2025 года. Присоединяйтесь к нашему клубу...</p>
-            <a href="#" class="news-link">Читать далее →</a>
-            </div>
-        </article>
-        
-        <article class="news-card">
-            <div class="news-date">
-            <span class="day">10</span>
-            <span class="month">Янв</span>
-            </div>
-            <div class="news-content">
-            <h3>Итоги President Cup 6</h3>
-            <p>Поздравляем победителей турнира и всех участников! Более 50 команд приняли участие...</p>
-            <a href="#" class="news-link">Читать далее →</a>
-            </div>
-        </article>
-        </div>
-    </div>
-    </section>-->
-
+  <section class="news">
+      <div class="container">
+          <h2 class="section-title">Новости</h2>
+          <div class="news-link">
+            <a href="news.php" class="text-main-color">Все новости</a>
+          </div>
+          <div class="news-list">
+              <?php 
+              $news = getNews(3); // Берем больше новостей
+              foreach ($news as $newsItem): 
+                  $newsDate = new DateTime($newsItem['news_date']);
+              ?>
+              <article class="news-item">
+                  <div class="news-date-block">
+                      <span class="day"><?= $newsDate->format('d') ?></span>
+                      <span class="month"><?= getRussianMonth($newsDate->format('n')) ?></span>
+                  </div>
+                  <img src="<?= $newsItem['image_path'] ?: 'images/news.jpg' ?>" 
+                      alt="<?= htmlspecialchars($newsItem['title']) ?>">
+                  <div class="news-content">
+                      <h4><?= htmlspecialchars($newsItem['title']) ?></h4>
+                      <p><?= htmlspecialchars($newsItem['content']) ?></p>
+                      <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link">Читать далее →</a>
+                      <!-- <a href="#" class="news-link">Читать далее →</a> -->
+                  </div>
+              </article>
+              <?php endforeach; ?>
+          </div>
+      </div>
+  </section>
 
   <!-- APPLY -->
-  <section class="apply">
+  <section class="apply" id="apply">
     <div class="container">
       <h2>Подай заявку в наш клуб</h2>
       <p>и мы рассмотрим ее в течение 24 часов</p>
