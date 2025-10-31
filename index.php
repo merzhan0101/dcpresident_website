@@ -162,9 +162,9 @@
       <h2>Біздің клубқа өтініш беріңіз</h2>
       <p>біз оны 24 сағат ішінде қарастырамыз</p>
       <form action="submit.php" method="POST" class="apply-form">
-        <input type="text" name="name" placeholder="Имя" required>
-        <input type="email" name="email" placeholder="Почта" required>
-        <textarea name="message" placeholder="Почему хочешь вступить?" required></textarea>
+        <input type="text" name="name" placeholder="Есіміңіз" required>
+        <input type="email" name="email" placeholder="Пошта" required>
+        <textarea name="message" placeholder="Неліктен клубқа қосылғыңыз келеді?" required></textarea>
         <button type="submit" class="btn">Жіберу</button>
       </form>
     </div>
