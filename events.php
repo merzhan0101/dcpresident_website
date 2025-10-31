@@ -12,16 +12,16 @@
 <main>
   <section class="page-header">
     <div class="container">
-      <h1>Мероприятия</h1>
-      <p>Все предстоящие и прошедшие события нашего клуба</p>
+      <h1>Іс-шаралар</h1>
+      <p>Біздің клубтың алдағы және өткен барлық іс-шаралары</p>
     </div>
   </section>
 
   <section class="events-page">
     <div class="container">
       <div class="tabs">
-        <button class="tab-btn active" data-tab="upcoming">Предстоящие</button>
-        <button class="tab-btn" data-tab="past">Прошедшие</button>
+        <button class="tab-btn active" data-tab="upcoming">Алдағы</button>
+        <button class="tab-btn" data-tab="past">Өткен</button>
       </div>
       
       <!-- Предстоящие мероприятия -->
@@ -30,8 +30,8 @@
         $events = getEvents(12, 'upcoming');
         if (empty($events)): ?>
           <div class="no-events">
-            <p>На данный момент нет предстоящих мероприятий</p>
-            <p>Следите за обновлениями в наших социальных сетях</p>
+            <p>Қазіргі уақытта алдағы іс шаралар жоқ</p>
+            <p>Біздің әлеуметтік желілерде хабардар болыңыз</p>
           </div>
         <?php else: ?>
           <?php foreach ($events as $event): ?>
@@ -62,7 +62,7 @@
         $pastEvents = getEvents(12, 'past');
         if (empty($pastEvents)): ?>
           <div class="no-events">
-            <p>Пока нет прошедших мероприятий</p>
+            <p>ПӘзірге өткен іс-шаралар жоқ</p>
           </div>
         <?php else: ?>
           <?php foreach ($pastEvents as $event): ?>
@@ -78,7 +78,7 @@
                 <span class="event-date">
                   📅 <?= date('d.m.Y', strtotime($event['event_date'])) ?>
                 </span>
-                <span class="tag completed">Завершено</span>
+                <span class="tag completed">Аяқталды</span>
               </div>
             </div>
           </div>

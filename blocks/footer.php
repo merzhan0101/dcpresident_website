@@ -10,18 +10,19 @@
     <div class="footer-links">
       <h3>Навигация</h3>
       <ul>
-        <li><a href="index.php">Главная</a></li>
-        <li><a href="about.php">О клубе</a></li>
-        <li><a href="events.php">Мероприятия</a></li>
-        <li><a href="achievements.php">Достижения</a></li>
-        <li><a href="news.php">Новости</a></li>
-        <li><a href="members.php">Участники</a></li>
-        <li><a href="contact.php">Контакты</a></li>
+        <li><a href="index.php">Басты бет</a></li>
+        <li><a href="about.php">Клуб туралы</a></li>
+        <li><a href="events.php">Іс-шаралар</a></li>
+        <li><a href="tournaments.php">President CUP's</a></li>
+        <li><a href="achievements.php">Жетістіктер</a></li>
+        <li><a href="news.php">Жаңалықтар</a></li>
+        <li><a href="members.php">President-тіктер</a></li>
+        <li><a href="contact.php">Байланыс</a></li>
       </ul>
     </div>
 
     <div class="footer-contact">
-    <h3>Контакты</h3>
+    <h3>Байланыс</h3>
 
     <p>
         <i class="fa-solid fa-envelope"></i>
@@ -41,14 +42,6 @@
         <a href="https://t.me/presidentcup6" target="_blank">@PresidentCup6</a>
     </p>
     </div>
-
-
-    <!-- <div class="footer-contact">
-      <h3>Контакты</h3>
-      <p><strong>Email: </strong>president.dc@toraighyrov.edu.kz</p>
-      <p><strong>Instagram: </strong><a href="https://www.instagram.com/tou_debate_club/?igsh=dzd4ZmFjcXVoZjll" target="_blank">@tou_debate_club</a></p>
-      <p><strong>Telegram: </strong><a href="https://t.me/presidentcup6" target="_blank">@PresidentCup6</a></p>
-    </div> -->
 
   </div>
 

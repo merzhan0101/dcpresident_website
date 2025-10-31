@@ -27,7 +27,7 @@ if (!$news) {
   <section class="page-header">
     <div class="container">
       <h1><?= htmlspecialchars($news['title']) ?></h1>
-      <p>Опубликовано: <?= date('d.m.Y', strtotime($news['news_date'])) ?></p>
+      <p>Жарияланды: <?= date('d.m.Y', strtotime($news['news_date'])) ?></p>
     </div>
   </section>
 
@@ -36,7 +36,7 @@ if (!$news) {
       <article class="news-full">
         <div class="news-meta">
           <span class="news-date">📅 <?= date('d.m.Y', strtotime($news['news_date'])) ?></span>
-          <span class="news-views">👁️ 245 просмотров</span>
+          <span class="news-views">👁️ 245 көрді</span>
         </div>
         
         <?php if ($news['image_path']): ?>
@@ -50,7 +50,7 @@ if (!$news) {
         </div>
         
         <div class="news-footer">
-          <a href="news.php" class="btn-back">← Назад к новостям</a>
+          <a href="news.php" class="btn-back">← Жаңалықтарға оралу</a>
           <!-- <div class="news-share">
             <span>Поделиться:</span>
             <a href="#" class="share-link">📱</a>
@@ -62,7 +62,7 @@ if (!$news) {
       
       <!-- Похожие новости -->
       <aside class="related-news">
-        <h3>Другие новости</h3>
+        <h3>Басқа жаңалықтар</h3>
         <div class="related-grid">
           <?php 
           $related_news = getNews(3); // Последние 3 новости
@@ -74,7 +74,7 @@ if (!$news) {
                  alt="<?= htmlspecialchars($related['title']) ?>">
             <h4><?= htmlspecialchars($related['title']) ?></h4>
             <p><?= date('d.m.Y', strtotime($related['news_date'])) ?></p>
-            <a href="news-single.php?id=<?= $related['id'] ?>" class="read-more">Читать →</a>
+            <a href="news-single.php?id=<?= $related['id'] ?>" class="read-more">Толығырақ →</a>
           </div>
           <?php 
             endif;

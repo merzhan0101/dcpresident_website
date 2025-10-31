@@ -27,7 +27,7 @@ if (!$achievement) {
   <section class="page-header">
     <div class="container">
       <h1><?= htmlspecialchars($achievement['title']) ?></h1>
-      <p>Достижение от <?= date('d.m.Y', strtotime($achievement['achievement_date'])) ?></p>
+      <p>Жетістік <?= date('d.m.Y', strtotime($achievement['achievement_date'])) ?></p>
     </div>
   </section>
 
@@ -55,7 +55,7 @@ if (!$achievement) {
         </div>
         
         <div class="achievement-footer">
-          <a href="achievements.php" class="btn-back">← Назад к достижениям</a>
+          <a href="achievements.php" class="btn-back">← Жетістікке оралу</a>
           <!-- <div class="achievement-share">
             <span>Поделиться победой:</span>
             <a href="#" class="share-link">📱</a>
@@ -67,7 +67,7 @@ if (!$achievement) {
       
       <!-- Похожие достижения -->
       <aside class="related-achievements">
-        <h3>Другие достижения</h3>
+        <h3>Басқа жетістіктер</h3>
         <div class="related-grid">
           <?php 
           $related_achievements = getAchievements(3);
@@ -79,7 +79,7 @@ if (!$achievement) {
                  alt="<?= htmlspecialchars($related['title']) ?>">
             <h4><?= htmlspecialchars($related['title']) ?></h4>
             <p><?= date('d.m.Y', strtotime($related['achievement_date'])) ?></p>
-            <a href="achievement-single.php?id=<?= $related['id'] ?>" class="read-more">Подробнее →</a>
+            <a href="achievement-single.php?id=<?= $related['id'] ?>" class="read-more">Толығырақ →</a>
           </div>
           <?php 
             endif;

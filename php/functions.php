@@ -312,13 +312,84 @@ function daysUntilBirthday($birthMonth, $birthDay) {
 // Функция для правильного склонения слова "день"
 function getRussianDaysWord($days) {
     if ($days % 10 == 1 && $days % 100 != 11) {
-        return 'день';
+        return 'күн'; // 'день' на казахском
     } elseif ($days % 10 >= 2 && $days % 10 <= 4 && ($days % 100 < 10 || $days % 100 >= 20)) {
-        return 'дня';
+        return 'кейін'; // 'дня' на казахском
     } else {
-        return 'дней';
+        return 'кейін'; // 'дней' на казахском
     }
 }
 
+
+// ТУРНИРЫ =====================================================================
+// Получить все турниры
+function getAllTournaments() {
+    global $pdo;
+    
+    try {
+        $sql = "SELECT * FROM tournaments ORDER BY start_date DESC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Database error in getAllTournaments: " . $e->getMessage());
+        return [];
+    }
+}
+
+// Получить турнир по ID
+function getTournamentById($id) {
+    global $pdo;
+    
+    try {
+        $sql = "SELECT * FROM tournaments WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Database error in getTournamentById: " . $e->getMessage());
+        return null;
+    }
+}
+
+// Получить турниры по уровню
+function getTournamentsByLevel($level) {
+    global $pdo;
+    
+    try {
+        $sql = "SELECT * FROM tournaments WHERE level = :level ORDER BY start_date DESC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':level', $level);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Database error in getTournamentsByLevel: " . $e->getMessage());
+        return [];
+    }
+}
+
+// Получить ближайшие турниры
+function getUpcomingTournaments($limit = 3) {
+    global $pdo;
+    
+    try {
+        $sql = "SELECT * FROM tournaments 
+                WHERE start_date >= CURDATE() 
+                ORDER BY start_date ASC 
+                LIMIT :limit";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Database error in getUpcomingTournaments: " . $e->getMessage());
+        return [];
+    }
+}
 
 ?>

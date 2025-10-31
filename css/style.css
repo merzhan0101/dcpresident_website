@@ -71,7 +71,7 @@ header {
 nav ul {
   display: flex;
   list-style: none;
-  gap: 25px;
+  gap: 22px;
   margin: 0;
   padding: 0;
 }
@@ -148,7 +148,7 @@ nav a.active::after {
 }
 
 button {
-  font-family: 'Times New Roman', serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 16px;
   font-weight: bold;
   color: #fff;

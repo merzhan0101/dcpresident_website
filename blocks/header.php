@@ -9,28 +9,23 @@
           </div>
       </div>
   </a>
-  <!-- <div class="logo">
-      <img src="images/logo_president.png" alt="Debate Club President Logo">
-      <div class="logo-text">
-        <p class="club">DC President</p>
-        <p class="university">Toraighyrov University</p>
-      </div>
-    </div> -->
 
-    <nav>
-      <ul>
-        <li><a href="index.php" class="<?= basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : '' ?>">Главная</a></li>
-        <li><a href="about.php" class="<?= basename($_SERVER['PHP_SELF']) == 'about.php' ? 'active' : '' ?>">О клубе</a></li>
-        <li><a href="events.php" class="<?= basename($_SERVER['PHP_SELF']) == 'events.php' ? 'active' : '' ?>">Мероприятия</a></li>
-        <li><a href="achievements.php" class="<?= basename($_SERVER['PHP_SELF']) == 'achievements.php' ? 'active' : '' ?>">Достижения</a></li>
-        <li><a href="news.php" class="<?= basename($_SERVER['PHP_SELF']) == 'news.php' ? 'active' : '' ?>">Новости</a></li>
-        <li><a href="contact.php" class="<?= basename($_SERVER['PHP_SELF']) == 'contact.php' ? 'active' : '' ?>">Контакты</a></li>
-      </ul>
-    </nav>
+  <nav>
+    <ul>
+      <li><a href="index.php" class="<?= basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : '' ?>">Басты бет</a></li>
+      <li><a href="about.php" class="<?= basename($_SERVER['PHP_SELF']) == 'about.php' ? 'active' : '' ?>">Клуб туралы</a></li>
+      <li><a href="events.php" class="<?= basename($_SERVER['PHP_SELF']) == 'events.php' ? 'active' : '' ?>">Іс-шаралар</a></li>
+      <li><a href="tournaments.php" class="<?= basename($_SERVER['PHP_SELF']) == 'tournaments.php' ? 'active' : '' ?>">President CUP's</a></li>
+      <li><a href="achievements.php" class="<?= basename($_SERVER['PHP_SELF']) == 'achievements.php' ? 'active' : '' ?>">Жетістіктер</a></li>
+      <li><a href="news.php" class="<?= basename($_SERVER['PHP_SELF']) == 'news.php' ? 'active' : '' ?>">Жаңалықтар</a></li>
+      <li><a href="contact.php" class="<?= basename($_SERVER['PHP_SELF']) == 'contact.php' ? 'active' : '' ?>">Байланыс</a></li>
+    </ul>
+  </nav>
 
-    <div class="header-btn">
-      <a href="index.php#apply" class="join-btn">Присоединиться</a>
-    </div>
+  <div class="header-btn">
+    <a href="index.php#apply" class="join-btn">Қосылу</a>
+  </div>
+  
   </div>
 </header>
 

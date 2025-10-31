@@ -12,10 +12,9 @@
   <section class="hero">
     <div class="container">
       <div class="hero-text">
-        <h1><span>Скорей вступай</span> в наш клуб!</h1>
+        <h1><span>Біздің клубқа</span> қосыл!</h1>
         <p>
-          Это просто пример текста о дебатном клубе President. Lorem ipsum dolor sit amet,
-          consectetur adipiscing elit. Развивай критическое мышление и лидерские качества вместе с нами!
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo placeat, ullam voluptatem voluptatibus deleniti repellat!
         </p>
       </div>
       <div class="hero-image">
@@ -33,12 +32,11 @@
       <div class="about-text">
         <h2>DC President</h2>
         <p>
-          Мы — студенческий дебатный клуб Торайгыров Университета, объединяющий активных, умных и
-          амбициозных студентов. Наша цель — развивать культуру дебатов и критического мышления.
+         Біз — белсенді, ақылды және өршіл студенттерді біріктіретін университеттің Торайғыров студенттік пікірсайыс клубымыз. 
+         Біздің мақсатымыз — пікірталас пен сыни ойлау мәдениетін дамыту.
         </p>
-        <!-- <button class="btn">Отправить заявку</button> -->
-        <a href="index.php#apply" class="join-btn">Отправить заявку</a>
-        <a href="members.php" class="btn btn-outline">Наши участники</a>
+        <a href="index.php#apply" class="join-btn">Өтінімді жіберу</a>
+        <a href="members.php" class="btn btn-outline">President-тіктер</a>
       </div>
     </div>
   </section>
@@ -46,20 +44,16 @@
   <!-- EVENTS -->
     <section class="events">
         <div class="container">
-            <h2>Мероприятия</h2>
+            <h2>Іс-шаралар</h2>
             <div class="events-link">
-              <a href="events.php" class="text-main-color">Все мероприятия</a>
+              <a href="events.php" class="text-main-color">Барлық іс-шаралар</a>
             </div>
-            <!-- <div class="tabs">
-                <button class="tab-btn active" data-tab="upcoming">Предстоящие</button>
-                <button class="tab-btn" data-tab="past">Прошедшие</button>
-            </div> -->
             
             <div class="events-grid" id="upcoming-events">
                 <?php 
                 $events = getEvents(6, 'upcoming');
                 if (empty($events)): ?>
-                    <p class="no-events">Нет предстоящих мероприятий</p>
+                    <p class="no-events">Алдағы іс-шаралар жоқ</p>
                 <?php else: ?>
                     <?php foreach ($events as $event): ?>
                     <div class="event-card">
@@ -78,7 +72,7 @@
                 <?php 
                 $pastEvents = getEvents(6, 'past');
                 if (empty($pastEvents)): ?>
-                    <p class="no-events">Нет прошедших мероприятий</p>
+                    <p class="no-events">Өткен іс-шаралар жоқ</p>
                 <?php else: ?>
                     <?php foreach ($pastEvents as $event): ?>
                     <div class="event-card">
@@ -86,7 +80,7 @@
                             alt="<?= htmlspecialchars($event['title']) ?>">
                         <h3><?= htmlspecialchars($event['title']) ?></h3>
                         <p><?= date('d.m.Y', strtotime($event['event_date'])) ?></p>
-                        <span class="tag completed">Завершено</span>
+                        <span class="tag completed">Аяқталды</span>
                     </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -97,9 +91,9 @@
     <!-- achievements -->
     <section class="achievements">
         <div class="container">
-            <h2 class="section-title">Достижения</h2>
+            <h2 class="section-title">Жетістіктер</h2>
             <div class="achievements-link">
-              <a href="achievements.php" class="text-main-color">Все достижения</a>
+              <a href="achievements.php" class="text-main-color">Барлық жетістіктер</a>
             </div>
             <div class="achievements-grid">
                 <?php 
@@ -121,7 +115,7 @@
                             <p class="date"><?= date('d.m.Y', strtotime($achievement['achievement_date'])) ?></p>
                         <?php endif; ?>
 
-                        <a href="achievement-single.php?id=<?= $achievement['id'] ?>" class="achievement-link">Подробнее →</a>
+                        <a href="achievement-single.php?id=<?= $achievement['id'] ?>" class="achievement-link">Толығырақ →</a>
 
                     </div>
                 </div>
@@ -133,9 +127,9 @@
   <!-- NEWS -->
   <section class="news">
       <div class="container">
-          <h2 class="section-title">Новости</h2>
+          <h2 class="section-title">Жаңалықтар</h2>
           <div class="news-link">
-            <a href="news.php" class="text-main-color">Все новости</a>
+            <a href="news.php" class="text-main-color">Барлық жаңалықтар</a>
           </div>
           <div class="news-list">
               <?php 
@@ -153,7 +147,7 @@
                   <div class="news-content">
                       <h4><?= htmlspecialchars($newsItem['title']) ?></h4>
                       <p><?= htmlspecialchars($newsItem['content']) ?></p>
-                      <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link">Читать далее →</a>
+                      <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link">Ары қарай оқу →</a>
                       <!-- <a href="#" class="news-link">Читать далее →</a> -->
                   </div>
               </article>
@@ -165,13 +159,13 @@
   <!-- APPLY -->
   <section class="apply" id="apply">
     <div class="container">
-      <h2>Подай заявку в наш клуб</h2>
-      <p>и мы рассмотрим ее в течение 24 часов</p>
+      <h2>Біздің клубқа өтініш беріңіз</h2>
+      <p>біз оны 24 сағат ішінде қарастырамыз</p>
       <form action="submit.php" method="POST" class="apply-form">
         <input type="text" name="name" placeholder="Имя" required>
         <input type="email" name="email" placeholder="Почта" required>
         <textarea name="message" placeholder="Почему хочешь вступить?" required></textarea>
-        <button type="submit" class="btn">Отправить</button>
+        <button type="submit" class="btn">Жіберу</button>
       </form>
     </div>
   </section>

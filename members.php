@@ -12,8 +12,8 @@
 <main>
   <section class="page-header">
     <div class="container">
-      <h1>Наши участники</h1>
-      <p>Знакомьтесь с командой DC President - талантливыми студентами, которые делают наш клуб лучше</p>
+      <h1>President-тіктер</h1>
+      <p>DC President командасымен танысыңыз - біздің клубты жақсартатын талантты студенттер</p>
     </div>
   </section>
 
@@ -22,13 +22,13 @@
 
     <!-- Ближайшие дни рождения -->
       <div class="birthdays-section">
-        <h2>🎉 Ближайшие дни рождения</h2>
+        <h2>🎉 Алдағы туған күндер</h2>
         <div class="birthdays-grid">
           <?php 
           $upcomingBirthdays = getUpcomingBirthdays(5);
           if (empty($upcomingBirthdays)): ?>
             <div class="no-birthdays">
-              <p>В ближайшее время дней рождения нет</p>
+              <p>Жақын арада туған күндер жоқ</p>
             </div>
           <?php else: ?>
             <?php foreach ($upcomingBirthdays as $member): 
@@ -47,11 +47,11 @@
                 </p>
                 <p class="birthday-days">
                   <?php if ($daysUntil == 0): ?>
-                    <span class="today">🎉 Сегодня!</span>
+                    <span class="today">🎉 Бүгін!</span>
                   <?php elseif ($daysUntil == 1): ?>
-                    <span class="tomorrow">Завтра!</span>
+                    <span class="tomorrow">Ертең!</span>
                   <?php else: ?>
-                    Через <?= $daysUntil ?> <?= getRussianDaysWord($daysUntil) ?>
+                    <?= $daysUntil ?> күннен <?= getRussianDaysWord($daysUntil) ?>
                   <?php endif; ?>
                 </p>
                 <p class="birthday-role"><?= ucfirst($member['role']) ?></p>
@@ -65,10 +65,10 @@
 
       <!-- Фильтры -->
       <div class="members-filters">
-        <button class="filter-btn active" data-filter="all">Все</button>
-        <button class="filter-btn" data-filter="молодое">Молодое поколение</button>
-        <button class="filter-btn" data-filter="среднее">Среднее поколение</button>
-        <button class="filter-btn" data-filter="старшее">Старшее поколение</button>
+        <button class="filter-btn active" data-filter="all">Барлығы</button>
+        <button class="filter-btn" data-filter="молодое">Жас буын</button>
+        <button class="filter-btn" data-filter="среднее">Орта буын</button>
+        <button class="filter-btn" data-filter="старшее">Аға буын</button>
       </div>
 
       <!-- Список участников -->
@@ -77,7 +77,7 @@
         $members = getAllActiveMembers();
         if (empty($members)): ?>
           <div class="no-members">
-            <p>Пока нет участников</p>
+            <p>Әзірге қатысушылар жоқ</p>
           </div>
         <?php else: ?>
           <?php foreach ($members as $member): ?>
@@ -90,7 +90,7 @@
             <div class="member-info">
               <h3><?= htmlspecialchars($member['full_name']) ?></h3>
               <p class="member-faculty">🎓 <?= htmlspecialchars($member['faculty']) ?></p>
-              <p class="member-generation">👥 <?= ucfirst($member['generation']) ?> поколение</p>
+              <p class="member-generation">👥 <?= ucfirst($member['generation']) ?> буын</p>
               <?php if ($member['birth_day'] && $member['birth_month']): ?>
                 <p class="member-birthday">🎂 <?= $member['birth_day'] ?> <?= getRussianMonthName($member['birth_month']) ?></p>
               <?php endif; ?>

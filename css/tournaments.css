@@ -1,0 +1,336 @@
+@import url("../fonts/stylesheet.css");
+
+/* ================= PAGE HEADER ================= */
+.page-header {
+  background: linear-gradient(135deg, var(--red) 0%, #8b0000 100%);
+  padding: 80px 0;
+  text-align: center;
+  color: white;
+}
+
+.page-header h1 {
+  font-size: 42px;
+  margin-bottom: 15px;
+  color: white;
+}
+
+.page-header p {
+  font-size: 18px;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+
+/* ================= TOURNAMENTS PAGE ================= */
+.tournaments-page {
+  padding: 60px 0;
+  background-color: var(--bg);
+}
+
+.tournaments-filters {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.tournaments-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.tournament-card {
+  display: flex;
+  background: var(--gray);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.tournament-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(181, 0, 0, 0.15);
+}
+
+.tournament-image {
+  position: relative;
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.tournament-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tournament-status,
+.tournament-level {
+  position: absolute;
+  top: 15px;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.tournament-status {
+  left: 15px;
+}
+
+.tournament-level {
+  right: 15px;
+}
+
+/* Статусы турниров */
+.tournament-status.планируется { background: #ffa726; }
+.tournament-status.регистрация { background: #4caf50; }
+.tournament-status.в процессе { background: #2196f3; }
+.tournament-status.завершен { background: #9e9e9e; }
+.tournament-status.отменен { background: #f44336; }
+
+/* Уровни турниров */
+.tournament-level.республиканский { background: #b50000; }
+.tournament-level.областной { background: #e91e63; }
+.tournament-level.городской { background: #9c27b0; }
+.tournament-level.школьный { background: #3f51b5; }
+
+.tournament-info {
+  padding: 30px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.tournament-info h3 {
+  color: var(--text);
+  margin-bottom: 15px;
+  font-size: 24px;
+}
+
+.tournament-season {
+  color: var(--red);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.tournament-dates,
+.tournament-prize,
+.tournament-participants {
+  color: #ccc;
+  margin-bottom: 8px;
+}
+
+.tournament-prize {
+  color: #ffd700;
+  font-weight: 600;
+}
+
+.tournament-description {
+  color: #aaa;
+  line-height: 1.5;
+  margin: 15px 0;
+  flex: 1;
+}
+
+.tournament-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.btn-small {
+  padding: 8px 20px;
+  font-size: 14px;
+}
+
+/* ================= TOURNAMENT SINGLE PAGE ================= */
+.tournament-single {
+  padding: 60px 0;
+  background-color: var(--bg);
+}
+
+.tournament-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 50px;
+}
+
+.tournament-main-image {
+  position: relative;
+}
+
+.tournament-main-image img {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.tournament-badges {
+  /* position: absolute; */
+  top: 20px;
+  left: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.tournament-quick-info {
+  background: var(--gray);
+  padding: 30px;
+  border-radius: 12px;
+}
+
+.tournament-quick-info h2 {
+  color: var(--text);
+  margin-bottom: 25px;
+  font-size: 24px;
+}
+
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: between;
+}
+
+.info-label {
+  color: #ccc;
+  min-width: 180px;
+}
+
+.info-value {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.info-value.prize {
+  color: #ffd700;
+}
+
+.registration-section {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #333;
+}
+
+.registration-note {
+  color: #aaa;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* Детальная информация */
+.tournament-details {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-bottom: 50px;
+}
+
+.detail-section h3 {
+  color: var(--text);
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.tournament-description-full {
+  color: var(--text);
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.organizers-list,
+.judges-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.organizer-item,
+.judge-item {
+  background: rgba(181, 0, 0, 0.1);
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 3px solid var(--red);
+}
+
+.organizer-name,
+.judge-name {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.teaser-video {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tournament-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 30px;
+  border-top: 1px solid #333;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 968px) {
+  .tournament-hero {
+    grid-template-columns: 1fr;
+  }
+  
+  .tournament-card {
+    flex-direction: column;
+  }
+  
+  .tournament-image {
+    width: 100%;
+    height: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tournaments-filters {
+    gap: 10px;
+  }
+  
+  .tournament-actions {
+    flex-direction: column;
+  }
+  
+  .tournament-footer {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+  
+  .info-item {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+.btn-back {
+  color: var(--red);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 10px 20px;
+  border: 2px solid var(--red);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+  background: var(--red);
+  color: white;
+}

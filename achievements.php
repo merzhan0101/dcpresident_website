@@ -12,8 +12,8 @@
 <main>
   <section class="page-header">
     <div class="container">
-      <h1>Достижения</h1>
-      <p>Наши победы и успехи в дебатных турнирах</p>
+      <h1>Жетістіктер</h1>
+      <p>Пікірсайыс турнирлеріндегі жеңістеріміз бен жетістіктеріміз</p>
     </div>
   </section>
 
@@ -24,7 +24,7 @@
         $achievements = getAchievements(12);
         if (empty($achievements)): ?>
           <div class="no-achievements">
-            <p>Пока нет достижений</p>
+            <p>Әзірге жетістіктер жоқ</p>
           </div>
         <?php else: ?>
           <?php foreach ($achievements as $achievement): ?>
@@ -46,7 +46,7 @@
                 <p class="date-page">📅 <?= date('d.m.Y', strtotime($achievement['achievement_date'])) ?></p>
               <?php endif; ?>
 
-              <a href="achievement-single.php?id=<?= $achievement['id'] ?>" class="achievement-link-page">Подробнее →</a>
+              <a href="achievement-single.php?id=<?= $achievement['id'] ?>" class="achievement-link-page">Толығырақ →</a>
               
             </div>
           </div>

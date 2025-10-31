@@ -12,8 +12,8 @@
 <main>
   <section class="page-header">
     <div class="container">
-      <h1>Новости</h1>
-      <p>Последние события и обновления нашего клуба</p>
+      <h1>Жаңалықтар</h1>
+      <p>Біздің клубтың соңғы оқиғалары мен жаңартулары</p>
     </div>
   </section>
 
@@ -24,7 +24,7 @@
         $news = getNews(12);
         if (empty($news)): ?>
           <div class="no-news">
-            <p>Пока нет новостей</p>
+            <p>Әзірге жаңалық жоқ</p>
           </div>
         <?php else: ?>
           <?php foreach ($news as $newsItem): 
@@ -44,7 +44,7 @@
               <p class="news-excerpt"><?= htmlspecialchars($newsItem['content']) ?></p>
               <div class="news-meta">
                 <span class="news-full-date">📅 <?= date('d.m.Y', strtotime($newsItem['news_date'])) ?></span>
-                <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link-page">Читать далее →</a>
+                <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link-page">Ары қарай оқу →</a>
                 <!-- <a href="#" class="news-link-page">Читать далее →</a> -->
               </div>
             </div>

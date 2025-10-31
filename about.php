@@ -13,8 +13,8 @@
   <!-- Заголовок страницы -->
   <section class="page-header">
     <div class="container">
-      <h1>О нашем клубе</h1>
-      <p>Узнайте больше о DC President - самом активном дебатном клубе Торайгыров Университета</p>
+      <h1>Біздің клуб туралы</h1>
+      <p>DC President - Торайғыров университетінің ең белсенді пікірсайыс клубы туралы көбірек біліңіз</p>
     </div>
   </section>
 
@@ -24,8 +24,8 @@
       <div class="about-hero">
         <div class="about-hero-text">
           <h2>DC President</h2>
-          <p class="lead">Мы — студенческий дебатный клуб, объединяющий самых активных, умных и амбициозных студентов Торайгыров Университета.</p>
-          <p>Основанный в 2018 году, наш клуб стал площадкой для развития критического мышления, ораторского мастерства и лидерских качеств. Мы верим, что каждый студент может стать уверенным спикером и эффективным коммуникатором.</p>
+          <p class="lead">Біз-университеттің ең белсенді, ақылды және өршіл студенттерін біріктіретін студенттік пікірсайыс клубымыз.</p>
+          <p>2019 жылы негізі қаланған біздің клуб сыни ойлауды, шешендік шеберлікті және көшбасшылықты дамытуға арналған алаңға айналды. Әрбір студент сенімді спикер және тиімді Коммуникатор бола алады деп сенеміз.</p>
         </div>
         <div class="about-hero-image">
           <img src="images/all_members.jpg" alt="Участники дебатного клуба President">
@@ -34,39 +34,39 @@
 
       <!-- Наши ценности -->
       <div class="values-section">
-        <h3>Наши ценности</h3>
+        <h3>Біздің құндылықтар</h3>
         <div class="values-grid">
           <div class="value-card">
             <div class="value-icon">💬</div>
-            <h4>Свобода слова</h4>
-            <p>Мы создаем безопасное пространство для выражения любых мнений и идей</p>
+            <h4>Сөз бостандығы</h4>
+            <p>Біз кез келген пікірлер мен идеяларды білдіру үшін қауіпсіз кеңістік жасаймыз</p>
           </div>
           <div class="value-card">
             <div class="value-icon">🤝</div>
-            <h4>Уважение</h4>
-            <p>Уважаем противоположные точки зрения и учимся у каждого диалога</p>
+            <h4>Құрмет</h4>
+            <p>Қарама-қарсы көзқарастарды құрметтейміз және әр диалогтан үйренеміз</p>
           </div>
           <div class="value-card">
             <div class="value-icon">🚀</div>
-            <h4>Развитие</h4>
-            <p>Постоянно совершенствуем свои навыки и помогаем расти другим</p>
+            <h4>Даму</h4>
+            <p>Біз өз дағдыларымызды үнемі жетілдіріп, басқалардың өсуіне көмектесеміз</p>
           </div>
           <div class="value-card">
             <div class="value-icon">🏆</div>
-            <h4>Лидерство</h4>
-            <p>Воспитываем будущих лидеров, способных менять мир к лучшему</p>
+            <h4>Көшбасшылық</h4>
+            <p>Біз әлемді жақсы жаққа өзгерте алатын болашақ көшбасшыларды тәрбиелейміз</p>
           </div>
         </div>
       </div>
 
       <!-- Наша команда -->
       <div class="team-section">
-        <h3>Руководство клуба</h3>
+        <h3>Клуб басшылығы</h3>
         <div class="team-grid">
           <?php 
           $leadership = getClubLeadership();
           if (empty($leadership)): ?>
-            <p class="no-members">Информация о руководстве скоро появится</p>
+            <p class="no-members">Басшылық туралы ақпарат жақында пайда болады.</p>
           <?php else: ?>
             <?php foreach ($leadership as $member): ?>
             <div class="team-member">
@@ -75,7 +75,7 @@
               <h4><?= htmlspecialchars($member['full_name']) ?></h4>
               <p class="position"><?= ucfirst($member['role']) ?></p>
               <p class="faculty"><?= htmlspecialchars($member['faculty']) ?></p>
-              <p class="generation">Поколение: <?= $member['generation'] ?></p>
+              <p class="generation">Буын: <?= $member['generation'] ?></p>
               <?php if ($member['birth_day'] && $member['birth_month']): ?>
                 <p class="birthday">🎂 <?= $member['birth_day'] ?> <?= getRussianMonthName($member['birth_month']) ?></p>
               <?php endif; ?>
@@ -87,60 +87,32 @@
           <?php endif; ?>
         </div>
         <div class="text-center" style="margin-top: 40px;">
-            <a href="members.php" class="text-main-color">Посмотреть всех участников →</a>
+            <a href="members.php" class="text-main-color">Барлық қатысушыларды қарау →</a>
         </div>
       </div>
 
         <!-- Статистика динамическая -->
         <div class="stats-section">
-            <h3>Мы в цифрах</h3>
+            <h3>Сандар сөйлесін</h3>
             <div class="stats-grid">
                 <div class="stat-item">
                     <div class="stat-number"><?= count(getAllActiveMembers()) ?>+</div>
-                    <div class="stat-label">Участников</div>
+                    <div class="stat-label">Қатысушылар</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">25+</div>
-                    <div class="stat-label">Турниров проведено</div>
+                    <div class="stat-label">Турнирлер өткізілді</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">15+</div>
-                    <div class="stat-label">Побед в турнирах</div>
+                    <div class="stat-label">Турнирлердегі жеңістер</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">3</div>
-                    <div class="stat-label">Года работы</div>
+                    <div class="stat-label">Жұмыс жылы</div>
                 </div>
             </div>
         </div>
-
-      <!-- Статистика -->
-      <!-- <div class="stats-section">
-        <h3>Мы в цифрах</h3>
-        <div class="stats-grid">
-
-          <div class="stat-item">
-            <div class="stat-number">150+</div>
-            <div class="stat-label">Участников</div>
-          </div>
-
-          <div class="stat-item">
-            <div class="stat-number">25+</div>
-            <div class="stat-label">Турниров проведено</div>
-          </div>
-          
-          <div class="stat-item">
-            <div class="stat-number">15+</div>
-            <div class="stat-label">Побед в турнирах</div>
-          </div>
-          
-          <div class="stat-item">
-            <div class="stat-number">3</div>
-            <div class="stat-label">Года работы</div>
-          </div>
-
-        </div>
-      </div> -->
 
     </div>
   </section>

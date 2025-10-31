@@ -15,7 +15,7 @@ function sendEmailNotification($name, $email, $message) {
     <head>
         <title>Новая заявка в дебатный клуб</title>
         <style>
-            body { font-family: Arial, sans-serif; }
+            body { font-family: Montserrat, sans-serif; }
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
             .header { background: #b50000; color: white; padding: 20px; text-align: center; }
             .content { padding: 20px; background: #f9f9f9; }
@@ -150,7 +150,7 @@ function sendConfirmationEmail($name, $email) {
     <head>
         <title>Подтверждение заявки</title>
         <style>
-            body { font-family: Arial, sans-serif; }
+            body { font-family: Montserrat, sans-serif; }
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
             .header { background: #b50000; color: white; padding: 20px; text-align: center; }
             .content { padding: 20px; background: #f9f9f9; }
