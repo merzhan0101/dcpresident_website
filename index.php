@@ -14,7 +14,8 @@
       <div class="hero-text">
         <h1><span>Біздің клубқа</span> қосыл!</h1>
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo placeat, ullam voluptatem voluptatibus deleniti repellat!
+          Өз ойыңды еркін жеткізуді, сенімді сөйлеуді және логикалық дәлелдеуді үйрен.<br>
+          Пікірталас мәдениетін бірге дамытайық!
         </p>
       </div>
       <div class="hero-image">

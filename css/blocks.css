@@ -1078,7 +1078,8 @@
   border-radius: 15px;
   font-size: 12px;
   font-weight: 600;
-  color: white;
+  color: black;
+  /* color: white; */
 }
 
 .member-role-badge.президент {

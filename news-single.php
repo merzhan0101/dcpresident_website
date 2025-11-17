@@ -36,7 +36,7 @@ if (!$news) {
       <article class="news-full">
         <div class="news-meta">
           <span class="news-date">📅 <?= date('d.m.Y', strtotime($news['news_date'])) ?></span>
-          <span class="news-views">👁️ 245 көрді</span>
+          <!-- <span class="news-views">👁️ 245 көрді</span> -->
         </div>
         
         <?php if ($news['image_path']): ?>

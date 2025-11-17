@@ -48,4 +48,11 @@
   <div class="footer-bottom">
     <p>© 2025 President Debate Club | Developed by MerJAN Azimkhanuly</p>
   </div>
+
+  <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>
+      <p><a href="admin/dashboard.php" style="color: var(--red);">⚙️ Панель управления</a></p>
+  <?php else: ?>
+      <!-- <p><a class="admin-link" href="admin/login.php">Администратору</a></p> -->
+      <!-- <p><a class="join-btn" href="admin/login.php">Администратору</a></p> -->
+  <?php endif; ?>
 </footer>

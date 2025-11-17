@@ -71,7 +71,7 @@ if (!$tournament) {
             <?php endif; ?>
           </div>
           
-          <?php if ($tournament['status'] == 'регистрация'): ?>
+          <?php if ($tournament['status'] == 'Тіркелу'): ?>
           <div class="registration-section">
             <a href="#" class="btn btn-large">Турнирге тіркелу</a>
             <p class="registration-note">Тіркеу ашық <?= date('d.m.Y', strtotime($tournament['registration_deadline']))?> дейін</p>

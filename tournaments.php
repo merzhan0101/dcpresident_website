@@ -56,12 +56,12 @@
                 <p class="tournament-prize">💰 Жүлде қоры: <?= number_format($tournament['prize_fund'], 0, ',', ' ') ?> ₸</p>
               <?php endif; ?>
               <?php if ($tournament['participants_count']): ?>
-                <p class="tournament-participants">👥 Участников: <?= $tournament['participants_count'] ?>+</p>
+                <p class="tournament-participants">👥 Қатысушылар саны: <?= $tournament['participants_count'] ?>+</p>
               <?php endif; ?>
               <p class="tournament-description"><?= htmlspecialchars($tournament['description']) ?></p>
               <div class="tournament-actions">
-                <a href="tournament-single.php?id=<?= $tournament['id'] ?>" class="btn btn-small">Подробнее</a>
-                <?php if ($tournament['status'] == 'регистрация' && $tournament['registration_deadline']): ?>
+                <a href="tournament-single.php?id=<?= $tournament['id'] ?>" class="btn btn-small">Толығырақ</a>
+                <?php if ($tournament['status'] == 'Тіркеу' && $tournament['registration_deadline']): ?>
                     <?php if ($tournament['registration_link']): ?>
                         <a href="<?= $tournament['registration_link'] ?>" class="btn btn-outline btn-small" target="_blank">Тіркелу</a>
                     <?php else: ?>

@@ -21,54 +21,57 @@
     <div class="container">
 
     <!-- Ближайшие дни рождения -->
-      <div class="birthdays-section">
-        <h2>🎉 Алдағы туған күндер</h2>
-        <div class="birthdays-grid">
-          <?php 
-          $upcomingBirthdays = getUpcomingBirthdays(5);
-          if (empty($upcomingBirthdays)): ?>
-            <div class="no-birthdays">
-              <p>Жақын арада туған күндер жоқ</p>
-            </div>
-          <?php else: ?>
-            <?php foreach ($upcomingBirthdays as $member): 
-              $daysUntil = daysUntilBirthday($member['birth_month'], $member['birth_day']);
-            ?>
-            <div class="birthday-card">
-              <div class="birthday-avatar">
-                <img src="<?= $member['image_path'] ?: ($member['role'] == 'президент' ? 'images/woman.jpg' : 'images/man.jpg') ?>" 
-                     alt="<?= htmlspecialchars($member['full_name']) ?>">
-                <div class="birthday-badge">🎂</div>
-              </div>
-              <div class="birthday-info">
-                <h4><?= htmlspecialchars($member['full_name']) ?></h4>
-                <p class="birthday-date">
-                  <?= $member['birth_day'] ?> <?= getRussianMonthName($member['birth_month']) ?>
-                </p>
-                <p class="birthday-days">
-                  <?php if ($daysUntil == 0): ?>
-                    <span class="today">🎉 Бүгін!</span>
-                  <?php elseif ($daysUntil == 1): ?>
-                    <span class="tomorrow">Ертең!</span>
-                  <?php else: ?>
-                    <?= $daysUntil ?> күннен <?= getRussianDaysWord($daysUntil) ?>
-                  <?php endif; ?>
-                </p>
-                <p class="birthday-role"><?= ucfirst($member['role']) ?></p>
-              </div>
-            </div>
-            <?php endforeach; ?>
-          <?php endif; ?>
+<!-- Ближайшие дни рождения -->
+<div class="birthdays-section">
+  <h2>🎉 Алдағы туған күндер</h2>
+  <div class="birthdays-grid">
+    <?php 
+    $upcomingBirthdays = getUpcomingBirthdays(5);
+    if (empty($upcomingBirthdays)): ?>
+      <div class="no-birthdays">
+        <p>Жақын арада туған күндер жоқ</p>
+      </div>
+    <?php else: ?>
+      <?php foreach ($upcomingBirthdays as $member): 
+        $daysUntil = daysUntilBirthday($member['birth_month'], $member['birth_day']);
+        // Пропускаем некорректные даты
+        if ($daysUntil === null) continue;
+      ?>
+      <div class="birthday-card">
+        <div class="birthday-avatar">
+          <img src="<?= $member['image_path'] ?: ($member['role'] == 'президент' ? 'images/woman.jpg' : 'images/man.jpg') ?>" 
+               alt="<?= htmlspecialchars($member['full_name']) ?>">
+          <div class="birthday-badge">🎂</div>
+        </div>
+        <div class="birthday-info">
+          <h4><?= htmlspecialchars($member['full_name']) ?></h4>
+          <p class="birthday-date">
+            <?= $member['birth_day'] ?> <?= getRussianMonthName($member['birth_month']) ?>
+          </p>
+          <p class="birthday-days">
+            <?php if ($daysUntil == 0): ?>
+              <span class="today">🎉 Бүгін!</span>
+            <?php elseif ($daysUntil == 1): ?>
+              <span class="tomorrow">Ертең!</span>
+            <?php else: ?>
+              <?= $daysUntil ?> күннен <?= getRussianDaysWord($daysUntil) ?>
+            <?php endif; ?>
+          </p>
+          <p class="birthday-role"><?= ucfirst($member['role']) ?></p>
         </div>
       </div>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </div>
+</div>
 
 
       <!-- Фильтры -->
       <div class="members-filters">
         <button class="filter-btn active" data-filter="all">Барлығы</button>
-        <button class="filter-btn" data-filter="молодое">Жас буын</button>
-        <button class="filter-btn" data-filter="среднее">Орта буын</button>
-        <button class="filter-btn" data-filter="старшее">Аға буын</button>
+        <button class="filter-btn" data-filter="жас">Жас буын</button>
+        <button class="filter-btn" data-filter="орта">Орта буын</button>
+        <button class="filter-btn" data-filter="аға">Аға буын</button>
       </div>
 
       <!-- Список участников -->

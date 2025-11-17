@@ -1,4 +1,5 @@
 <?php
+session_start();
 // Подключаем базу данных
 include 'php/database.php';
 

@@ -1,5 +1,5 @@
 <header>
-  <div class="container header-container">
+  <div class="container1 header-container">
   <a href="index.php" style="text-decoration: none;">
       <div class="logo">
           <img src="images/logo_president.png" alt="DC President Logo">
@@ -23,7 +23,8 @@
   </nav>
 
   <div class="header-btn">
-    <a href="index.php#apply" class="join-btn">Қосылу</a>
+    <a class="join-btn" href="index.php#apply">Қосылу</a>
+    <a class="join-btn" href="admin/login.php">Admin panel</a>
   </div>
   
   </div>
