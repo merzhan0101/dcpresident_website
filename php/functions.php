@@ -234,6 +234,30 @@ function getAllActiveMembers() {
     }
 }
 
+function getAllMembers() {
+    global $pdo;
+
+    try {
+        $sql = "SELECT * FROM members 
+                ORDER BY 
+                    CASE role 
+                        WHEN 'президент' THEN 1
+                        WHEN 'вице-президент' THEN 2 
+                        WHEN 'тренер' THEN 3
+                        WHEN 'координатор' THEN 4
+                        ELSE 5
+                    END, full_name";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Database error in getAllMembers: " . $e->getMessage());
+        return [];
+    }
+}
+
 // Получить участников по поколению
 function getMembersByGeneration($generation) {
     global $pdo;
@@ -574,5 +598,164 @@ function updateLastLogin($user_id) {
     }
 }
 
+// загрузка фото турниров
+function uploadTournamentPhoto($file) {
+    $uploadDir = '../images/tournaments/';
+
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    $fileType = mime_content_type($file['tmp_name']);
+
+    if (!in_array($fileType, $allowedTypes)) {
+        throw new Exception('Недопустимый тип файла.');
+    }
+
+    if ($file['size'] > 5 * 1024 * 1024) {
+        throw new Exception('Файл слишком большой. Максимум 5MB.');
+    }
+
+    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $filename = uniqid() . '.' . $extension;
+    $filepath = $uploadDir . $filename;
+
+    if (move_uploaded_file($file['tmp_name'], $filepath)) {
+        return 'images/tournaments/' . $filename;
+    }
+
+    throw new Exception('Ошибка при загрузке файла.');
+}
+
+// загрузка тизера
+function uploadTournamentVideo($file)
+{
+    $uploadDir = '../videos/tournaments/';
+
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir,0777,true);
+    }
+
+    // разрешаемые расширения
+    $allowedExtensions = ['mp4', 'mov', 'webm'];
+
+    $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+    if (!in_array($extension, $allowedExtensions)) {
+        throw new Exception('Разрешены только MP4, MOV и WEBM.');
+    }
+
+    $filename = uniqid('video_') . '.mp4';
+
+    move_uploaded_file(
+        $file['tmp_name'],
+        $uploadDir . $filename
+    );
+
+    return 'videos/tournaments/' . $filename;
+}
+
+// ЗАГРУЗКА ФОТО ДЛЯ МЕРОПРИЯТИЯ
+function uploadEventPhoto($file) {
+    $uploadDir = '../images/events/';
+
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    $fileType = mime_content_type($file['tmp_name']);
+
+    if (!in_array($fileType, $allowedTypes)) {
+        throw new Exception('Недопустимый тип файла.');
+    }
+
+    if ($file['size'] > 5 * 1024 * 1024) {
+        throw new Exception('Файл слишком большой. Максимум 5MB.');
+    }
+
+    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $filename = uniqid() . '.' . $extension;
+    $filepath = $uploadDir . $filename;
+
+    if (move_uploaded_file($file['tmp_name'], $filepath)) {
+        return 'images/events/' . $filename;
+    }
+
+    throw new Exception('Ошибка при загрузке файла.');
+}
+
+// ЗАГРУЗКА ФОТО ДЛЯ ДОСТИЖЕНИЯ
+function uploadAchievementPhoto($file) {
+    $uploadDir = '../images/achievements/';
+
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    $fileType = mime_content_type($file['tmp_name']);
+
+    if (!in_array($fileType, $allowedTypes)) {
+        throw new Exception('Недопустимый тип файла.');
+    }
+
+    if ($file['size'] > 5 * 1024 * 1024) {
+        throw new Exception('Файл слишком большой. Максимум 5MB.');
+    }
+
+    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $filename = uniqid() . '.' . $extension;
+    $filepath = $uploadDir . $filename;
+
+    if (move_uploaded_file($file['tmp_name'], $filepath)) {
+        return 'images/achievements/' . $filename;
+    }
+
+    throw new Exception('Ошибка при загрузке файла.');
+}
+
+// ЗАГРУЗКА ФОТО ДЛЯ НОВОСТИ
+function uploadNewsPhoto($file)
+{
+    $uploadDir = '../images/news/';
+
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    $allowedTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/webp'
+    ];
+
+    $fileType = mime_content_type($file['tmp_name']);
+
+    if (!in_array($fileType, $allowedTypes)) {
+        throw new Exception('Недопустимый тип файла.');
+    }
+
+    if ($file['size'] > 5 * 1024 * 1024) {
+        throw new Exception('Файл слишком большой.');
+    }
+
+    $extension = pathinfo(
+        $file['name'],
+        PATHINFO_EXTENSION
+    );
+
+    $filename = uniqid() . '.' . $extension;
+
+    $filepath = $uploadDir . $filename;
+
+    if (move_uploaded_file($file['tmp_name'], $filepath)) {
+        return 'images/news/' . $filename;
+    }
+
+    throw new Exception('Ошибка загрузки файла.');
+}
 
 ?>

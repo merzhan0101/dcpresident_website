@@ -9,6 +9,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     switch ($action) {
         case 'add':
+            $image_path = null;
+            if (isset($_FILES['tournament_image']) && $_FILES['tournament_image']['error'] === UPLOAD_ERR_OK) {
+                $image_path = uploadTournamentPhoto($_FILES['tournament_image']);
+            }
+
             $title = trim($_POST['title']);
             $description = trim($_POST['description']);
             $full_description = trim($_POST['full_description']);
@@ -23,16 +28,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $judges = trim($_POST['judges']);
             $participants_count = $_POST['participants_count'] ?: null;
             $registration_link = trim($_POST['registration_link']);
+            $registration_type = $_POST['registration_type'] ?? 'telegram';
+            $google_form_link = trim($_POST['google_form_link'] ?? '');
+
+            $teaser_video = null;
+            if (
+                isset($_FILES['teaser_video']) &&
+                $_FILES['teaser_video']['error'] === UPLOAD_ERR_OK
+            ) {
+                $teaser_video = uploadTournamentVideo($_FILES['teaser_video']);
+            }
             
-            $sql = "INSERT INTO tournaments (title, description, full_description, level, season, start_date, end_date, registration_deadline, prize_fund, status, organizers, judges, participants_count, registration_link) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO tournaments 
+            (title, description, full_description, level, season, start_date, end_date, registration_deadline, prize_fund, status, organizers, judges, participants_count, registration_link, registration_type, google_form_link, image_path, teaser_video) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$title, $description, $full_description, $level, $season, $start_date, $end_date, $registration_deadline, $prize_fund, $status, $organizers, $judges, $participants_count, $registration_link]);
+            $stmt->execute([
+                $title,
+                $description,
+                $full_description,
+                $level,
+                $season,
+                $start_date,
+                $end_date,
+                $registration_deadline,
+                $prize_fund,
+                $status,
+                $organizers,
+                $judges,
+                $participants_count,
+                $registration_link,
+                $registration_type,
+                $google_form_link,
+                $image_path,
+                $teaser_video
+            ]);
             
             header("Location: tournaments.php?success=added");
             exit;
             
         case 'edit':
+            // upload/edit img
+            $image_path = $_POST['current_image'] ?? null;
+            if (isset($_FILES['tournament_image']) && $_FILES['tournament_image']['error'] === UPLOAD_ERR_OK) {
+                if (
+                    $image_path &&
+                    strpos($image_path, 'images/tournaments/') === 0 &&
+                    file_exists('../' . $image_path)
+                ) {
+                    unlink('../' . $image_path);
+                }
+
+                $image_path = uploadTournamentPhoto($_FILES['tournament_image']);
+            }
+
+            // ТИЗЕР
+            $teaser_video = $_POST['current_teaser_video'] ?? null;
+            if (
+                isset($_FILES['teaser_video']) &&
+                $_FILES['teaser_video']['error'] === UPLOAD_ERR_OK
+            ) {
+                if (
+                    $teaser_video &&
+                    strpos($teaser_video, 'videos/tournaments/') === 0 &&
+                    file_exists('../' . $teaser_video)
+                ) {
+                    unlink('../' . $teaser_video);
+                }
+
+                $teaser_video = uploadTournamentVideo($_FILES['teaser_video']);
+            }
+
             $id = $_POST['id'];
             $title = trim($_POST['title']);
             $description = trim($_POST['description']);
@@ -48,11 +114,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $judges = trim($_POST['judges']);
             $participants_count = $_POST['participants_count'] ?: null;
             $registration_link = trim($_POST['registration_link']);
+            $registration_type = $_POST['registration_type'] ?? 'telegram';
+            $google_form_link = trim($_POST['google_form_link'] ?? '');
             
-            $sql = "UPDATE tournaments SET title=?, description=?, full_description=?, level=?, season=?, start_date=?, end_date=?, registration_deadline=?, prize_fund=?, status=?, organizers=?, judges=?, participants_count=?, registration_link=? WHERE id=?";
+            $sql = "UPDATE tournaments 
+                    SET title=?, description=?, full_description=?, level=?, season=?, start_date=?, end_date=?, registration_deadline=?, prize_fund=?, status=?, 
+                    organizers=?, judges=?, participants_count=?, registration_link=?, registration_type=?, google_form_link=?, image_path=?, teaser_video=?
+                    WHERE id=?";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$title, $description, $full_description, $level, $season, $start_date, $end_date, $registration_deadline, $prize_fund, $status, $organizers, $judges, $participants_count, $registration_link, $id]);
-            
+            $stmt->execute([
+                $title,
+                $description,
+                $full_description,
+                $level,
+                $season,
+                $start_date,
+                $end_date,
+                $registration_deadline,
+                $prize_fund,
+                $status,
+                $organizers,
+                $judges,
+                $participants_count,
+                $registration_link,
+                $registration_type,
+                $google_form_link,
+                $image_path,
+                $teaser_video,
+                $id
+            ]);
             header("Location: tournaments.php?success=updated");
             exit;
             
@@ -87,12 +177,6 @@ $tournaments = getAllTournaments();
             font-weight: 600;
         }
 
-        /* .status-планируется { background: #ffa726; color: white; }
-        .status-регистрация { background: #4caf50; color: white; }
-        .status-в процессе { background: #2196f3; color: white; }
-        .status-завершен { background: #9e9e9e; color: white; }
-        .status-отменен { background: #f44336; color: white; } */
-
         .status-жоспарланған { background: #ffa726; color: white; }
         .status-тіркеу { background: #4caf50; color: white; }
         .status-процесте { background: #2196f3; color: white; }
@@ -110,6 +194,67 @@ $tournaments = getAllTournaments();
         .level-областной { background: #e91e63; }
         .level-городской { background: #9c27b0; }
         .level-школьный { background: #3f51b5; }
+
+        /* filter */
+        .tournaments-toolbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:16px;
+            margin:20px 0;
+            padding:18px;
+            background:var(--gray);
+            border:1px solid #333;
+            border-radius:12px;
+        }
+
+        .toolbar-left{
+            display:flex;
+            gap:12px;
+            flex-wrap:wrap;
+        }
+
+        .tournaments-toolbar input,
+        .tournaments-toolbar select{
+
+            height:42px;
+            padding:0 14px;
+            border-radius:8px;
+            border:1px solid #444;
+            background:#1b1b1b;
+            color:#fff;
+
+        }
+
+        .tournaments-toolbar input{
+            min-width:300px;
+        }
+
+        .toolbar-stats span{
+
+            padding:9px 14px;
+            background:rgba(181,0,0,.15);
+            border-radius:8px;
+            color:#ddd;
+
+        }
+
+        @media(max-width:900px){
+
+            .tournaments-toolbar{
+                flex-direction:column;
+                align-items:stretch;
+            }
+
+            .toolbar-left{
+                width:100%;
+            }
+
+            .tournaments-toolbar input{
+                min-width:100%;
+            }
+
+        }
     </style>
 </head>
 <body>
@@ -127,6 +272,39 @@ $tournaments = getAllTournaments();
                     ✅ Турнир успешно <?= $_GET['success'] == 'added' ? 'создан' : ($_GET['success'] == 'updated' ? 'обновлен' : 'удален') ?>
                 </div>
             <?php endif; ?>
+
+            <div class="tournaments-toolbar">
+                <div class="toolbar-left">
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="🔍 Поиск по названию..."
+                    >
+
+                    <select id="levelFilter">
+                        <option value="all">Все уровни</option>
+                        <option value="мектепшілік">Мектепшілік</option>
+                        <option value="қалалық">Қалалық</option>
+                        <option value="облыстық">Облыстық</option>
+                        <option value="республикалық">Республикалық</option>
+                    </select>
+
+                    <select id="statusFilter">
+                        <option value="all">Все статусы</option>
+                        <option value="жоспарланған">Жоспарланған</option>
+                        <option value="тіркеу">Тіркеу</option>
+                        <option value="процесте">Процесте</option>
+                        <option value="аяқталды">Аяқталды</option>
+                        <option value="жойылды">Жойылды</option>
+                    </select>
+
+                </div>
+
+                <div class="toolbar-stats">
+                    <span>Всего: <?= count($tournaments) ?></span>
+                </div>
+            </div>
             
             <div class="admin-table">
                 <table>
@@ -142,9 +320,14 @@ $tournaments = getAllTournaments();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($tournaments as $tournament): ?>
-                        <tr>
-                            <td><?= $tournament['id'] ?></td>
+                        <?php foreach ($tournaments as $index => $tournament): ?>
+                        <tr
+                            class="tournament-row"
+                            data-title="<?= htmlspecialchars(mb_strtolower($tournament['title'])) ?>"
+                            data-level="<?= htmlspecialchars($tournament['level']) ?>"
+                            data-status="<?= htmlspecialchars($tournament['status']) ?>"
+                        >
+                            <td><?= $index + 1 ?></td>
                             <td><?= htmlspecialchars($tournament['title']) ?></td>
                             <td><span class="level-badge level-<?= $tournament['level'] ?>"><?= $tournament['level'] ?></span></td>
                             <td><?= date('d.m.Y', strtotime($tournament['start_date'])) ?></td>
@@ -166,9 +349,50 @@ $tournaments = getAllTournaments();
     <div id="tournamentModal" class="modal">
         <div class="modal-content">
             <h2 id="modalTitle">Создать турнир</h2>
-            <form method="POST" id="tournamentForm">
+            <!-- <form method="POST" id="tournamentForm"> -->
+            <form method="POST" id="tournamentForm" enctype="multipart/form-data">
                 <input type="hidden" name="action" id="formAction" value="add">
                 <input type="hidden" name="id" id="tournamentId">
+                <input type="hidden" name="current_image" id="currentImage">
+                <input type="hidden" name="current_teaser" id="currentTeaser">
+
+                <div id="currentImageContainer" style="display: none; margin-bottom: 15px;">
+                    <!-- <p>Текущее фото:</p> -->
+                    <img id="currentImagePreview"
+                        src=""
+                        alt="Текущее фото"
+                        style="width: 140px; height: 90px; object-fit: cover; border-radius: 8px;">
+                </div>
+
+                <div id="currentVideoContainer" style="display:none">
+                    <!-- <label>Текущее видео</label> -->
+                    <video
+                        id="currentVideoPreview"
+                        controls
+                        width="300">
+                    </video>
+                </div>
+
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Фото турнира</label>
+                    <input type="file" name="tournament_image" id="tournamentImage" accept="image/*">
+                </div>
+
+                <div class="form-group" style="grid-column:1/-1;">
+
+                    <label>Тизер турнира (MP4)</label>
+
+                    <input
+                        type="file"
+                        name="teaser_video"
+                        accept="video/mp4,video/webm,video/ogg">
+
+                    <input
+                        type="hidden"
+                        name="current_teaser_video"
+                        id="current_teaser_video">
+
+                </div>
                 
                 <div class="form-grid">
                     <div class="form-group" style="grid-column: 1 / -1;">
@@ -228,8 +452,23 @@ $tournaments = getAllTournaments();
                     </div>
                     
                     <div class="form-group" style="grid-column: 1 / -1;">
-                        <label>Ссылка для регистрации</label>
-                        <input type="url" name="registration_link" id="registration_link" placeholder="https://t.me/BotName">
+                        <div class="form-group">
+                            <label>Тип регистрации</label>
+                            <select name="registration_type" id="registration_type">
+                                <option value="telegram">Telegram бот</option>
+                                <option value="google_form">Google форма</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Ссылка Telegram бота</label>
+                            <input type="url" name="registration_link" id="registration_link" placeholder="https://t.me/BotName">
+                        </div>
+
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Ссылка Google формы</label>
+                            <input type="url" name="google_form_link" id="google_form_link" placeholder="https://forms.gle/...">
+                        </div>
                     </div>
                     
                     <div class="form-group" style="grid-column: 1 / -1;">
@@ -276,22 +515,24 @@ $tournaments = getAllTournaments();
                 title.textContent = 'Создать турнир';
                 formAction.value = 'add';
                 document.getElementById('tournamentForm').reset();
+                setTimeout(toggleRegistrationFields, 100);
             } else {
                 title.textContent = 'Редактировать турнир';
                 formAction.value = 'edit';
                 // Загрузка данных турнира
                 loadTournamentData(id);
+                setTimeout(toggleRegistrationFields, 100);
             }
             
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
+            // modal.style.display = 'block';
         }
         
         function closeModal() {
             document.getElementById('tournamentModal').style.display = 'none';
         }
-        
+
         function loadTournamentData(id) {
-            // Здесь должна быть AJAX загрузка данных
             fetch(`../api/get_tournament.php?id=${id}`)
                 .then(response => response.json())
                 .then(data => {
@@ -306,12 +547,55 @@ $tournaments = getAllTournaments();
                     document.getElementById('prize_fund').value = data.prize_fund || '';
                     document.getElementById('participants_count').value = data.participants_count || '';
                     document.getElementById('registration_link').value = data.registration_link || '';
+                    document.getElementById('registration_type').value = data.registration_type || 'telegram';
+                    document.getElementById('google_form_link').value = data.google_form_link || '';
                     document.getElementById('description').value = data.description;
                     document.getElementById('full_description').value = data.full_description || '';
                     document.getElementById('organizers').value = data.organizers || '';
                     document.getElementById('judges').value = data.judges || '';
-                });
+
+                    const currentImage = document.getElementById('currentImage');
+                    const currentImageContainer = document.getElementById('currentImageContainer');
+                    const currentImagePreview = document.getElementById('currentImagePreview');
+
+                    // тизер
+                    document.getElementById('current_teaser_video').value =
+                        data.teaser_video || '';
+                        if (data.teaser_video){
+                            currentVideoContainer.style.display='block';
+                            currentVideoPreview.src='../'+data.teaser_video;
+                        } else{
+                            currentVideoContainer.style.display='none';
+                        }
+
+                    if (data.image_path) {
+                        currentImage.value = data.image_path;
+                        currentImagePreview.src = '../' + data.image_path;
+                        currentImageContainer.style.display = 'block';
+                    } else {
+                        currentImage.value = '';
+                        currentImagePreview.src = '';
+                        currentImageContainer.style.display = 'none';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         }
+
+        function toggleRegistrationFields() {
+            const type = document.getElementById('registration_type').value;
+            const telegramField = document.getElementById('registration_link').closest('.form-group');
+            const googleField = document.getElementById('google_form_link').closest('.form-group');
+
+            if (type === 'google_form') {
+                telegramField.style.display = 'none';
+                googleField.style.display = 'block';
+            } else {
+                telegramField.style.display = 'block';
+                googleField.style.display = 'none';
+            }
+        }
+
+        document.getElementById('registration_type').addEventListener('change', toggleRegistrationFields);
         
         function confirmDelete(id) {
             if (confirm('Вы уверены, что хотите удалить этот турнир?')) {
@@ -319,6 +603,49 @@ $tournaments = getAllTournaments();
                 document.getElementById('deleteForm').submit();
             }
         }
+
+        // FILTER
+        const searchInput=document.getElementById("searchInput");
+        const levelFilter=document.getElementById("levelFilter");
+        const statusFilter=document.getElementById("statusFilter");
+
+        const rows=document.querySelectorAll(".tournament-row");
+
+        function filterTournaments(){
+
+            const search=searchInput.value.toLowerCase().trim();
+            const level=levelFilter.value;
+            const status=statusFilter.value;
+
+            rows.forEach(row=>{
+
+                const title=row.dataset.title;
+                const rowLevel=row.dataset.level;
+                const rowStatus=row.dataset.status;
+
+                const searchOk=
+                    title.includes(search);
+
+                const levelOk=
+                    level==="all" ||
+                    rowLevel===level;
+
+                const statusOk=
+                    status==="all" ||
+                    rowStatus===status;
+
+                row.style.display=
+                    searchOk && levelOk && statusOk
+                    ? ""
+                    : "none";
+
+            });
+
+        }
+
+        searchInput.addEventListener("input",filterTournaments);
+        levelFilter.addEventListener("change",filterTournaments);
+        statusFilter.addEventListener("change",filterTournaments);
         
         window.onclick = function(event) {
             const modal = document.getElementById('tournamentModal');

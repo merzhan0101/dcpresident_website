@@ -12,8 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $name = trim($_POST['full_name']);
             $generation = $_POST['generation'];
             $faculty = trim($_POST['faculty']);
-            $birth_day = $_POST['birth_day'];
-            $birth_month = $_POST['birth_month'];
+            // $birth_day = $_POST['birth_day'];
+            // $birth_month = $_POST['birth_month'];
+            $birth_day = !empty($_POST['birth_day']) ? (int)$_POST['birth_day'] : null;
+            $birth_month = !empty($_POST['birth_month']) ? (int)$_POST['birth_month'] : null;
             $role = $_POST['role'];
             $bio = trim($_POST['bio']);
             
@@ -36,8 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $name = trim($_POST['full_name']);
             $generation = $_POST['generation'];
             $faculty = trim($_POST['faculty']);
-            $birth_day = $_POST['birth_day'];
-            $birth_month = $_POST['birth_month'];
+            // $birth_day = $_POST['birth_day'];
+            // $birth_month = $_POST['birth_month'];
+            $birth_day = !empty($_POST['birth_day']) ? (int)$_POST['birth_day'] : null;
+            $birth_month = !empty($_POST['birth_month']) ? (int)$_POST['birth_month'] : null;
             $role = $_POST['role'];
             $bio = trim($_POST['bio']);
             $is_active = isset($_POST['is_active']) ? 1 : 0;
@@ -46,7 +50,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $image_path = $_POST['current_photo'] ?? null;
             if (isset($_FILES['member_photo']) && $_FILES['member_photo']['error'] === UPLOAD_ERR_OK) {
                 // Удаляем старое фото если оно есть
-                if ($image_path && file_exists('../' . $image_path)) {
+                /*if ($image_path && file_exists('../' . $image_path)) {
+                    unlink('../' . $image_path);
+                }*/
+                if (
+                    $image_path &&
+                    file_exists('../' . $image_path) &&
+                    !in_array($image_path, [
+                        'images/man.jpg',
+                        'images/woman.jpg',
+                        'images/avatar-default.jpg'
+                    ])
+                ) {
                     unlink('../' . $image_path);
                 }
                 $image_path = uploadMemberPhoto($_FILES['member_photo']);
@@ -81,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$members = getAllActiveMembers();
+$members = getAllMembers();
 ?>
 
 <!DOCTYPE html>
@@ -158,22 +173,27 @@ $members = getAllActiveMembers();
             display: none;
             position: fixed;
             z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
+
+            justify-content: center;
+            align-items: center;
+
             background: rgba(0, 0, 0, 0.5);
         }
-        
+
         .modal-content {
             background: var(--gray);
-            margin: 5% auto;
             padding: 30px;
             border-radius: 10px;
+
             width: 90%;
-            max-width: 600px;
+            max-width: 650px;
             max-height: 90vh;
             overflow-y: auto;
+            overflow-x: hidden;
+
+            margin: 0;
+            box-sizing: border-box;
         }
         
         .form-grid {
@@ -230,6 +250,64 @@ $members = getAllActiveMembers();
             object-fit: cover;
             border: 2px solid var(--red);
         }
+
+        /* filter */
+        .members-toolbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:15px;
+            margin:20px 0;
+            padding:18px;
+            background:var(--gray);
+            border-radius:12px;
+            border:1px solid #2f2f2f;
+            font-family: inherit;
+        }
+
+        .toolbar-left{
+            display:flex;
+            gap:12px;
+            flex-wrap:wrap;
+        }
+
+        .members-toolbar input,
+        .members-toolbar select{
+            height:42px;
+            padding:0 14px;
+            border-radius:8px;
+            border:1px solid #444;
+            background:#1b1b1b;
+            color:#fff;
+        }
+
+        .members-toolbar input{
+            min-width:300px;
+        }
+
+        .toolbar-stats span{
+            padding:9px 14px;
+            border-radius:8px;
+            background:rgba(181,0,0,.15);
+            color:#ddd;
+        }
+
+        @media(max-width:900px){
+
+            .members-toolbar{
+                flex-direction:column;
+                align-items:stretch;
+            }
+
+            .toolbar-left{
+                width:100%;
+            }
+
+            .members-toolbar input{
+                min-width:100%;
+            }
+
+        }
     </style>
 </head>
 <body>
@@ -247,6 +325,37 @@ $members = getAllActiveMembers();
                     ✅ Участник успешно <?= $_GET['success'] == 'added' ? 'добавлен' : ($_GET['success'] == 'updated' ? 'обновлен' : 'удален') ?>
                 </div>
             <?php endif; ?>
+
+            <!-- ФИЛЬТРАЦИЯ -->
+            <div class="members-toolbar">
+                <div class="toolbar-left">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="🔍 Поиск по ФИО, факультету..."
+                    >
+
+                    <select id="generationFilter">
+                        <option value="all">Все поколения</option>
+                        <option value="жас">Жас</option>
+                        <option value="орта">Орта</option>
+                        <option value="аға">Аға</option>
+                    </select>
+
+                    <select id="roleFilter">
+                        <option value="all">Все роли</option>
+                        <option value="клуб мүшесі">Клуб мүшесі</option>
+                        <option value="pr">PR</option>
+                        <option value="бас бапкер">Бас бапкер</option>
+                        <option value="координатор">Координатор</option>
+                        <option value="президент">Президент</option>
+                    </select>
+                </div>
+
+                <div class="toolbar-stats">
+                    <span>Всего: <?= count($members) ?></span>
+                </div>
+            </div>
             
             <div class="admin-table">
                 <table>
@@ -262,9 +371,15 @@ $members = getAllActiveMembers();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($members as $member): ?>
-                        <tr>
-                            <td><?= $member['id'] ?></td>
+                    <?php foreach ($members as $index => $member): ?>
+                        <tr
+                            class="member-row"
+                            data-name="<?= htmlspecialchars(mb_strtolower($member['full_name'])) ?>"
+                            data-faculty="<?= htmlspecialchars(mb_strtolower($member['faculty'])) ?>"
+                            data-generation="<?= htmlspecialchars($member['generation']) ?>"
+                            data-role="<?= htmlspecialchars($member['role']) ?>"
+                        >
+                            <td><?= $index + 1 ?></td>
                             <td>
                                 <?php if ($member['image_path']): ?>
                                     <img src="../<?= $member['image_path'] ?>" alt="<?= htmlspecialchars($member['full_name']) ?>" class="member-photo">
@@ -397,7 +512,8 @@ $members = getAllActiveMembers();
                 loadMemberData(id);
             }
             
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
+            // modal.style.display = 'block';
         }
         
         function closeModal() {
@@ -459,6 +575,51 @@ $members = getAllActiveMembers();
                 document.getElementById('deleteForm').submit();
             }
         }
+
+        // FILTER
+        const searchInput=document.getElementById('searchInput');
+        const generationFilter=document.getElementById('generationFilter');
+        const roleFilter=document.getElementById('roleFilter');
+
+        const rows=document.querySelectorAll('.member-row');
+
+        function filterMembers(){
+
+            const search=searchInput.value.toLowerCase().trim();
+            const generation=generationFilter.value;
+            const role=roleFilter.value;
+
+            rows.forEach(row=>{
+
+                const name=row.dataset.name;
+                const faculty=row.dataset.faculty;
+                const rowGeneration=row.dataset.generation;
+                const rowRole=row.dataset.role;
+
+                const searchOk=
+                    name.includes(search) ||
+                    faculty.includes(search);
+
+                const generationOk=
+                    generation==="all" ||
+                    rowGeneration===generation;
+
+                const roleOk=
+                    role==="all" ||
+                    rowRole===role;
+
+                row.style.display=
+                    searchOk && generationOk && roleOk
+                    ? ""
+                    : "none";
+
+            });
+
+        }
+
+        searchInput.addEventListener("input",filterMembers);
+        generationFilter.addEventListener("change",filterMembers);
+        roleFilter.addEventListener("change",filterMembers);
         
         // Закрытие модального окна при клике вне его
         window.onclick = function(event) {

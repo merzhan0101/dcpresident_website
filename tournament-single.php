@@ -71,11 +71,24 @@ if (!$tournament) {
             <?php endif; ?>
           </div>
           
-          <?php if ($tournament['status'] == 'Тіркелу'): ?>
-          <div class="registration-section">
-            <a href="#" class="btn btn-large">Турнирге тіркелу</a>
-            <p class="registration-note">Тіркеу ашық <?= date('d.m.Y', strtotime($tournament['registration_deadline']))?> дейін</p>
-          </div>
+          <?php if ($tournament['status'] === 'тіркеу'): ?>
+              <div class="registration-section">
+                <?php if ($tournament['status'] === 'тіркеу' && $tournament['registration_type'] === 'telegram' && !empty($tournament['registration_link'])): ?>
+                  <div class="registration-section">
+                      <a href="<?= htmlspecialchars($tournament['registration_link']) ?>"
+                        class="btn btn-large"
+                        target="_blank">
+                          Telegram арқылы тіркелу
+                      </a>
+
+                      <?php if ($tournament['registration_deadline']): ?>
+                          <p class="registration-note">
+                              Тіркеу ашық <?= date('d.m.Y', strtotime($tournament['registration_deadline'])) ?> дейін
+                          </p>
+                      <?php endif; ?>
+                  </div>
+                <?php endif; ?>
+              </div>
           <?php endif; ?>
         </div>
       </div>
@@ -135,6 +148,53 @@ if (!$tournament) {
         </div>
         <?php endif; ?>
       </div>
+      <!-- конец tournament-details -->
+
+      <?php if (
+          $tournament['status'] === 'тіркеу' &&
+          $tournament['registration_type'] === 'google_form' &&
+          !empty($tournament['google_form_link'])
+      ): ?>
+
+          <?php
+          $googleFormLink = $tournament['google_form_link'];
+
+          if (strpos($googleFormLink, 'embedded=true') === false) {
+              $separator = strpos($googleFormLink, '?') === false ? '?' : '&';
+              $googleFormLink .= $separator . 'embedded=true';
+          }
+          ?>
+
+          <section class="google-registration-section">
+              <div class="registration-alert">
+                  <h2>📝 Турнирге тіркелу</h2>
+
+                  <?php if ($tournament['registration_deadline']): ?>
+                      <p>
+                          Тіркеу ашық 
+                          <strong><?= date('d.m.Y', strtotime($tournament['registration_deadline'])) ?></strong>
+                          дейін
+                      </p>
+                  <?php else: ?>
+                      <p>Форманы толтырып, турнирге қатысуға өтініш жіберіңіз.</p>
+                  <?php endif; ?>
+              </div>
+
+              <div class="google-form-wrapper">
+                  <iframe
+                      src="<?= htmlspecialchars($googleFormLink) ?>"
+                      width="100%"
+                      height="1250"
+                      frameborder="0"
+                      marginheight="0"
+                      marginwidth="0"
+                      loading="lazy">
+                      Жүктелуде...
+                  </iframe>
+              </div>
+          </section>
+
+      <?php endif; ?>
 
       <div class="tournament-footer">
         <a href="tournaments.php" class="btn-back">← Турнирлерге оралу</a>

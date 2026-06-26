@@ -13,11 +13,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $content = trim($_POST['content']);
             $full_content = trim($_POST['full_content']);
             $news_date = $_POST['news_date'];
-            
-            $sql = "INSERT INTO news (title, content, full_content, news_date) 
-                    VALUES (?, ?, ?, ?)";
+
+            $image_path = null;
+            if (
+                isset($_FILES['news_image']) &&
+                $_FILES['news_image']['error'] === UPLOAD_ERR_OK
+            ) {
+                $image_path = uploadNewsPhoto($_FILES['news_image']);
+            }
+
+            $sql = "INSERT INTO news
+                    (title, content, full_content, news_date, image_path)
+                    VALUES (?, ?, ?, ?, ?)";
+
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$title, $content, $full_content, $news_date]);
+            $stmt->execute([
+                $title,
+                $content,
+                $full_content,
+                $news_date,
+                $image_path
+            ]);
+                        
+            // $sql = "INSERT INTO news (title, content, full_content, news_date) 
+            //         VALUES (?, ?, ?, ?)";
+            // $stmt = $pdo->prepare($sql);
+            // $stmt->execute([$title, $content, $full_content, $news_date]);
             
             header("Location: news.php?success=added");
             exit;
@@ -28,10 +49,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $content = trim($_POST['content']);
             $full_content = trim($_POST['full_content']);
             $news_date = $_POST['news_date'];
-            
-            $sql = "UPDATE news SET title=?, content=?, full_content=?, news_date=? WHERE id=?";
+
+            $image_path = $_POST['current_image'] ?? null;
+            if (
+                isset($_FILES['news_image']) &&
+                $_FILES['news_image']['error'] === UPLOAD_ERR_OK
+            ) {
+                if (
+                    $image_path &&
+                    strpos($image_path, 'images/news/') === 0 &&
+                    file_exists('../' . $image_path)
+                ) {
+                    unlink('../' . $image_path);
+                }
+                $image_path = uploadNewsPhoto($_FILES['news_image']);
+            }
+           
+            $sql = "UPDATE news
+                    SET
+                    title=?,
+                    content=?,
+                    full_content=?,
+                    news_date=?,
+                    image_path=?
+                    WHERE id=?";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$title, $content, $full_content, $news_date, $id]);
+            $stmt->execute([
+                $title,
+                $content,
+                $full_content,
+                $news_date,
+                $image_path,
+                $id
+            ]);
+            
+            // $sql = "UPDATE news SET title=?, content=?, full_content=?, news_date=? WHERE id=?";
+            // $stmt = $pdo->prepare($sql);
+            // $stmt->execute([$title, $content, $full_content, $news_date, $id]);
             
             header("Location: news.php?success=updated");
             exit;
@@ -59,6 +113,67 @@ $news = getAllNews();
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="icon" type="image/png" href="/images/logo_president.png">
+        <style>
+        .news-toolbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:16px;
+            margin:20px 0;
+            padding:18px;
+            background:var(--gray);
+            border:1px solid #333;
+            border-radius:12px;
+        }
+
+        .toolbar-left{
+            display:flex;
+            gap:12px;
+            flex-wrap:wrap;
+        }
+
+        .news-toolbar input,
+        .news-toolbar select{
+
+            height:42px;
+            padding:0 14px;
+            border-radius:8px;
+            border:1px solid #444;
+            background:#1b1b1b;
+            color:#fff;
+
+        }
+
+        .news-toolbar input{
+            min-width:300px;
+        }
+
+        .toolbar-stats span{
+
+            padding:9px 14px;
+            background:rgba(181,0,0,.15);
+            border-radius:8px;
+            color:#ddd;
+
+        }
+
+        @media(max-width:900px){
+
+            .news-toolbar{
+                flex-direction:column;
+                align-items:stretch;
+            }
+
+            .toolbar-left{
+                width:100%;
+            }
+
+            .news-toolbar input{
+                min-width:100%;
+            }
+
+        }
+    </style>
 </head>
 <body>
     <div class="admin-container">
@@ -75,6 +190,20 @@ $news = getAllNews();
                     ✅ Новость успешно <?= $_GET['success'] == 'added' ? 'добавлена' : ($_GET['success'] == 'updated' ? 'обновлена' : 'удалена') ?>
                 </div>
             <?php endif; ?>
+
+            <div class="news-toolbar">
+                <div class="toolbar-left">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="🔍 Поиск по названию..."
+                    >
+                </div>
+
+                <div class="toolbar-stats">
+                    <span>Всего: <?= count($news) ?></span>
+                </div>
+            </div>
             
             <div class="admin-table">
                 <table>
@@ -87,9 +216,12 @@ $news = getAllNews();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($news as $newsItem): ?>
-                        <tr>
-                            <td><?= $newsItem['id'] ?></td>
+                        <?php foreach ($news as $index=>$newsItem): ?>
+                        <tr
+                            class="news-row"
+                            data-title="<?= htmlspecialchars(mb_strtolower($newsItem['title'])) ?>"
+                        >
+                            <td><?= $index + 1 ?></td>
                             <td><?= htmlspecialchars($newsItem['title']) ?></td>
                             <td><?= date('d.m.Y', strtotime($newsItem['news_date'])) ?></td>
                             <td>
@@ -108,9 +240,25 @@ $news = getAllNews();
     <div id="newsModal" class="modal">
         <div class="modal-content">
             <h2 id="modalTitle">Добавить новость</h2>
-            <form method="POST" id="newsForm">
+            <form method="POST" id="newsForm" enctype="multipart/form-data">
                 <input type="hidden" name="action" id="formAction" value="add">
                 <input type="hidden" name="id" id="newsId">
+                <input type="hidden" name="current_image" id="currentImage">
+
+                <div id="currentImageContainer" style="display:none;margin-bottom:15px;">
+                    <img id="currentImagePreview"
+                        src=""
+                        style="width:140px;height:90px;object-fit:cover;border-radius:8px;">
+                </div>
+
+                <div class="form-group" style="grid-column:1/-1;">
+                    <label>Фото новости</label>
+                    <input
+                        type="file"
+                        name="news_image"
+                        id="newsImage"
+                        accept="image/*">
+                </div>
                 
                 <div class="form-grid">
                     <div class="form-group" style="grid-column: 1 / -1;">
@@ -164,7 +312,7 @@ $news = getAllNews();
                 loadNewsData(id);
             }
             
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
         }
         
         function closeModal() {
@@ -175,6 +323,20 @@ $news = getAllNews();
             fetch(`../api/get_news.php?id=${id}`)
                 .then(response => response.json())
                 .then(data => {
+                    const currentImage = document.getElementById('currentImage');
+                    const currentImageContainer = document.getElementById('currentImageContainer');
+                    const currentImagePreview = document.getElementById('currentImagePreview');
+
+                    if (data.image_path) {
+                        currentImage.value = data.image_path;
+                        currentImagePreview.src = '../' + data.image_path;
+                        currentImageContainer.style.display = 'block';
+                    } else {
+                        currentImage.value = '';
+                        currentImagePreview.src = '';
+                        currentImageContainer.style.display = 'none';
+                    }
+
                     document.getElementById('newsId').value = data.id;
                     document.getElementById('title').value = data.title;
                     document.getElementById('news_date').value = data.news_date;
@@ -189,7 +351,34 @@ $news = getAllNews();
                 document.getElementById('deleteForm').submit();
             }
         }
-        
+
+        // FILTER
+        const searchInput=document.getElementById("searchInput");
+        const rows=document.querySelectorAll(".news-row");
+
+        function filterNews(){
+
+            const search=searchInput.value.toLowerCase().trim();
+
+            rows.forEach(row=>{
+
+                const title=row.dataset.title;
+
+                const searchOk=
+                    title.includes(search);
+
+                row.style.display=
+                    searchOk 
+                    ? ""
+                    : "none";
+
+            });
+
+        }
+
+        searchInput.addEventListener("input",filterNews);
+
+        // ===============================================================
         window.onclick = function(event) {
             const modal = document.getElementById('newsModal');
             if (event.target === modal) {

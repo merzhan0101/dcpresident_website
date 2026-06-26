@@ -85,6 +85,16 @@
               <label for="email">Email *</label>
               <input type="email" id="email" name="email" required>
             </div>
+
+            <div class="form-group">
+                <label for="phone">Телефон / WhatsApp *</label>
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="+7 (777) 123-45-67"
+                    required>
+            </div>
             
             <div class="form-group">
               <label for="subject">Хабарлама тақырыбы</label>

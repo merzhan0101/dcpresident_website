@@ -15,7 +15,7 @@
         <a href="achievements.php" class="<?= basename($_SERVER['PHP_SELF']) == 'achievements.php' ? 'active' : '' ?>">🎯 Достижения</a>
         <a href="news.php" class="<?= basename($_SERVER['PHP_SELF']) == 'news.php' ? 'active' : '' ?>">📰 Новости</a>
         <a href="applications.php" class="<?= basename($_SERVER['PHP_SELF']) == 'applications.php' ? 'active' : '' ?>">📋 Заявки</a>
-        <a href="../index.php">🌐 На сайт</a>
+        <!-- <a href="../index.php">🌐 На сайт</a> -->
         <a href="logout.php">🚪 Выйти</a>
     </nav>
 </div>

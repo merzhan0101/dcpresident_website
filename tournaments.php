@@ -22,10 +22,10 @@
       <!-- Фильтры по уровню -->
       <div class="tournaments-filters">
         <button class="filter-btn active" data-filter="all">Барлық турнирлер</button>
-        <button class="filter-btn" data-filter="республиканский">Республикалық</button>
-        <button class="filter-btn" data-filter="областной">Облыстық</button>
-        <button class="filter-btn" data-filter="городской">Қалалық</button>
-        <button class="filter-btn" data-filter="школьный">Мектепшілік</button>
+        <button class="filter-btn" data-filter="республикалық">Республикалық</button>
+        <button class="filter-btn" data-filter="облыстық">Облыстық</button>
+        <button class="filter-btn" data-filter="қалалық">Қалалық</button>
+        <button class="filter-btn" data-filter="мектепшілік">Мектепшілік</button>
       </div>
 
       <!-- Список турниров -->

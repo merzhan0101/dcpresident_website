@@ -25,6 +25,7 @@ function getApplicationsCount() {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Панель управления - DC President</title>
+    <link rel="icon" type="image/png" href="/images/logo_president.png">
     <link rel="stylesheet" href="../css/style.css">
     <style>
         .admin-container {
@@ -145,7 +146,7 @@ function getApplicationsCount() {
                 <a href="achievements.php">🎯 Достижения</a>
                 <a href="news.php">📰 Новости</a>
                 <a href="applications.php">📋 Заявки</a>
-                <a href="../index.php">🌐 На сайт</a>
+                <!-- <a href="../index.php">🌐 На сайт</a> -->
                 <a href="logout.php">🚪 Выйти</a>
             </nav>
         </div>

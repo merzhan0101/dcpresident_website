@@ -37,7 +37,7 @@
          Біздің мақсатымыз — пікірталас пен сыни ойлау мәдениетін дамыту.
         </p>
         <a href="index.php#apply" class="join-btn">Өтінімді жіберу</a>
-        <a href="members.php" class="btn btn-outline">President-тіктер</a>
+        <!-- <a href="members.php" class="btn btn-outline">President-тіктер</a> -->
       </div>
     </div>
   </section>
@@ -162,9 +162,11 @@
     <div class="container">
       <h2>Біздің клубқа өтініш беріңіз</h2>
       <p>біз оны 24 сағат ішінде қарастырамыз</p>
-      <form action="submit.php" method="POST" class="apply-form">
+      <!-- <form action="submit.php" method="POST" class="apply-form"> -->
+      <form action="submit_boevoi.php" method="POST" class="apply-form">
         <input type="text" name="name" placeholder="Есіміңіз" required>
         <input type="email" name="email" placeholder="Пошта" required>
+        <input type="tel" name="phone" placeholder="Телефон / WhatsApp" required>
         <textarea name="message" placeholder="Неліктен клубқа қосылғыңыз келеді?" required></textarea>
         <button type="submit" class="btn">Жіберу</button>
       </form>

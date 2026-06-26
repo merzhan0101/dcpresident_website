@@ -11,13 +11,13 @@
       <h3>Навигация</h3>
       <ul>
         <li><a href="index.php">Басты бет</a></li>
-        <li><a href="about.php">Клуб туралы</a></li>
-        <li><a href="events.php">Іс-шаралар</a></li>
-        <li><a href="tournaments.php">President CUP's</a></li>
-        <li><a href="achievements.php">Жетістіктер</a></li>
-        <li><a href="news.php">Жаңалықтар</a></li>
-        <li><a href="members.php">President-тіктер</a></li>
-        <li><a href="contact.php">Байланыс</a></li>
+        <li><a href="/about">Клуб туралы</a></li>
+        <li><a href="/events">Іс-шаралар</a></li>
+        <li><a href="/tournaments">President CUP's</a></li>
+        <li><a href="/achievements">Жетістіктер</a></li>
+        <li><a href="/news">Жаңалықтар</a></li>
+        <li><a href="/members">President-тіктер</a></li>
+        <li><a href="/contact">Байланыс</a></li>
       </ul>
     </div>
 
@@ -46,7 +46,7 @@
   </div>
 
   <div class="footer-bottom">
-    <p>© 2025 President Debate Club | Developed by MerJAN Azimkhanuly</p>
+    <p>© 2025 President Debate Club | Developed by MerJVN</p>
   </div>
 
   <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>

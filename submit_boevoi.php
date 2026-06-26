@@ -62,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Получаем и валидируем данные
         $name = trim(htmlspecialchars($_POST['name'] ?? ''));
         $email = filter_var(trim($_POST['email'] ?? ''), FILTER_VALIDATE_EMAIL);
+        $phone = trim(htmlspecialchars($_POST['phone'] ?? ''));
         $message = trim(htmlspecialchars($_POST['message'] ?? ''));
         
         // Проверяем обязательные поля
@@ -73,6 +74,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if (!$email) {
             $errors[] = "Пожалуйста, введите корректный email адрес";
+        }
+
+        if (empty($phone)) {
+            $errors[] = "Пожалуйста, введите телефон";
         }
         
         if (empty($message)) {
@@ -100,13 +105,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user_agent = $_SERVER['HTTP_USER_AGENT'];
         
         // Сохраняем в базу данных
-        $sql = "INSERT INTO applications (name, email, message, ip_address, user_agent) 
-                VALUES (:name, :email, :message, :ip_address, :user_agent)";
+        $sql = "INSERT INTO applications (name, email, phone, message, ip_address, user_agent) 
+                VALUES (:name, :email, :phone, :message, :ip_address, :user_agent)";
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             ':name' => $name,
             ':email' => $email,
+            ':phone' => $phone,
             ':message' => $message,
             ':ip_address' => $ip_address,
             ':user_agent' => $user_agent

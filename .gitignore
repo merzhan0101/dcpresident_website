@@ -1,0 +1,10 @@
+.env
+.git/
+
+*.log
+applications.txt
+logs/
+
+.vscode/
+.idea/
+Thumbs.db

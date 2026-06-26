@@ -15,11 +15,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tournament_name = trim($_POST['tournament_name']);
             $position = trim($_POST['position']);
             $achievement_date = $_POST['achievement_date'];
-            
-            $sql = "INSERT INTO achievements (title, description, full_content, tournament_name, position, achievement_date) 
-                    VALUES (?, ?, ?, ?, ?, ?)";
+
+            $image_path = null;
+
+            if (isset($_FILES['achievement_image']) && $_FILES['achievement_image']['error'] === UPLOAD_ERR_OK) {
+                $image_path = uploadAchievementPhoto($_FILES['achievement_image']);
+            }
+
+            $sql = "INSERT INTO achievements 
+                    (title, description, full_content, tournament_name, position, achievement_date, image_path) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$title, $description, $full_content, $tournament_name, $position, $achievement_date]);
+            $stmt->execute([$title, $description, $full_content, $tournament_name, $position, $achievement_date, $image_path]);
+
+            // $sql = "INSERT INTO achievements (title, description, full_content, tournament_name, position, achievement_date) 
+            //         VALUES (?, ?, ?, ?, ?, ?)";
+            // $stmt = $pdo->prepare($sql);
+            // $stmt->execute([$title, $description, $full_content, $tournament_name, $position, $achievement_date]);
             
             header("Location: achievements.php?success=added");
             exit;
@@ -32,10 +44,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tournament_name = trim($_POST['tournament_name']);
             $position = trim($_POST['position']);
             $achievement_date = $_POST['achievement_date'];
-            
-            $sql = "UPDATE achievements SET title=?, description=?, full_content=?, tournament_name=?, position=?, achievement_date=? WHERE id=?";
+
+            $image_path = $_POST['current_image'] ?? null;
+
+            if (isset($_FILES['achievement_image']) && $_FILES['achievement_image']['error'] === UPLOAD_ERR_OK) {
+                if (
+                    $image_path &&
+                    strpos($image_path, 'images/achievements/') === 0 &&
+                    file_exists('../' . $image_path)
+                ) {
+                    unlink('../' . $image_path);    
+                }
+
+                $image_path = uploadAchievementPhoto($_FILES['achievement_image']);
+            }
+
+            $sql = "UPDATE achievements 
+                    SET title=?, description=?, full_content=?, tournament_name=?, position=?, achievement_date=?, image_path=? 
+                    WHERE id=?";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$title, $description, $full_content, $tournament_name, $position, $achievement_date, $id]);
+            $stmt->execute([$title, $description, $full_content, $tournament_name, $position, $achievement_date, $image_path, $id]);
+            
+            // $sql = "UPDATE achievements SET title=?, description=?, full_content=?, tournament_name=?, position=?, achievement_date=? WHERE id=?";
+            // $stmt = $pdo->prepare($sql);
+            // $stmt->execute([$title, $description, $full_content, $tournament_name, $position, $achievement_date, $id]);
             
             header("Location: achievements.php?success=updated");
             exit;
@@ -63,6 +95,67 @@ $achievements = getAllAchievements();
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="icon" type="image/png" href="/images/logo_president.png">
+    <style>
+        .achievements-toolbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:16px;
+            margin:20px 0;
+            padding:18px;
+            background:var(--gray);
+            border:1px solid #333;
+            border-radius:12px;
+        }
+
+        .toolbar-left{
+            display:flex;
+            gap:12px;
+            flex-wrap:wrap;
+        }
+
+        .achievements-toolbar input,
+        .achievements-toolbar select{
+
+            height:42px;
+            padding:0 14px;
+            border-radius:8px;
+            border:1px solid #444;
+            background:#1b1b1b;
+            color:#fff;
+
+        }
+
+        .achievements-toolbar input{
+            min-width:300px;
+        }
+
+        .toolbar-stats span{
+
+            padding:9px 14px;
+            background:rgba(181,0,0,.15);
+            border-radius:8px;
+            color:#ddd;
+
+        }
+
+        @media(max-width:900px){
+
+            .achievements-toolbar{
+                flex-direction:column;
+                align-items:stretch;
+            }
+
+            .toolbar-left{
+                width:100%;
+            }
+
+            .achievements-toolbar input{
+                min-width:100%;
+            }
+
+        }
+    </style>
 </head>
 <body>
     <div class="admin-container">
@@ -79,6 +172,20 @@ $achievements = getAllAchievements();
                     ✅ Достижение успешно <?= $_GET['success'] == 'added' ? 'добавлено' : ($_GET['success'] == 'updated' ? 'обновлено' : 'удалено') ?>
                 </div>
             <?php endif; ?>
+
+            <div class="achievements-toolbar">
+                <div class="toolbar-left">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="🔍 Поиск по названию..."
+                    >
+                </div>
+
+                <div class="toolbar-stats">
+                    <span>Всего: <?= count($achievements) ?></span>
+                </div>
+            </div>
             
             <div class="admin-table">
                 <table>
@@ -93,9 +200,12 @@ $achievements = getAllAchievements();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($achievements as $achievement): ?>
-                        <tr>
-                            <td><?= $achievement['id'] ?></td>
+                        <?php foreach ($achievements as $index=>$achievement): ?>
+                        <tr
+                            class="achievement-row"
+                            data-title="<?= htmlspecialchars(mb_strtolower($achievement['title'])) ?>"
+                        >
+                            <td><?= $index + 1 ?></td>
                             <td><?= htmlspecialchars($achievement['title']) ?></td>
                             <td><?= htmlspecialchars($achievement['tournament_name'] ?? '-') ?></td>
                             <td><?= htmlspecialchars($achievement['position'] ?? '-') ?></td>
@@ -116,9 +226,22 @@ $achievements = getAllAchievements();
     <div id="achievementModal" class="modal">
         <div class="modal-content">
             <h2 id="modalTitle">Добавить достижение</h2>
-            <form method="POST" id="achievementForm">
+            <form method="POST" id="achievementForm" enctype="multipart/form-data">
                 <input type="hidden" name="action" id="formAction" value="add">
                 <input type="hidden" name="id" id="achievementId">
+                <input type="hidden" name="current_image" id="currentImage">
+
+                <div id="currentImageContainer" style="display: none; margin-bottom: 15px;">
+                    <img id="currentImagePreview"
+                        src=""
+                        alt="Текущее фото"
+                        style="width: 140px; height: 90px; object-fit: cover; border-radius: 8px;">
+                </div>
+
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Фото достижения</label>
+                    <input type="file" name="achievement_image" id="achievementImage" accept="image/*">
+                </div>
                 
                 <div class="form-grid">
                     <div class="form-group" style="grid-column: 1 / -1;">
@@ -182,7 +305,7 @@ $achievements = getAllAchievements();
                 loadAchievementData(id);
             }
             
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
         }
         
         function closeModal() {
@@ -193,6 +316,20 @@ $achievements = getAllAchievements();
             fetch(`../api/get_achievement.php?id=${id}`)
                 .then(response => response.json())
                 .then(data => {
+                    const currentImage = document.getElementById('currentImage');
+                    const currentImageContainer = document.getElementById('currentImageContainer');
+                    const currentImagePreview = document.getElementById('currentImagePreview');
+
+                    if (data.image_path) {
+                        currentImage.value = data.image_path;
+                        currentImagePreview.src = '../' + data.image_path;
+                        currentImageContainer.style.display = 'block';
+                    } else {
+                        currentImage.value = '';
+                        currentImagePreview.src = '';
+                        currentImageContainer.style.display = 'none';
+                    }
+
                     document.getElementById('achievementId').value = data.id;
                     document.getElementById('title').value = data.title;
                     document.getElementById('tournament_name').value = data.tournament_name || '';
@@ -209,7 +346,34 @@ $achievements = getAllAchievements();
                 document.getElementById('deleteForm').submit();
             }
         }
-        
+
+        // FILTER
+        const searchInput=document.getElementById("searchInput");
+        const rows=document.querySelectorAll(".achievement-row");
+
+        function filterAchievements(){
+
+            const search=searchInput.value.toLowerCase().trim();
+
+            rows.forEach(row=>{
+
+                const title=row.dataset.title;
+
+                const searchOk=
+                    title.includes(search);
+
+                row.style.display=
+                    searchOk 
+                    ? ""
+                    : "none";
+
+            });
+
+        }
+
+        searchInput.addEventListener("input",filterAchievements);
+
+        // ===============================================================
         window.onclick = function(event) {
             const modal = document.getElementById('achievementModal');
             if (event.target === modal) {
