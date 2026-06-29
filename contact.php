@@ -47,17 +47,46 @@
             <div class="contact-details">
               <h4>Әлеуметтік медиа</h4>
               <div class="social-links">
-                <a href="https://www.instagram.com/tou_debate_club/" class="social-link instagram">
-                  <span class="social-icon">📷</span>
-                  Instagram
+                <a href="https://www.instagram.com/tou_debate_club/" class="social-link instagram" target="_blank">
+                    <div class="social-left">
+                        <div class="social-icon">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+
+                        <div class="social-name">
+                            Instagram
+                        </div>
+                    </div>
+
+                    <span class="social-arrow">
+                        →
+                    </span>
                 </a>
-                <a href="https://t.me/presidentcup6" class="social-link telegram">
-                  <span class="social-icon">✈️</span>
-                  Telegram
+                <a href="https://t.me/presidentcup6" class="social-link telegram" target="_blank">
+                    <div class="social-left">
+                        <div class="social-icon">
+                            <i class="fab fa-telegram-plane"></i>
+                        </div>
+
+                        <div class="social-name">
+                            Telegram
+                        </div>
+                    </div>
+
+                    <span class="social-arrow">→</span>
                 </a>
-                <a href="#" class="social-link whatsapp">
-                  <span class="social-icon">💬</span>
-                  WhatsApp
+                <a href="https://wa.me/77019134408" class="social-link whatsapp" target="_blank">
+                    <div class="social-left">
+                        <div class="social-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+
+                        <div class="social-name">
+                            WhatsApp
+                        </div>
+                    </div>
+
+                    <span class="social-arrow">→</span>
                 </a>
               </div>
             </div>

@@ -489,6 +489,30 @@ $members = getAllMembers();
         <input type="hidden" name="action" value="delete">
         <input type="hidden" name="id" id="deleteId">
     </form>
+
+        <!-- CONFIRM -->
+    <div id="deleteModal" class="delete-modal">
+        <div class="delete-modal-content">
+            <div class="delete-modal-icon">🗑️</div>
+
+            <h3>Удалить запись?</h3>
+
+            <p>
+                Это действие нельзя будет отменить.
+                Запись будет удалена безвозвратно.
+            </p>
+
+            <div class="delete-modal-actions">
+                <button type="button" class="btn-cancel-delete" onclick="closeDeleteModal()">
+                    Отмена
+                </button>
+
+                <button type="button" class="btn-confirm-delete" onclick="submitDeleteForm()">
+                    Да, удалить
+                </button>
+            </div>
+        </div>
+    </div>
     
     <script>
         function openModal(action, id = null) {
@@ -569,11 +593,23 @@ $members = getAllMembers();
             }
         }
         
+        let deleteId = null;
+
         function confirmDelete(id) {
-            if (confirm('Вы уверены, что хотите удалить этого участника?')) {
-                document.getElementById('deleteId').value = id;
-                document.getElementById('deleteForm').submit();
-            }
+            deleteId = id;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            deleteId = null;
+            document.getElementById('deleteModal').classList.remove('active');
+        }
+
+        function submitDeleteForm() {
+            if (!deleteId) return;
+
+            document.getElementById('deleteId').value = deleteId;
+            document.getElementById('deleteForm').submit();
         }
 
         // FILTER

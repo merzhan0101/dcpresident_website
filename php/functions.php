@@ -279,38 +279,42 @@ function getMembersByGeneration($generation) {
 
 // Загрузить фото участника
 function uploadMemberPhoto($file) {
-    $uploadDir = '../images/members/';
-    
-    // Создаем папку если не существует
-    if (!file_exists($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-    
-    // Проверяем тип файла
-    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    $fileType = mime_content_type($file['tmp_name']);
-    
-    if (!in_array($fileType, $allowedTypes)) {
-        throw new Exception('Недопустимый тип файла. Разрешены только JPEG, PNG, GIF и WebP.');
-    }
-    
-    // Проверяем размер файла (максимум 5MB)
-    if ($file['size'] > 5 * 1024 * 1024) {
-        throw new Exception('Файл слишком большой. Максимальный размер - 5MB.');
-    }
-    
-    // Генерируем уникальное имя файла
-    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-    $filename = uniqid() . '.' . $extension;
-    $filepath = $uploadDir . $filename;
-    
-    // Перемещаем файл
-    if (move_uploaded_file($file['tmp_name'], $filepath)) {
-        return 'images/members/' . $filename;
-    } else {
-        throw new Exception('Ошибка при загрузке файла.');
-    }
+    return uploadOptimizedImage($file, 'members');
 }
+
+// function uploadMemberPhoto($file) {
+//     $uploadDir = '../images/members/';
+    
+//     // Создаем папку если не существует
+//     if (!file_exists($uploadDir)) {
+//         mkdir($uploadDir, 0777, true);
+//     }
+    
+//     // Проверяем тип файла
+//     $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+//     $fileType = mime_content_type($file['tmp_name']);
+    
+//     if (!in_array($fileType, $allowedTypes)) {
+//         throw new Exception('Недопустимый тип файла. Разрешены только JPEG, PNG, GIF и WebP.');
+//     }
+    
+//     // Проверяем размер файла (максимум 5MB)
+//     if ($file['size'] > 5 * 1024 * 1024) {
+//         throw new Exception('Файл слишком большой. Максимальный размер - 5MB.');
+//     }
+    
+//     // Генерируем уникальное имя файла
+//     $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+//     $filename = uniqid() . '.' . $extension;
+//     $filepath = $uploadDir . $filename;
+    
+//     // Перемещаем файл
+//     if (move_uploaded_file($file['tmp_name'], $filepath)) {
+//         return 'images/members/' . $filename;
+//     } else {
+//         throw new Exception('Ошибка при загрузке файла.');
+//     }
+// }
 
 // Функция для получения названия месяца
 function getRussianMonthName($monthNumber) {
@@ -600,33 +604,37 @@ function updateLastLogin($user_id) {
 
 // загрузка фото турниров
 function uploadTournamentPhoto($file) {
-    $uploadDir = '../images/tournaments/';
-
-    if (!file_exists($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-
-    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    $fileType = mime_content_type($file['tmp_name']);
-
-    if (!in_array($fileType, $allowedTypes)) {
-        throw new Exception('Недопустимый тип файла.');
-    }
-
-    if ($file['size'] > 5 * 1024 * 1024) {
-        throw new Exception('Файл слишком большой. Максимум 5MB.');
-    }
-
-    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-    $filename = uniqid() . '.' . $extension;
-    $filepath = $uploadDir . $filename;
-
-    if (move_uploaded_file($file['tmp_name'], $filepath)) {
-        return 'images/tournaments/' . $filename;
-    }
-
-    throw new Exception('Ошибка при загрузке файла.');
+    return uploadOptimizedImage($file, 'tournaments');
 }
+
+// function uploadTournamentPhoto($file) {
+//     $uploadDir = '../images/tournaments/';
+
+//     if (!file_exists($uploadDir)) {
+//         mkdir($uploadDir, 0777, true);
+//     }
+
+//     $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+//     $fileType = mime_content_type($file['tmp_name']);
+
+//     if (!in_array($fileType, $allowedTypes)) {
+//         throw new Exception('Недопустимый тип файла.');
+//     }
+
+//     if ($file['size'] > 5 * 1024 * 1024) {
+//         throw new Exception('Файл слишком большой. Максимум 5MB.');
+//     }
+
+//     $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+//     $filename = uniqid() . '.' . $extension;
+//     $filepath = $uploadDir . $filename;
+
+//     if (move_uploaded_file($file['tmp_name'], $filepath)) {
+//         return 'images/tournaments/' . $filename;
+//     }
+
+//     throw new Exception('Ошибка при загрузке файла.');
+// }
 
 // загрузка тизера
 function uploadTournamentVideo($file)
@@ -658,104 +666,196 @@ function uploadTournamentVideo($file)
 
 // ЗАГРУЗКА ФОТО ДЛЯ МЕРОПРИЯТИЯ
 function uploadEventPhoto($file) {
-    $uploadDir = '../images/events/';
-
-    if (!file_exists($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-
-    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    $fileType = mime_content_type($file['tmp_name']);
-
-    if (!in_array($fileType, $allowedTypes)) {
-        throw new Exception('Недопустимый тип файла.');
-    }
-
-    if ($file['size'] > 5 * 1024 * 1024) {
-        throw new Exception('Файл слишком большой. Максимум 5MB.');
-    }
-
-    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-    $filename = uniqid() . '.' . $extension;
-    $filepath = $uploadDir . $filename;
-
-    if (move_uploaded_file($file['tmp_name'], $filepath)) {
-        return 'images/events/' . $filename;
-    }
-
-    throw new Exception('Ошибка при загрузке файла.');
+    return uploadOptimizedImage($file, 'events');
 }
+
+// function uploadEventPhoto($file) {
+//     $uploadDir = '../images/events/';
+
+//     if (!file_exists($uploadDir)) {
+//         mkdir($uploadDir, 0777, true);
+//     }
+
+//     $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+//     $fileType = mime_content_type($file['tmp_name']);
+
+//     if (!in_array($fileType, $allowedTypes)) {
+//         throw new Exception('Недопустимый тип файла.');
+//     }
+
+//     if ($file['size'] > 5 * 1024 * 1024) {
+//         throw new Exception('Файл слишком большой. Максимум 5MB.');
+//     }
+
+//     $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+//     $filename = uniqid() . '.' . $extension;
+//     $filepath = $uploadDir . $filename;
+
+//     if (move_uploaded_file($file['tmp_name'], $filepath)) {
+//         return 'images/events/' . $filename;
+//     }
+
+//     throw new Exception('Ошибка при загрузке файла.');
+// }
 
 // ЗАГРУЗКА ФОТО ДЛЯ ДОСТИЖЕНИЯ
 function uploadAchievementPhoto($file) {
-    $uploadDir = '../images/achievements/';
-
-    if (!file_exists($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-
-    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    $fileType = mime_content_type($file['tmp_name']);
-
-    if (!in_array($fileType, $allowedTypes)) {
-        throw new Exception('Недопустимый тип файла.');
-    }
-
-    if ($file['size'] > 5 * 1024 * 1024) {
-        throw new Exception('Файл слишком большой. Максимум 5MB.');
-    }
-
-    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-    $filename = uniqid() . '.' . $extension;
-    $filepath = $uploadDir . $filename;
-
-    if (move_uploaded_file($file['tmp_name'], $filepath)) {
-        return 'images/achievements/' . $filename;
-    }
-
-    throw new Exception('Ошибка при загрузке файла.');
+    return uploadOptimizedImage($file, 'achievements');
 }
 
-// ЗАГРУЗКА ФОТО ДЛЯ НОВОСТИ
-function uploadNewsPhoto($file)
-{
-    $uploadDir = '../images/news/';
+// function uploadAchievementPhoto($file) {
+//     $uploadDir = '../images/achievements/';
 
-    if (!file_exists($uploadDir)) {
+//     if (!file_exists($uploadDir)) {
+//         mkdir($uploadDir, 0777, true);
+//     }
+
+//     $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+//     $fileType = mime_content_type($file['tmp_name']);
+
+//     if (!in_array($fileType, $allowedTypes)) {
+//         throw new Exception('Недопустимый тип файла.');
+//     }
+
+//     if ($file['size'] > 5 * 1024 * 1024) {
+//         throw new Exception('Файл слишком большой. Максимум 5MB.');
+//     }
+
+//     $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+//     $filename = uniqid() . '.' . $extension;
+//     $filepath = $uploadDir . $filename;
+
+//     if (move_uploaded_file($file['tmp_name'], $filepath)) {
+//         return 'images/achievements/' . $filename;
+//     }
+
+//     throw new Exception('Ошибка при загрузке файла.');
+// }
+
+// ЗАГРУЗКА ФОТО ДЛЯ НОВОСТИ
+function uploadNewsPhoto($file) {
+    return uploadOptimizedImage($file, 'news');
+}
+
+// function uploadNewsPhoto($file) {
+//     $uploadDir = '../images/news/';
+
+//     if (!file_exists($uploadDir)) {
+//         mkdir($uploadDir, 0777, true);
+//     }
+
+//     $allowedTypes = [
+//         'image/jpeg',
+//         'image/png',
+//         'image/gif',
+//         'image/webp'
+//     ];
+
+//     $fileType = mime_content_type($file['tmp_name']);
+
+//     if (!in_array($fileType, $allowedTypes)) {
+//         throw new Exception('Недопустимый тип файла.');
+//     }
+
+//     if ($file['size'] > 5 * 1024 * 1024) {
+//         throw new Exception('Файл слишком большой.');
+//     }
+
+//     $extension = pathinfo(
+//         $file['name'],
+//         PATHINFO_EXTENSION
+//     );
+
+//     $filename = uniqid() . '.' . $extension;
+
+//     $filepath = $uploadDir . $filename;
+
+//     if (move_uploaded_file($file['tmp_name'], $filepath)) {
+//         return 'images/news/' . $filename;
+//     }
+
+//     throw new Exception('Ошибка загрузки файла.');
+// }
+
+// СЖАТИЕ ФОТО
+function uploadOptimizedImage($file, $folder, $maxSizeMb = 25) {
+    $uploadDir = "../images/$folder/";
+
+    if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0777, true);
+    }
+
+    // if ($file['size'] > $maxSizeMb * 1024 * 1024) {
+    //     throw new Exception("Фото не должно превышать {$maxSizeMb} МБ.");
+    // }
+
+    if ($file['size'] > $maxSizeMb * 1024 * 1024) {
+        $_SESSION['error'] = "❌ Размер изображения превышает {$maxSizeMb} МБ.";
+        return false;
     }
 
     $allowedTypes = [
         'image/jpeg',
         'image/png',
-        'image/gif',
         'image/webp'
     ];
 
-    $fileType = mime_content_type($file['tmp_name']);
+    $mime = mime_content_type($file['tmp_name']);
 
-    if (!in_array($fileType, $allowedTypes)) {
-        throw new Exception('Недопустимый тип файла.');
+    if (!in_array($mime, $allowedTypes)) {
+        $_SESSION['error'] = "❌ Разрешены только JPG, PNG и WEBP.";
+        return false;
     }
 
-    if ($file['size'] > 5 * 1024 * 1024) {
-        throw new Exception('Файл слишком большой.');
+    switch ($mime) {
+        case 'image/jpeg':
+            $source = imagecreatefromjpeg($file['tmp_name']);
+            break;
+        case 'image/png':
+            $source = imagecreatefrompng($file['tmp_name']);
+            break;
+        case 'image/webp':
+            $source = imagecreatefromwebp($file['tmp_name']);
+            break;
+        default:
+            throw new Exception('Неподдерживаемый формат.');
     }
 
-    $extension = pathinfo(
-        $file['name'],
-        PATHINFO_EXTENSION
+    $width = imagesx($source);
+    $height = imagesy($source);
+
+    $maxWidth = 1600;
+    $maxHeight = 1600;
+
+    $ratio = min($maxWidth / $width, $maxHeight / $height, 1);
+
+    $newWidth = (int)($width * $ratio);
+    $newHeight = (int)($height * $ratio);
+
+    $newImage = imagecreatetruecolor($newWidth, $newHeight);
+
+    imagecopyresampled(
+        $newImage,
+        $source,
+        0,
+        0,
+        0,
+        0,
+        $newWidth,
+        $newHeight,
+        $width,
+        $height
     );
 
-    $filename = uniqid() . '.' . $extension;
-
+    $filename = uniqid('img_') . '.jpg';
     $filepath = $uploadDir . $filename;
 
-    if (move_uploaded_file($file['tmp_name'], $filepath)) {
-        return 'images/news/' . $filename;
-    }
+    imagejpeg($newImage, $filepath, 85);
 
-    throw new Exception('Ошибка загрузки файла.');
+    imagedestroy($source);
+    imagedestroy($newImage);
+
+    return "images/$folder/" . $filename;
 }
 
 ?>

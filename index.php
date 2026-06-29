@@ -176,3 +176,5 @@
 </main>
 
 <?php include 'blocks/footer.php'; ?>
+
+<script src="js/script.js"></script>

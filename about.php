@@ -87,7 +87,7 @@
           <?php endif; ?>
         </div>
         <div class="text-center" style="margin-top: 40px;">
-            <a href="members.php" class="text-main-color">Барлық қатысушыларды қарау →</a>
+            <a href="members.php" class="text-main-color">Барлық қатысушыларды қарау</a>
         </div>
       </div>
 
@@ -119,3 +119,5 @@
 </main>
 
 <?php include 'blocks/footer.php'; ?>
+
+<script src="js/script.js"></script>

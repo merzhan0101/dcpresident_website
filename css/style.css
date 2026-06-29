@@ -118,13 +118,13 @@ nav a.active::after {
     color: white;
     text-decoration: none;
     border-radius: 5px;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     transition: all 0.3s ease;
 }
 
 /* Специальный стиль для кнопки администратора */
-.header-btn .join-btn:last-child {
+.header-btn #admin_panel_link{
     background: transparent;
     color: #666;
     border: 1px solid #ddd;
@@ -647,44 +647,64 @@ a.news-link {
 }
 
 .text-main-color {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--red);
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 16px;
-  padding: 12px 24px;
-  border: 2px solid var(--red);
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(to right, transparent 50%, var(--red) 50%);
-  background-size: 200% 100%;
-  background-position: right bottom;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    min-width: 250px;
+    padding: 14px 28px;
+
+    background: linear-gradient(135deg, #b50000, #7d0000);
+    color: #fff;
+    text-decoration: none;
+
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.08);
+
+    font-size: 17px;
+    font-weight: 700;
+
+    box-shadow: 0 8px 20px rgba(181,0,0,.25);
+
+    transition: all .3s ease;
 }
 
-.text-main-color::before {
-  content: '→';
-  font-size: 18px;
-  transition: transform 0.3s ease;
+.text-main-color::before{
+    font-size:20px;
+    transition:.3s;
 }
 
-.text-main-color:hover {
-  color: white;
-  background-position: left bottom;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(181, 0, 0, 0.3);
+.text-main-color:hover{
+    transform:translateY(-4px);
+    box-shadow:0 14px 28px rgba(181,0,0,.45);
+    background:linear-gradient(135deg,#d40000,#930000);
 }
 
-.text-main-color:hover::before {
-  transform: translateX(3px);
+.text-main-color:hover::before{
+    transform:translateX(-2px) scale(1.15);
 }
 
-.text-main-color:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(181, 0, 0, 0.3);
+.text-main-color::after{
+    content:"→";
+    margin-left:6px;
+    transition:.3s;
+}
+
+.text-main-color:hover::after{
+    transform:translateX(6px);
+}
+
+.events-link .text-main-color::before{
+    content:"📅";
+}
+
+.achievements-link .text-main-color::before{
+    content:"🏆";
+}
+
+.news-link .text-main-color::before{
+    content:"📰";
 }
 
 /* Альтернативный вариант с иконкой */
@@ -894,4 +914,51 @@ footer {
         margin-left: 0;
         margin-top: 10px;
     }
+}
+
+/* ===== Scroll To Top ===== */
+
+.scroll-top-btn{
+    position:fixed;
+    right:30px;
+    bottom:30px;
+
+    width:55px;
+    height:55px;
+
+    border:none;
+    border-radius:50%;
+
+    background:linear-gradient(135deg,#b50000,#8a0000);
+    color:#fff;
+
+    font-size:26px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    box-shadow:0 10px 25px rgba(181,0,0,.35);
+
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(20px);
+
+    transition:.3s;
+
+    z-index:999;
+}
+
+.scroll-top-btn.show{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
+}
+
+.scroll-top-btn:hover{
+    transform:translateY(-4px);
+    box-shadow:0 16px 35px rgba(181,0,0,.55);
 }

@@ -627,7 +627,7 @@
   margin-bottom: 30px;
 }
 
-.text-main-color {
+/* .text-main-color {
   color: var(--red);
   text-decoration: none;
   font-weight: 600;
@@ -637,7 +637,7 @@
 
 .text-main-color:hover {
   color: #ff3333;
-}
+} */
 
 
 /* ================= CONTACT PAGE ================= */
@@ -688,25 +688,87 @@
   line-height: 1.5;
 }
 
-.social-links {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+/* ===== SOCIAL LINKS ===== */
+
+.social-links{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    margin-top:15px;
 }
 
-.social-link {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--text);
-  text-decoration: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: background-color 0.3s ease;
+.social-link{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:16px 20px;
+
+    background:#1d1d1d;
+    border:1px solid #333;
+    border-left:4px solid var(--red);
+
+    border-radius:12px;
+
+    color:#fff;
+    text-decoration:none;
+
+    transition:.3s;
 }
 
-.social-link:hover {
-  background-color: rgba(181, 0, 0, 0.1);
+.social-link:hover{
+    transform:translateX(8px);
+    border-color:var(--red);
+    box-shadow:0 10px 25px rgba(181,0,0,.25);
+}
+
+.social-left{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.social-icon{
+    width:46px;
+    height:46px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+    font-size:22px;
+    color:#fff;
+}
+
+.social-name{
+    font-size:18px;
+    font-weight:600;
+}
+
+.social-arrow{
+    font-size:22px;
+    color:#888;
+    transition:.3s;
+}
+
+.social-link:hover .social-arrow{
+    color:white;
+    transform:translateX(5px);
+}
+
+/* Цвета */
+
+.instagram .social-icon{
+    background:linear-gradient(45deg,#833ab4,#fd1d1d,#fcb045);
+}
+
+.telegram .social-icon{
+    background:#229ED9;
+}
+
+.whatsapp .social-icon{
+    background:#25D366;
 }
 
 /* Contact Form */

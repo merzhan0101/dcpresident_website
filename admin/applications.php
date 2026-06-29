@@ -168,25 +168,6 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="main-content">
             <div class="admin-header">
                 <h1>Заявки на вступление</h1>
-                <!-- <div style="display:flex; gap:10px; margin:20px 0; flex-wrap:wrap;">
-                    <input 
-                        type="text" 
-                        id="searchInput" 
-                        placeholder="Поиск по имени или email..."
-                        style="padding:10px; border-radius:6px; border:1px solid #333; background:var(--bg); color:var(--text); min-width:250px;"
-                    >
-
-                    <select 
-                        id="statusFilter"
-                        style="padding:10px; border-radius:6px; border:1px solid #333; background:var(--bg); color:var(--text);"
-                    >
-                        <option value="all">Все статусы</option>
-                        <option value="новая">Новые</option>
-                        <option value="обработана">Обработанные</option>
-                        <option value="отклонена">Отклонённые</option>
-                    </select>
-                </div> -->
-
             </div>
             
             <?php if (isset($_GET['success'])): ?>
@@ -210,6 +191,10 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <option value="обработана">Обработанные</option>
                         <option value="отклонена">Отклонённые</option>
                     </select>
+
+                    <a href="export_applications.php" class="btn-export">
+                        📥 Экспорт Excel
+                    </a>
                 </div>
 
                 <div class="toolbar-stats">
@@ -287,6 +272,30 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div class="form-actions">
                 <button type="button" onclick="closeModal()" class="btn-admin" style="background: #666;">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRM -->
+    <div id="deleteModal" class="delete-modal">
+        <div class="delete-modal-content">
+            <div class="delete-modal-icon">🗑️</div>
+
+            <h3>Удалить запись?</h3>
+
+            <p>
+                Это действие нельзя будет отменить.
+                Запись будет удалена безвозвратно.
+            </p>
+
+            <div class="delete-modal-actions">
+                <button type="button" class="btn-cancel-delete" onclick="closeDeleteModal()">
+                    Отмена
+                </button>
+
+                <button type="button" class="btn-confirm-delete" onclick="submitDeleteForm()">
+                    Да, удалить
+                </button>
             </div>
         </div>
     </div>

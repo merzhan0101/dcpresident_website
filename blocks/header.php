@@ -24,7 +24,6 @@
 
   <div class="header-btn">
     <a class="join-btn" href="index.php#apply">Қосылу</a>
-    <a class="join-btn" href="admin/login.php">Admin panel</a>
   </div>
   
   </div>
