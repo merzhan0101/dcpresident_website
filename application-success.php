@@ -6,6 +6,7 @@
     <title>Заявка отправлена - DC President</title>
     <link rel="stylesheet" href="css/style_success.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="/images/logo_president.png">
 </head>
 <body>
     <?php include 'blocks/header.php'; ?>
@@ -22,12 +23,23 @@
             <div class="container">
                 <div class="success-card">
                     <div class="success-icon">✅</div>
-                    <h2>Ваша заявка успешно отправлена!</h2>
-                    <p>Мы рассмотрим вашу заявку в течение 24 часов и свяжемся с вами по указанному email.</p>
-                    <p>Пока вы ждете, можете ознакомиться с нашими <a href="events.php">мероприятиями</a> или узнать больше <a href="about.php">о клубе</a>.</p>
+
+                    <h2>Өтініміңіз сәтті жіберілді!</h2>
+
+                    <p>
+                        Өтініміңіз қабылданды. Біз оны 24 сағат ішінде қарап,
+                        көрсетілген электрондық пошта арқылы немесе whatsapp арқылы сізбен хабарласамыз.
+                    </p>
+
+                    <p>
+                        Осы уақыт аралығында біздің
+                        <a href="events.php">іс-шараларымызбен</a> танысып
+                        немесе <a href="about.php">клуб туралы</a> толығырақ ақпарат ала аласыз.
+                    </p>
+
                     <div class="success-actions">
-                        <a href="index.php" class="btn">На главную</a>
-                        <a href="events.php" class="btn btn-outline">Мероприятия</a>
+                        <a href="index.php" class="btn">Басты бетке</a>
+                        <a href="events.php" class="btn btn-outline">Іс-шаралар</a>
                     </div>
                 </div>
             </div>
