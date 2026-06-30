@@ -1,0 +1,15 @@
+RewriteEngine On
+DirectoryIndex index.php
+
+# /index.php -> /
+RewriteCond %{THE_REQUEST} \s/+index\.php[\s?]
+RewriteRule ^index\.php$ / [R=301,L]
+
+# /about.php -> /about
+RewriteCond %{THE_REQUEST} \s/+(.+)\.php[\s?]
+RewriteRule ^(.+)\.php$ /$1 [R=301,L]
+
+# /about -> /about.php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+)$ $1.php [L]
