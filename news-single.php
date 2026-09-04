@@ -5,6 +5,7 @@
 
 <?php 
 include 'php/functions.php';
+include 'blocks/carousel.php';
 
 // Получаем ID новости из URL
 $news_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -36,7 +37,11 @@ if (!$news) {
       <article class="news-full">
         <div class="news-meta">
           <span class="news-date">📅 <?= date('d.m.Y', strtotime($news['news_date'])) ?></span>
-          <!-- <span class="news-views">👁️ 245 көрді</span> -->
+          <?php if (!empty($news['instagram_url'])): ?>
+            <a href="<?= $news['instagram_url'] ?>" target="_blank" class="btn-instagram-small">
+              📷 Instagram
+            </a>
+          <?php endif; ?>
         </div>
         
         <?php if ($news['image_path']): ?>
@@ -45,18 +50,23 @@ if (!$news) {
         </div>
         <?php endif; ?>
         
+        <!-- Карусель для дополнительных фото -->
+        <?php if (!empty($news['gallery_images'])): ?>
+          <?= renderCarousel($news['gallery_images'], 'news_single_' . $news['id']) ?>
+        <?php endif; ?>
+        
         <div class="news-content-full">
           <?= nl2br(htmlspecialchars($news['full_content'] ?: $news['content'])) ?>
         </div>
         
         <div class="news-footer">
           <a href="news.php" class="btn-back">← Жаңалықтарға оралу</a>
-          <!-- <div class="news-share">
-            <span>Поделиться:</span>
-            <a href="#" class="share-link">📱</a>
-            <a href="#" class="share-link">📧</a>
-            <a href="#" class="share-link">🔗</a>
-          </div> -->
+          
+          <?php if (!empty($news['instagram_url'])): ?>
+            <a href="<?= $news['instagram_url'] ?>" target="_blank" class="btn-instagram">
+              📷 Instagram-да көру
+            </a>
+          <?php endif; ?>
         </div>
       </article>
       
@@ -65,9 +75,9 @@ if (!$news) {
         <h3>Басқа жаңалықтар</h3>
         <div class="related-grid">
           <?php 
-          $related_news = getNews(3); // Последние 3 новости
+          $related_news = getNews(3);
           foreach ($related_news as $related):
-            if ($related['id'] != $news_id): // Исключаем текущую новость
+            if ($related['id'] != $news_id):
           ?>
           <div class="related-item">
             <img src="<?= $related['image_path'] ?: 'images/news.jpg' ?>" 
@@ -87,3 +97,5 @@ if (!$news) {
 </main>
 
 <?php include 'blocks/footer.php'; ?>
+</body>
+</html>

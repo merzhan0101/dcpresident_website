@@ -3,6 +3,7 @@
 
 <?php include 'php/functions.php'; ?>
 <?php include 'blocks/head.php'; ?>
+<?php include 'blocks/carousel.php'; ?>
 
 <link rel="stylesheet" href="css/blocks.css">
 
@@ -35,23 +36,61 @@
           </div>
         <?php else: ?>
           <?php foreach ($events as $event): ?>
-          <div class="event-card-page">
+            <div class="event-card-page">
+                <div class="event-image">
+                    <img src="<?= $event['image_path'] ?: 'images/school_debate.jpg' ?>" 
+                        alt="<?= htmlspecialchars($event['title']) ?>">
+                </div>
+                <div class="event-info">
+                    <h3><?= htmlspecialchars($event['title']) ?></h3>
+                    <p class="event-description"><?= htmlspecialchars($event['description']) ?></p>
+                    
+                    <!-- Карусель с дополнительными фото -->
+                    <?php if (!empty($event['gallery_images'])): ?>
+                        <?= renderCarousel($event['gallery_images'], 'event_' . $event['id']) ?>
+                    <?php endif; ?>
+                    
+                    <div class="event-meta">
+                        <span class="event-date">
+                            📅 <?= date('d.m.Y', strtotime($event['event_date'])) ?>
+                            <?= $event['event_time'] ? '— ' . date('H:i', strtotime($event['event_time'])) : '' ?>
+                        </span>
+                        <span class="tag <?= strtolower($event['status']) ?>"><?= $event['status'] ?></span>
+                    </div>
+                    
+                    <!-- Кнопка Instagram -->
+                    <?php if (!empty($event['instagram_url'])): ?>
+                    <div class="instagram-link">
+                        <a href="<?= $event['instagram_url'] ?>" target="_blank" class="btn-instagram">
+                            📷 Instagram-да көру
+                        </a>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <div class="event-actions">
+                        <a href="events-single.php?id=<?= $event['id'] ?>" class="btn-event">Толығырақ →</a>
+                    </div>
+                </div>
+            </div>
+
+
+          <!-- <div class="event-card-page">
             <div class="event-image">
-              <img src="<?= $event['image_path'] ?: 'images/school_debate.jpg' ?>" 
-                   alt="<?= htmlspecialchars($event['title']) ?>">
+              <img src="</?= $event['image_path'] ?: 'images/school_debate.jpg' ?>" 
+                   alt="</?= htmlspecialchars($event['title']) ?>">
             </div>
             <div class="event-info">
-              <h3><?= htmlspecialchars($event['title']) ?></h3>
-              <p class="event-description"><?= htmlspecialchars($event['description']) ?></p>
+              <h3></?= htmlspecialchars($event['title']) ?></h3>
+              <p class="event-description"></?= htmlspecialchars($event['description']) ?></p>
               <div class="event-meta">
                 <span class="event-date">
-                  📅 <?= date('d.m.Y', strtotime($event['event_date'])) ?>
-                  <?= $event['event_time'] ? '— ' . date('H:i', strtotime($event['event_time'])) : '' ?>
+                  📅 </?= date('d.m.Y', strtotime($event['event_date'])) ?>
+                  </?= $event['event_time'] ? '— ' . date('H:i', strtotime($event['event_time'])) : '' ?>
                 </span>
-                <span class="tag <?= strtolower($event['status']) ?>"><?= $event['status'] ?></span>
+                <span class="tag </?= strtolower($event['status']) ?>"></?= $event['status'] ?></span>
               </div>
             </div>
-          </div>
+          </div> -->
           <?php endforeach; ?>
         <?php endif; ?>
       </div>

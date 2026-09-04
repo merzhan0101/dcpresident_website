@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $content = trim($_POST['content']);
             $full_content = trim($_POST['full_content']);
             $news_date = $_POST['news_date'];
+            $instagram_url = trim($_POST['instagram_url']) ?: null;
 
             $image_path = null;
             if (
@@ -22,9 +23,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $image_path = uploadNewsPhoto($_FILES['news_image']);
             }
 
+            // Дополнительные фото
+            $gallery_images = null;
+            if (isset($_FILES['gallery_images'])) {
+                $uploaded = uploadMultipleImages($_FILES['gallery_images'], 'events');
+                if (!empty($uploaded)) {
+                    $gallery_images = json_encode($uploaded);
+                }
+            }
+
             $sql = "INSERT INTO news
-                    (title, content, full_content, news_date, image_path)
-                    VALUES (?, ?, ?, ?, ?)";
+                    (title, content, full_content, news_date, image_path, gallery_images, instagram_url)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
 
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
@@ -32,7 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $content,
                 $full_content,
                 $news_date,
-                $image_path
+                $image_path,
+                $gallery_images,
+                $instagram_url
             ]);
                         
             // $sql = "INSERT INTO news (title, content, full_content, news_date) 
@@ -49,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $content = trim($_POST['content']);
             $full_content = trim($_POST['full_content']);
             $news_date = $_POST['news_date'];
+            $instagram_url = trim($_POST['instagram_url']) ?: null;
 
             $image_path = $_POST['current_image'] ?? null;
             if (
@@ -64,14 +77,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 $image_path = uploadNewsPhoto($_FILES['news_image']);
             }
-           
+
+            // Дополнительные фото при редактировании
+            $gallery_images = $_POST['current_gallery'] ?? null;
+            if (isset($_FILES['gallery_images']) && !empty($_FILES['gallery_images']['tmp_name'][0])) {
+                $uploaded = uploadMultipleImages($_FILES['gallery_images'], 'news');
+                if (!empty($uploaded)) {
+                    $gallery_images = json_encode($uploaded);
+                }
+            }
+        
             $sql = "UPDATE news
                     SET
                     title=?,
                     content=?,
                     full_content=?,
                     news_date=?,
-                    image_path=?
+                    image_path=?,
+                    gallery_images=?,
+                    instagram_url=?
                     WHERE id=?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
@@ -80,12 +104,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $full_content,
                 $news_date,
                 $image_path,
+                $gallery_images,
+                $instagram_url,
                 $id
             ]);
-            
-            // $sql = "UPDATE news SET title=?, content=?, full_content=?, news_date=? WHERE id=?";
-            // $stmt = $pdo->prepare($sql);
-            // $stmt->execute([$title, $content, $full_content, $news_date, $id]);
             
             header("Location: news.php?success=updated");
             exit;
@@ -244,6 +266,7 @@ $news = getAllNews();
                 <input type="hidden" name="action" id="formAction" value="add">
                 <input type="hidden" name="id" id="newsId">
                 <input type="hidden" name="current_image" id="currentImage">
+                <input type="hidden" name="current_gallery" id="currentGallery">
 
                 <div id="currentImageContainer" style="display:none;margin-bottom:15px;">
                     <img id="currentImagePreview"
@@ -258,6 +281,19 @@ $news = getAllNews();
                         name="news_image"
                         id="newsImage"
                         accept="image/*">
+                </div>
+
+                <!-- В модальном окне после загрузки основного фото -->
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Дополнительные фото (несколько)</label>
+                    <input type="file" name="gallery_images[]" id="galleryImages" accept="image/*" multiple>
+                    <div class="form-hint">Выберите несколько фото, удерживая Ctrl или Shift</div>
+                </div>
+
+
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Ссылка на Instagram пост</label>
+                    <input type="url" name="instagram_url" id="instagram_url" placeholder="https://www.instagram.com/p/...">
                 </div>
                 
                 <div class="form-grid">

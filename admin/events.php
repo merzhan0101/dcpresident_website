@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     
     switch ($action) {
-        case 'add':
+        /*case 'add':
             $title = trim($_POST['title']);
             $description = trim($_POST['description']);
             $event_date = $_POST['event_date'];
@@ -29,6 +29,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             //         VALUES (?, ?, ?, ?, ?)";
             // $stmt = $pdo->prepare($sql);
             // $stmt->execute([$title, $description, $event_date, $event_time, $status]);
+            
+            header("Location: events.php?success=added");
+            exit;*/
+
+        case 'add':
+            $title = trim($_POST['title']);
+            $description = trim($_POST['description']);
+            $event_date = $_POST['event_date'];
+            $event_time = $_POST['event_time'] ?: null;
+            $status = $_POST['status'];
+            $instagram_url = trim($_POST['instagram_url']) ?: null;
+
+            // Основное фото
+            $image_path = null;
+            if (isset($_FILES['event_image']) && $_FILES['event_image']['error'] === UPLOAD_ERR_OK) {
+                $image_path = uploadEventPhoto($_FILES['event_image']);
+            }
+            
+            // Дополнительные фото
+            $gallery_images = null;
+            if (isset($_FILES['gallery_images']) && !empty($_FILES['gallery_images']['tmp_name'][0])) {
+                $uploaded = uploadMultipleImages($_FILES['gallery_images'], 'events');
+                if (!empty($uploaded)) {
+                    $gallery_images = json_encode($uploaded);
+                    echo "Gallery saved: " . $gallery_images; // Для отладки
+                }
+            }
+
+            $sql = "INSERT INTO events (title, description, event_date, event_time, status, image_path, gallery_images, instagram_url) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$title, $description, $event_date, $event_time, $status, $image_path, $gallery_images, $instagram_url]);
             
             header("Location: events.php?success=added");
             exit;
@@ -236,6 +268,7 @@ $events = getAllEvents('all');
                 <input type="hidden" name="action" id="formAction" value="add">
                 <input type="hidden" name="id" id="eventId">
                 <input type="hidden" name="current_image" id="currentImage">
+                <input type="hidden" name="current_gallery" id="currentGallery">
 
                 <div id="currentImageContainer" style="display: none; margin-bottom: 15px;">
                     <img id="currentImagePreview"
@@ -247,6 +280,18 @@ $events = getAllEvents('all');
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <label>Фото мероприятия</label>
                     <input type="file" name="event_image" id="eventImage" accept="image/*">
+                </div>
+
+                <!-- В модальном окне после загрузки основного фото -->
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Дополнительные фото (несколько)</label>
+                    <input type="file" name="gallery_images[]" id="galleryImages" accept="image/*" multiple>
+                    <div class="form-hint">Выберите несколько фото, удерживая Ctrl или Shift</div>
+                </div>
+
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Ссылка на Instagram пост</label>
+                    <input type="url" name="instagram_url" id="instagram_url" placeholder="https://www.instagram.com/p/...">
                 </div>
                 
                 <div class="form-grid">
@@ -345,6 +390,19 @@ $events = getAllEvents('all');
             fetch(`../api/get_event.php?id=${id}`)
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Event data:', data); // Проверяем данные
+                    
+                    // Проверяем галерею
+                    console.log('Gallery images:', data.gallery_images);
+                    if (data.gallery_images) {
+                        try {
+                            const gallery = JSON.parse(data.gallery_images);
+                            console.log('Parsed gallery:', gallery);
+                        } catch (e) {
+                            console.log('Gallery is not JSON:', data.gallery_images);
+                        }
+                    }
+
                     const currentImage = document.getElementById('currentImage');
                     const currentImageContainer = document.getElementById('currentImageContainer');
                     const currentImagePreview = document.getElementById('currentImagePreview');
@@ -365,6 +423,8 @@ $events = getAllEvents('all');
                     document.getElementById('event_time').value = data.event_time || '';
                     document.getElementById('status').value = data.status;
                     document.getElementById('description').value = data.description;
+                    document.getElementById('instagram_url').value = data.instagram_url || '';
+                    document.getElementById('currentGallery').value = data.gallery_images || '';
                 });
         }
         

@@ -858,4 +858,84 @@ function uploadOptimizedImage($file, $folder, $maxSizeMb = 25) {
     return "images/$folder/" . $filename;
 }
 
+// test
+// Функция для загрузки нескольких изображений
+function uploadMultipleImages($files, $folder) {
+    $uploadedFiles = [];
+    
+    // Проверяем, что есть файлы
+    if (empty($files['tmp_name'][0])) {
+        return $uploadedFiles;
+    }
+    
+    $uploadDir = "../images/$folder/";
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+    
+    // Разрешенные типы
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    
+    foreach ($files['tmp_name'] as $key => $tmpName) {
+        // Пропускаем пустые значения
+        if (empty($tmpName) || $files['error'][$key] !== UPLOAD_ERR_OK) {
+            continue;
+        }
+        
+        // Проверяем тип
+        $mime = mime_content_type($tmpName);
+        if (!in_array($mime, $allowedTypes)) {
+            continue;
+        }
+        
+        // Проверяем размер (макс 5MB)
+        if ($files['size'][$key] > 5 * 1024 * 1024) {
+            continue;
+        }
+        
+        // Генерируем имя файла
+        $extension = strtolower(pathinfo($files['name'][$key], PATHINFO_EXTENSION));
+        $filename = uniqid('img_') . '.' . $extension;
+        $filepath = $uploadDir . $filename;
+        
+        // Сохраняем файл
+        if (move_uploaded_file($tmpName, $filepath)) {
+            $uploadedFiles[] = "images/$folder/" . $filename;
+        }
+    }
+    
+    return $uploadedFiles;
+}
+
+// Функция для получения галереи
+function getGalleryImages($data) {
+    if (empty($data)) return [];
+    
+    // Если это JSON строка, парсим ее
+    if (is_string($data)) {
+        $gallery = json_decode($data, true);
+        return is_array($gallery) ? $gallery : [];
+    }
+    
+    // Если это уже массив
+    return is_array($data) ? $data : [];
+}
+
+// Получить мероприятие по ID
+function getEventById($id) {
+    global $pdo;
+    
+    try {
+        $sql = "SELECT * FROM events WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Database error in getEventById: " . $e->getMessage());
+        return null;
+    }
+}
+
 ?>

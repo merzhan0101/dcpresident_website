@@ -13,15 +13,15 @@ if (!isset($_GET['id'])) {
 $id = intval($_GET['id']);
 
 try {
-    $sql = "SELECT * FROM achievements WHERE id = ?";
+    $sql = "SELECT * FROM members WHERE id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id]);
-    $achievement = $stmt->fetch(PDO::FETCH_ASSOC);
+    $member = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    if ($achievement) {
-        echo json_encode($achievement);
+    if ($member) {
+        echo json_encode($member);
     } else {
-        echo json_encode(['error' => 'Достижение не найдено']);
+        echo json_encode(['error' => 'Участник не найден']);
     }
     
 } catch (PDOException $e) {

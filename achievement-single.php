@@ -5,6 +5,7 @@
 
 <?php 
 include 'php/functions.php';
+include 'blocks/carousel.php';
 
 // Получаем ID достижения из URL
 $achievement_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -42,6 +43,11 @@ if (!$achievement) {
           <?php if ($achievement['position']): ?>
             <span class="achievement-position">🎯 <?= htmlspecialchars($achievement['position']) ?></span>
           <?php endif; ?>
+          <?php if (!empty($achievement['instagram_url'])): ?>
+            <a href="<?= $achievement['instagram_url'] ?>" target="_blank" class="btn-instagram-small">
+              📷 Instagram
+            </a>
+          <?php endif; ?>
         </div>
         
         <?php if ($achievement['image_path']): ?>
@@ -50,18 +56,23 @@ if (!$achievement) {
         </div>
         <?php endif; ?>
         
+        <!-- Карусель -->
+        <?php if (!empty($achievement['gallery_images'])): ?>
+          <?= renderCarousel($achievement['gallery_images'], 'achievement_single_' . $achievement['id']) ?>
+        <?php endif; ?>
+        
         <div class="achievement-content-full">
           <?= nl2br(htmlspecialchars($achievement['full_content'] ?: $achievement['description'])) ?>
         </div>
         
         <div class="achievement-footer">
           <a href="achievements.php" class="btn-back">← Жетістікке оралу</a>
-          <!-- <div class="achievement-share">
-            <span>Поделиться победой:</span>
-            <a href="#" class="share-link">📱</a>
-            <a href="#" class="share-link">📧</a>
-            <a href="#" class="share-link">🔗</a>
-          </div> -->
+          
+          <?php if (!empty($achievement['instagram_url'])): ?>
+            <a href="<?= $achievement['instagram_url'] ?>" target="_blank" class="btn-instagram">
+              📷 Instagram-да көру
+            </a>
+          <?php endif; ?>
         </div>
       </article>
       
@@ -92,3 +103,5 @@ if (!$achievement) {
 </main>
 
 <?php include 'blocks/footer.php'; ?>
+</body>
+</html>

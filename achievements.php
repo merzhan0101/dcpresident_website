@@ -3,6 +3,7 @@
 
 <?php include 'php/functions.php'; ?>
 <?php include 'blocks/head.php'; ?>
+<?php include 'blocks/carousel.php'; ?>
 
 <link rel="stylesheet" href="css/blocks.css">
 
@@ -45,9 +46,22 @@
               <?php if ($achievement['achievement_date']): ?>
                 <p class="date-page">📅 <?= date('d.m.Y', strtotime($achievement['achievement_date'])) ?></p>
               <?php endif; ?>
+              
+              <!-- Карусель -->
+              <?php if (!empty($achievement['gallery_images'])): ?>
+                <?= renderCarousel($achievement['gallery_images'], 'achievement_' . $achievement['id']) ?>
+              <?php endif; ?>
+
+              <!-- Кнопка Instagram -->
+              <?php if (!empty($achievement['instagram_url'])): ?>
+              <div class="instagram-link">
+                <a href="<?= $achievement['instagram_url'] ?>" target="_blank" class="btn-instagram">
+                  📷 Instagram-да көру
+                </a>
+              </div>
+              <?php endif; ?>
 
               <a href="achievement-single.php?id=<?= $achievement['id'] ?>" class="achievement-link-page">Толығырақ →</a>
-              
             </div>
           </div>
           <?php endforeach; ?>
@@ -60,3 +74,5 @@
 <?php include 'blocks/footer.php'; ?>
 
 <script src="js/script.js"></script>
+</body>
+</html>

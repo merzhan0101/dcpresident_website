@@ -3,6 +3,7 @@
 
 <?php include 'php/functions.php'; ?>
 <?php include 'blocks/head.php'; ?>
+<?php include 'blocks/carousel.php'; ?>
 
 <link rel="stylesheet" href="css/blocks.css">
 
@@ -42,11 +43,25 @@
             <div class="news-content-page">
               <h3><?= htmlspecialchars($newsItem['title']) ?></h3>
               <p class="news-excerpt"><?= htmlspecialchars($newsItem['content']) ?></p>
+              
+              <!-- Карусель -->
+              <?php if (!empty($newsItem['gallery_images'])): ?>
+                <?= renderCarousel($newsItem['gallery_images'], 'news_' . $newsItem['id']) ?>
+              <?php endif; ?>
+              
               <div class="news-meta">
                 <span class="news-full-date">📅 <?= date('d.m.Y', strtotime($newsItem['news_date'])) ?></span>
                 <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link-page">Ары қарай оқу →</a>
-                <!-- <a href="#" class="news-link-page">Читать далее →</a> -->
               </div>
+              
+              <!-- Кнопка для Instagram -->
+              <?php if (!empty($newsItem['instagram_url'])): ?>
+              <div class="instagram-link">
+                <a href="<?= $newsItem['instagram_url'] ?>" target="_blank" class="btn-instagram">
+                  📷 Instagram-да көру
+                </a>
+              </div>
+              <?php endif; ?>
             </div>
           </article>
           <?php endforeach; ?>
@@ -59,3 +74,5 @@
 <?php include 'blocks/footer.php'; ?>
 
 <script src="js/script.js"></script>
+</body>
+</html>
