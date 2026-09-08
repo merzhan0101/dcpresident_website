@@ -53,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $uploaded = uploadMultipleImages($_FILES['gallery_images'], 'events');
                 if (!empty($uploaded)) {
                     $gallery_images = json_encode($uploaded);
-                    echo "Gallery saved: " . $gallery_images; // Для отладки
                 }
             }
 
@@ -123,6 +122,8 @@ $events = getAllEvents('all');
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="icon" type="image/png" href="/images/logo_president.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
     <style>
         .events-toolbar{
             display:flex;
@@ -333,6 +334,21 @@ $events = getAllEvents('all');
         </div>
     </div>
     
+    <!-- Модальное окно обрезки фото -->
+    <div id="cropModal" class="modal" style="z-index: 9999;">
+        <div class="modal-content" style="max-width: 600px;">
+            <h2>Обрезать фото</h2>
+            <p class="form-hint" style="margin-bottom: 12px; color: #ffb74d; font-weight: 600;">⚠️ Проверьте, что в рамку попадают лица/важные детали — при необходимости подвиньте рамку мышью перед тем как применить.</p>
+            <div style="max-height: 420px; overflow: hidden; background: #000;">
+                <img id="cropImage" style="max-width: 100%; display: block;">
+            </div>
+            <div class="form-actions" style="margin-top: 15px;">
+                <button type="button" onclick="cancelCrop()" class="btn-admin" style="background: #666;">Отмена</button>
+                <button type="button" onclick="applyCrop()" class="btn-admin">Применить обрезку</button>
+            </div>
+        </div>
+    </div>
+
     <form method="POST" id="deleteForm" style="display: none;">
         <input type="hidden" name="action" value="delete">
         <input type="hidden" name="id" id="deleteId">
@@ -373,6 +389,8 @@ $events = getAllEvents('all');
                 formAction.value = 'add';
                 document.getElementById('eventForm').reset();
                 document.getElementById('event_date').valueAsDate = new Date();
+                document.getElementById('currentImageContainer').style.display = 'none';
+                document.getElementById('currentImagePreview').src = '';
             } else {
                 title.textContent = 'Редактировать мероприятие';
                 formAction.value = 'edit';
@@ -488,6 +506,76 @@ $events = getAllEvents('all');
             if (event.target === modal) {
                 closeModal();
             }
+        }
+        // ============================================================
+        // ОБРЕЗКА ФОТО МЕРОПРИЯТИЯ
+        // ============================================================
+        let eventCropper = null;
+
+        document.getElementById('eventImage').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                const cropImage = document.getElementById('cropImage');
+                cropImage.src = evt.target.result;
+                document.getElementById('cropModal').style.display = 'flex';
+
+                if (eventCropper) {
+                    eventCropper.destroy();
+                }
+                eventCropper = new Cropper(cropImage, {
+                    aspectRatio: 1,      // квадратная область — так фото хорошо смотрится и в узкой карточке на /events, и в широкой на главной
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    background: false,
+                    ready: function () {
+                        // По умолчанию ставим рамку сверху картинки (там чаще всего лица),
+                        // а не по центру — центр часто попадает на торс/фон
+                        const canvasData = eventCropper.getCanvasData();
+                        const cropBoxData = eventCropper.getCropBoxData();
+                        eventCropper.setCropBoxData({
+                            left: cropBoxData.left,
+                            top: canvasData.top,
+                            width: cropBoxData.width,
+                            height: cropBoxData.width
+                        });
+                    }
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function cancelCrop() {
+            document.getElementById('cropModal').style.display = 'none';
+            document.getElementById('eventImage').value = '';
+            if (eventCropper) {
+                eventCropper.destroy();
+                eventCropper = null;
+            }
+        }
+
+        function applyCrop() {
+            if (!eventCropper) return;
+
+            eventCropper.getCroppedCanvas({ width: 800, height: 800 }).toBlob(function (blob) {
+                const croppedFile = new File([blob], 'event_photo.jpg', { type: 'image/jpeg' });
+
+                // Подменяем файл в input'е обрезанной версией
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(croppedFile);
+                document.getElementById('eventImage').files = dataTransfer.files;
+
+                // Показываем превью результата
+                const previewUrl = URL.createObjectURL(blob);
+                document.getElementById('currentImagePreview').src = previewUrl;
+                document.getElementById('currentImageContainer').style.display = 'block';
+
+                document.getElementById('cropModal').style.display = 'none';
+                eventCropper.destroy();
+                eventCropper = null;
+            }, 'image/jpeg', 0.9);
         }
     </script>
 </body>

@@ -36,6 +36,7 @@
   border-radius: 12px;
   overflow: hidden;
   display: flex;
+  align-items: flex-start;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
@@ -46,7 +47,8 @@
 }
 
 .event-image {
-  width: 150px;
+  width: 220px;
+  height: 220px;
   flex-shrink: 0;
 }
 

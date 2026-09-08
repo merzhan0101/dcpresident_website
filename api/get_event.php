@@ -1,7 +1,7 @@
 <?php
-// Включаем отображение ошибок для отладки
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 
 // Подключаем базу данных
 require_once '../php/database.php';
@@ -31,6 +31,7 @@ try {
     }
     
 } catch (PDOException $e) {
-    echo json_encode(['error' => 'Ошибка базы данных: ' . $e->getMessage()]);
+    error_log('API error in api/get_event.php: ' . $e->getMessage());
+    echo json_encode(['error' => 'Ошибка базы данных']);
 }
 ?>

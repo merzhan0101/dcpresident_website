@@ -48,9 +48,9 @@
               <?php endif; ?>
               
               <!-- Карусель -->
-              <?php if (!empty($achievement['gallery_images'])): ?>
-                <?= renderCarousel($achievement['gallery_images'], 'achievement_' . $achievement['id']) ?>
-              <?php endif; ?>
+              <!-- <\?php if (!empty($achievement['gallery_images'])): ?>
+                <\?= renderCarousel($achievement['gallery_images'], 'achievement_' . $achievement['id']) ?>
+              <\?php endif; ?\> -->
 
               <!-- Кнопка Instagram -->
               <?php if (!empty($achievement['instagram_url'])): ?>

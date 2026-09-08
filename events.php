@@ -45,11 +45,6 @@
                     <h3><?= htmlspecialchars($event['title']) ?></h3>
                     <p class="event-description"><?= htmlspecialchars($event['description']) ?></p>
                     
-                    <!-- Карусель с дополнительными фото -->
-                    <?php if (!empty($event['gallery_images'])): ?>
-                        <?= renderCarousel($event['gallery_images'], 'event_' . $event['id']) ?>
-                    <?php endif; ?>
-                    
                     <div class="event-meta">
                         <span class="event-date">
                             📅 <?= date('d.m.Y', strtotime($event['event_date'])) ?>
@@ -101,7 +96,7 @@
         $pastEvents = getEvents(12, 'past');
         if (empty($pastEvents)): ?>
           <div class="no-events">
-            <p>ПӘзірге өткен іс-шаралар жоқ</p>
+            <p>Әзірге өткен іс-шаралар жоқ</p>
           </div>
         <?php else: ?>
           <?php foreach ($pastEvents as $event): ?>

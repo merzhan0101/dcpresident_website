@@ -12,7 +12,7 @@
   <section class="hero">
     <div class="container">
       <div class="hero-text">
-        <h1><span>Біздің клубқа</span> қосыл!</h1>
+        <h1><span>Ойлан. Дәлелде. Қорға.</span></h1>
         <p>
           Өз ойыңды еркін жеткізуді, сенімді сөйлеуді және логикалық дәлелдеуді үйрен.<br>
           Пікірталас мәдениетін бірге дамытайық!
@@ -33,8 +33,8 @@
       <div class="about-text">
         <h2>DC President</h2>
         <p>
-         Біз — белсенді, ақылды және өршіл студенттерді біріктіретін университеттің Торайғыров студенттік пікірсайыс клубымыз. 
-         Біздің мақсатымыз — пікірталас пен сыни ойлау мәдениетін дамыту.
+            Біз — Торайғыров университетінің пікірсайыс клубымыз. Мұнда әртүрлі көзқарастар тоғысып, жаңа идеялар талқыланады.<br><br>
+            Біздің мақсатымыз — студенттердің сыни ойлауын дамытып, өз пікірін еркін әрі сенімді жеткізе алатын орта қалыптастыру.
         </p>
         <a href="index.php#apply" class="join-btn">Өтінімді жіберу</a>
         <!-- <a href="members.php" class="btn btn-outline">President-тіктер</a> -->
@@ -63,7 +63,10 @@
                         <h3><?= htmlspecialchars($event['title']) ?></h3>
                         <p><?= date('d.m.Y', strtotime($event['event_date'])) ?> 
                         <?= $event['event_time'] ? '— ' . date('H:i', strtotime($event['event_time'])) : '' ?></p>
-                        <span class="tag <?= strtolower($event['status']) ?>"><?= $event['status'] ?></span>
+                        <div class="event-actions">
+                            <span class="tag <?= strtolower($event['status']) ?>"><?= $event['status'] ?></span>
+                            <a href="events-single.php?id=<?= $event['id'] ?>" class="btn-event">Толығырақ →</a>
+                        </div>
                     </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
