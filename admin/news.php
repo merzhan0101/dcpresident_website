@@ -25,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Дополнительные фото
             $gallery_images = null;
-            if (isset($_FILES['gallery_images'])) {
-                $uploaded = uploadMultipleImages($_FILES['gallery_images'], 'events');
+            if (isset($_FILES['gallery_images']) && !empty($_FILES['gallery_images']['tmp_name'][0])) {
+                $uploaded = uploadMultipleImages($_FILES['gallery_images'], 'news');
                 if (!empty($uploaded)) {
                     $gallery_images = json_encode($uploaded);
                 }
@@ -135,6 +135,8 @@ $news = getAllNews();
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="icon" type="image/png" href="/images/logo_president.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
         <style>
         .news-toolbar{
             display:flex;
@@ -208,9 +210,18 @@ $news = getAllNews();
             </div>
             
             <?php if (isset($_GET['success'])): ?>
-                <div style="background: rgba(76, 175, 80, 0.2); color: #4caf50; padding: 10px; border-radius: 6px; margin-bottom: 20px;">
+                <div id="successAlert" style="background: rgba(76, 175, 80, 0.2); color: #4caf50; padding: 10px; border-radius: 6px; margin-bottom: 20px; transition: opacity 0.5s ease;">
                     ✅ Новость успешно <?= $_GET['success'] == 'added' ? 'добавлена' : ($_GET['success'] == 'updated' ? 'обновлена' : 'удалена') ?>
                 </div>
+                <script>
+                    setTimeout(function () {
+                        const alertBox = document.getElementById('successAlert');
+                        if (alertBox) {
+                            alertBox.style.opacity = '0';
+                            setTimeout(function () { alertBox.remove(); }, 500);
+                        }
+                    }, 3000);
+                </script>
             <?php endif; ?>
 
             <div class="news-toolbar">
@@ -326,6 +337,21 @@ $news = getAllNews();
         </div>
     </div>
     
+    <!-- Модальное окно обрезки фото -->
+    <div id="cropModal" class="modal" style="z-index: 9999;">
+        <div class="modal-content" style="max-width: 600px;">
+            <h2>Обрезать фото</h2>
+            <p class="form-hint" style="margin-bottom: 12px; color: #ffb74d; font-weight: 600;">⚠️ Проверьте, что в рамку попадают лица/важные детали — при необходимости подвиньте рамку мышью перед тем как применить.</p>
+            <div style="max-height: 420px; overflow: hidden; background: #000;">
+                <img id="cropImage" style="max-width: 100%; display: block;">
+            </div>
+            <div class="form-actions" style="margin-top: 15px;">
+                <button type="button" onclick="cancelCrop()" class="btn-admin" style="background: #666;">Отмена</button>
+                <button type="button" onclick="applyCrop()" class="btn-admin">Применить обрезку</button>
+            </div>
+        </div>
+    </div>
+
     <form method="POST" id="deleteForm" style="display: none;">
         <input type="hidden" name="action" value="delete">
         <input type="hidden" name="id" id="deleteId">
@@ -366,6 +392,8 @@ $news = getAllNews();
                 formAction.value = 'add';
                 document.getElementById('newsForm').reset();
                 document.getElementById('news_date').valueAsDate = new Date();
+                document.getElementById('currentImageContainer').style.display = 'none';
+                document.getElementById('currentImagePreview').src = '';
             } else {
                 title.textContent = 'Редактировать новость';
                 formAction.value = 'edit';
@@ -402,6 +430,8 @@ $news = getAllNews();
                     document.getElementById('news_date').value = data.news_date;
                     document.getElementById('content').value = data.content;
                     document.getElementById('full_content').value = data.full_content || '';
+                    document.getElementById('instagram_url').value = data.instagram_url || '';
+                    document.getElementById('currentGallery').value = data.gallery_images || '';
                 });
         }
         
@@ -456,6 +486,79 @@ $news = getAllNews();
             if (event.target === modal) {
                 closeModal();
             }
+        }
+        // Отключаем отправку формы по Enter в однострочных полях (кроме textarea)
+        document.getElementById('newsForm').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+            }
+        });
+
+        // ============================================================
+        // ОБРЕЗКА ФОТО НОВОСТИ
+        // ============================================================
+        let newsCropper = null;
+
+        document.getElementById('newsImage').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                const cropImage = document.getElementById('cropImage');
+                cropImage.src = evt.target.result;
+                document.getElementById('cropModal').style.display = 'flex';
+
+                if (newsCropper) {
+                    newsCropper.destroy();
+                }
+                newsCropper = new Cropper(cropImage, {
+                    aspectRatio: 4 / 3,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    background: false,
+                    ready: function () {
+                        const canvasData = newsCropper.getCanvasData();
+                        const cropBoxData = newsCropper.getCropBoxData();
+                        newsCropper.setCropBoxData({
+                            left: cropBoxData.left,
+                            top: canvasData.top,
+                            width: cropBoxData.width,
+                            height: cropBoxData.width * 3 / 4
+                        });
+                    }
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function cancelCrop() {
+            document.getElementById('cropModal').style.display = 'none';
+            document.getElementById('newsImage').value = '';
+            if (newsCropper) {
+                newsCropper.destroy();
+                newsCropper = null;
+            }
+        }
+
+        function applyCrop() {
+            if (!newsCropper) return;
+
+            newsCropper.getCroppedCanvas({ width: 800, height: 600 }).toBlob(function (blob) {
+                const croppedFile = new File([blob], 'news_photo.jpg', { type: 'image/jpeg' });
+
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(croppedFile);
+                document.getElementById('newsImage').files = dataTransfer.files;
+
+                const previewUrl = URL.createObjectURL(blob);
+                document.getElementById('currentImagePreview').src = previewUrl;
+                document.getElementById('currentImageContainer').style.display = 'block';
+
+                document.getElementById('cropModal').style.display = 'none';
+                newsCropper.destroy();
+                newsCropper = null;
+            }, 'image/jpeg', 0.9);
         }
     </script>
 </body>

@@ -7,11 +7,13 @@ function getEvents($limit = 6, $type = 'upcoming') {
     
     $sql = "SELECT * FROM events ";
     if ($type === 'upcoming') {
-        $sql .= "WHERE event_date >= CURDATE() ";
+        $sql .= "WHERE event_date >= CURDATE() ORDER BY event_date LIMIT :limit";
+    } elseif ($type === 'past') {
+        $sql .= "WHERE event_date < CURDATE() ORDER BY event_date LIMIT :limit";
     } else {
-        $sql .= "WHERE event_date < CURDATE() ";
+        // 'all' — без фильтрации по дате, сначала самые новые (как в новостях и достижениях)
+        $sql .= "ORDER BY event_date DESC LIMIT :limit";
     }
-    $sql .= "ORDER BY event_date LIMIT :limit";
     
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);

@@ -43,11 +43,6 @@ if (!$achievement) {
           <?php if ($achievement['position']): ?>
             <span class="achievement-position">🎯 <?= htmlspecialchars($achievement['position']) ?></span>
           <?php endif; ?>
-          <?php if (!empty($achievement['instagram_url'])): ?>
-            <a href="<?= $achievement['instagram_url'] ?>" target="_blank" class="btn-instagram-small">
-              📷 Instagram
-            </a>
-          <?php endif; ?>
         </div>
         
         <?php if ($achievement['image_path']): ?>
@@ -66,7 +61,7 @@ if (!$achievement) {
         </div>
         
         <div class="achievement-footer">
-          <a href="achievements.php" class="btn-back">← Жетістікке оралу</a>
+          <a href="achievements.php" class="btn-back">← Жетістіктерге оралу</a>
           
           <?php if (!empty($achievement['instagram_url'])): ?>
             <a href="<?= $achievement['instagram_url'] ?>" target="_blank" class="btn-instagram">

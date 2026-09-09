@@ -52,9 +52,9 @@
             
             <div class="events-grid" id="upcoming-events">
                 <?php 
-                $events = getEvents(6, 'upcoming');
+                $events = getEvents(6, 'all');
                 if (empty($events)): ?>
-                    <p class="no-events">Алдағы іс-шаралар жоқ</p>
+                    <p class="no-events">Іс-шаралар жоқ</p>
                 <?php else: ?>
                     <?php foreach ($events as $event): ?>
                     <div class="event-card">
@@ -67,24 +67,6 @@
                             <span class="tag <?= strtolower($event['status']) ?>"><?= $event['status'] ?></span>
                             <a href="events-single.php?id=<?= $event['id'] ?>" class="btn-event">Толығырақ →</a>
                         </div>
-                    </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-            
-            <div class="events-grid" id="past-events" style="display: none;">
-                <?php 
-                $pastEvents = getEvents(6, 'past');
-                if (empty($pastEvents)): ?>
-                    <p class="no-events">Өткен іс-шаралар жоқ</p>
-                <?php else: ?>
-                    <?php foreach ($pastEvents as $event): ?>
-                    <div class="event-card">
-                        <img src="<?= $event['image_path'] ?: 'images/school_debate.jpg' ?>" 
-                            alt="<?= htmlspecialchars($event['title']) ?>">
-                        <h3><?= htmlspecialchars($event['title']) ?></h3>
-                        <p><?= date('d.m.Y', strtotime($event['event_date'])) ?></p>
-                        <span class="tag completed">Аяқталды</span>
                     </div>
                     <?php endforeach; ?>
                 <?php endif; ?>

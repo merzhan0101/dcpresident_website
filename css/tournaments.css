@@ -202,7 +202,8 @@
 
 .info-item {
   display: flex;
-  justify-content: between;
+  justify-content: space-between;
+  gap: 15px;
 }
 
 .info-label {

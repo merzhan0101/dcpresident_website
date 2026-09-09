@@ -197,9 +197,18 @@ $events = getAllEvents('all');
             </div>
             
             <?php if (isset($_GET['success'])): ?>
-                <div style="background: rgba(76, 175, 80, 0.2); color: #4caf50; padding: 10px; border-radius: 6px; margin-bottom: 20px;">
+                <div id="successAlert" style="background: rgba(76, 175, 80, 0.2); color: #4caf50; padding: 10px; border-radius: 6px; margin-bottom: 20px; transition: opacity 0.5s ease;">
                     ✅ Мероприятие успешно <?= $_GET['success'] == 'added' ? 'добавлено' : ($_GET['success'] == 'updated' ? 'обновлено' : 'удалено') ?>
                 </div>
+                <script>
+                    setTimeout(function () {
+                        const alertBox = document.getElementById('successAlert');
+                        if (alertBox) {
+                            alertBox.style.opacity = '0';
+                            setTimeout(function () { alertBox.remove(); }, 500);
+                        }
+                    }, 3000);
+                </script>
             <?php endif; ?>
 
             <div class="events-toolbar">
@@ -577,6 +586,13 @@ $events = getAllEvents('all');
                 eventCropper = null;
             }, 'image/jpeg', 0.9);
         }
+
+        // Отключаем отправку формы по Enter в однострочных полях (кроме textarea)
+        document.getElementById('eventForm').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+            }
+        });
     </script>
 </body>
 </html>

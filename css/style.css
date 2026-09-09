@@ -241,8 +241,9 @@ button.active:hover {
 }
 
 .hero p {
-  max-width: 500px;
+  max-width: 630px;
   line-height: 1.6;
+  font-size: 20px;
 }
 
 .hero img {
@@ -264,7 +265,11 @@ button.active:hover {
 }
 
 .about-text {
-  max-width: 500px;
+  max-width: 600px;
+}
+
+.about-text p {
+  font-size: 20px;
 }
 
 /* EVENTS */
@@ -284,11 +289,15 @@ button.active:hover {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 25px;
+  justify-content: center;
+  justify-items: center;
 }
 
 .event-card {
   background-color: #1f1f1f;
   padding: 15px;
+  max-width: 480px;
+  width: 100%;
   border-radius: 10px;
 }
 
@@ -401,6 +410,10 @@ button.active:hover {
   margin-bottom: 10px;
   font-size: 18px;
   line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .tournament {
@@ -423,6 +436,10 @@ button.active:hover {
   margin: 10px 0;
   flex: 1;
   font-size: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .date {
@@ -430,6 +447,20 @@ button.active:hover {
   font-size: 13px;
   margin-top: 15px;
   font-style: italic;
+}
+
+.achievement-link {
+  color: var(--red);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s;
+  margin-top: auto;
+  padding-top: 10px;
+  display: inline-block;
+}
+
+.achievement-link:hover {
+  color: #ff3333;
 }
 
 /* ================= RESPONSIVE ================= */
@@ -488,6 +519,7 @@ button.active:hover {
 
 .news-item {
   display: flex;
+  min-height: 220px;
   background: var(--gray);
   border-radius: 12px;
   overflow: hidden;
@@ -502,7 +534,7 @@ button.active:hover {
 
 .news-item img {
   width: 250px;
-  /* height: 200px; */
+  height: 100%;
   object-fit: cover;
   border-right: 3px solid var(--red);
 }
@@ -514,11 +546,20 @@ button.active:hover {
   flex-direction: column;
 }
 
+.news-content > a.news-link {
+  margin-top: auto;
+  padding-top: 10px;
+}
+
 .news-content h4 {
   color: var(--text);
   margin-bottom: 12px;
   font-size: 20px;
   line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .news-content p {
@@ -570,6 +611,46 @@ button.active:hover {
   transition: color 0.3s;
   margin-top: 10px;
   /* display: inline-block; */
+}
+
+.news-content .news-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.news-content .news-meta .news-link {
+  margin-top: 0;
+}
+
+.news-full-date {
+  color: #aaa;
+  font-size: 14px;
+}
+
+.instagram-link {
+  margin-top: 10px;
+}
+
+.btn-instagram {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-instagram:hover {
+  transform: translateY(-2px);
 }
 
 .news-link:hover {

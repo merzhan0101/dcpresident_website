@@ -65,8 +65,8 @@ if (!$tournament) {
             <?php endif; ?>
             <?php if ($tournament['participants_count']): ?>
             <div class="info-item">
-              <span class="info-label">👥 Қатысушылар саны:</span>
-              <span class="info-value"><?= $tournament['participants_count'] ?>+ командалар</span>
+              <span class="info-label">👥 Қатысушылар саны: </span>
+              <span class="info-value"><?= $tournament['participants_count'] ?></span>
             </div>
             <?php endif; ?>
           </div>

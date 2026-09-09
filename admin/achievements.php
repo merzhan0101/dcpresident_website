@@ -17,22 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $achievement_date = $_POST['achievement_date'];
             $instagram_url = trim($_POST['instagram_url']) ?: null;
 
-            // Основное фото
+            // Основное фото (уже обрезано на клиенте через Cropper.js — просто сохраняем)
             $image_path = null;
             if (isset($_FILES['achievement_image']) && $_FILES['achievement_image']['error'] === UPLOAD_ERR_OK) {
-                $tempPath = $_FILES['achievement_image']['tmp_name'];
-                $uploadDir = '../images/achievements/';
-                
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0777, true);
-                }
-                
-                $filename = uniqid('img_') . '.jpg';
-                $targetPath = $uploadDir . $filename;
-                
-                cropImageToRatio($tempPath, $targetPath, 16/9);
-                
-                $image_path = 'images/achievements/' . $filename;
+                $image_path = uploadAchievementPhoto($_FILES['achievement_image']);
             }
 
             // Дополнительные фото - загружаем обрезанные из Cropper.js
@@ -266,9 +254,18 @@ $achievements = getAllAchievements();
             </div>
             
             <?php if (isset($_GET['success'])): ?>
-                <div style="background: rgba(76, 175, 80, 0.2); color: #4caf50; padding: 10px; border-radius: 6px; margin-bottom: 20px;">
+                <div id="successAlert" style="background: rgba(76, 175, 80, 0.2); color: #4caf50; padding: 10px; border-radius: 6px; margin-bottom: 20px; transition: opacity 0.5s ease;">
                     ✅ Достижение успешно <?= $_GET['success'] == 'added' ? 'добавлено' : ($_GET['success'] == 'updated' ? 'обновлено' : 'удалено') ?>
                 </div>
+                <script>
+                    setTimeout(function () {
+                        const alertBox = document.getElementById('successAlert');
+                        if (alertBox) {
+                            alertBox.style.opacity = '0';
+                            setTimeout(function () { alertBox.remove(); }, 500);
+                        }
+                    }, 3000);
+                </script>
             <?php endif; ?>
 
             <div class="achievements-toolbar">
@@ -477,6 +474,9 @@ $achievements = getAllAchievements();
             formAction.value = 'add';
             document.getElementById('achievementForm').reset();
             document.getElementById('achievement_date').valueAsDate = new Date();
+            document.getElementById('galleryPreview').innerHTML = '';
+            croppedGalleryFiles = [];
+            galleryFilesQueue = [];
         } else {
             title.textContent = 'Редактировать достижение';
             formAction.value = 'edit';
@@ -515,6 +515,27 @@ $achievements = getAllAchievements();
                 document.getElementById('achievement_date').value = data.achievement_date;
                 document.getElementById('description').value = data.description;
                 document.getElementById('full_content').value = data.full_content || '';
+                document.getElementById('instagram_url').value = data.instagram_url || '';
+
+                // Восстанавливаем уже загруженную галерею (доп. фото)
+                document.getElementById('currentGallery').value = data.gallery_images || '';
+                croppedGalleryFiles = [];
+                galleryFilesQueue = [];
+                const galleryPreview = document.getElementById('galleryPreview');
+                galleryPreview.innerHTML = '';
+                if (data.gallery_images) {
+                    try {
+                        const existingImages = JSON.parse(data.gallery_images);
+                        existingImages.forEach(function (imgPath) {
+                            const div = document.createElement('div');
+                            div.style.cssText = 'position: relative; width: 100px; height: 75px; border-radius: 8px; overflow: hidden; border: 2px solid #333;';
+                            div.innerHTML = `<img src="../${imgPath}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                            galleryPreview.appendChild(div);
+                        });
+                    } catch (e) {
+                        console.error('Не удалось разобрать gallery_images:', e);
+                    }
+                }
             });
     }
     
@@ -639,6 +660,9 @@ $achievements = getAllAchievements();
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
             cropInput.files = dataTransfer.files;
+
+            // Сохраняем ссылку на input ДО того, как closeCropModal() обнулит cropInput
+            const targetInput = cropInput;
             
             const previewContainer = document.getElementById(cropTargetId);
             const previewImg = document.getElementById(cropTargetId + 'Img');
@@ -654,7 +678,7 @@ $achievements = getAllAchievements();
             closeCropModal();
             
             const event = new Event('change', { bubbles: true });
-            cropInput.dispatchEvent(event);
+            targetInput.dispatchEvent(event);
             
         }, 'image/jpeg', 0.92);
     }
@@ -1269,6 +1293,13 @@ $achievements = getAllAchievements();
                 processNextGalleryFile();
             }
         }*/
+
+        // Отключаем отправку формы по Enter в однострочных полях (кроме textarea)
+        document.getElementById('achievementForm').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+            }
+        });
     </script>
 </body>
 </html>

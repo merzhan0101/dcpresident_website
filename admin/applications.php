@@ -171,9 +171,18 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             
             <?php if (isset($_GET['success'])): ?>
-                <div style="background: rgba(76, 175, 80, 0.2); color: #4caf50; padding: 10px; border-radius: 6px; margin-bottom: 20px;">
+                <div id="successAlert" style="background: rgba(76, 175, 80, 0.2); color: #4caf50; padding: 10px; border-radius: 6px; margin-bottom: 20px; transition: opacity 0.5s ease;">
                     ✅ Статус заявки обновлен
                 </div>
+                <script>
+                    setTimeout(function () {
+                        const alertBox = document.getElementById('successAlert');
+                        if (alertBox) {
+                            alertBox.style.opacity = '0';
+                            setTimeout(function () { alertBox.remove(); }, 500);
+                        }
+                    }, 3000);
+                </script>
             <?php endif; ?>
 
             <!-- ФИЛЬТР -->

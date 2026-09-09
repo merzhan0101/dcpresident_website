@@ -14,7 +14,7 @@ if (!isset($_GET['id'])) {
 $id = intval($_GET['id']);
 
 try {
-    $sql = "SELECT * FROM tournament WHERE id = ?";
+    $sql = "SELECT * FROM tournaments WHERE id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id]);
     $tournament = $stmt->fetch(PDO::FETCH_ASSOC);
