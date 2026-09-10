@@ -22,7 +22,14 @@
     <div class="container">
       <div class="achievements-grid-page">
         <?php 
-        $achievements = getAchievements(null);
+        $perPage = 6;
+        $totalAchievements = getAchievementsCount();
+        $totalPages = max(1, (int)ceil($totalAchievements / $perPage));
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $page = max(1, min($page, $totalPages));
+        $offset = ($page - 1) * $perPage;
+
+        $achievements = getAchievements($perPage, $offset);
         if (empty($achievements)): ?>
           <div class="no-achievements">
             <p>Әзірге жетістіктер жоқ</p>
@@ -67,6 +74,26 @@
           <?php endforeach; ?>
         <?php endif; ?>
       </div>
+
+      <?php if ($totalPages > 1): ?>
+      <nav class="pagination" aria-label="Пагинация">
+        <?php if ($page > 1): ?>
+          <a href="?page=<?= $page - 1 ?>" class="page-btn page-prev">← Алдыңғы</a>
+        <?php endif; ?>
+
+        <?php foreach (paginationRange($page, $totalPages) as $p): ?>
+          <?php if ($p === null): ?>
+            <span class="page-dots">…</span>
+          <?php else: ?>
+            <a href="?page=<?= $p ?>" class="page-btn <?= $p === $page ? 'active' : '' ?>"><?= $p ?></a>
+          <?php endif; ?>
+        <?php endforeach; ?>
+
+        <?php if ($page < $totalPages): ?>
+          <a href="?page=<?= $page + 1 ?>" class="page-btn page-next">Келесі →</a>
+        <?php endif; ?>
+      </nav>
+      <?php endif; ?>
     </div>
   </section>
 </main>

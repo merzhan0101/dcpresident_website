@@ -52,7 +52,7 @@
             
             <div class="events-grid" id="upcoming-events">
                 <?php 
-                $events = getEvents(6, 'all');
+                $events = getEvents(3, 'all');
                 if (empty($events)): ?>
                     <p class="no-events">Іс-шаралар жоқ</p>
                 <?php else: ?>
@@ -96,7 +96,7 @@
                         <?php if ($achievement['position']): ?>
                             <p class="position"><?= htmlspecialchars($achievement['position']) ?></p>
                         <?php endif; ?>
-                        <p class="description"><?= htmlspecialchars($achievement['description']) ?></p>
+                        <p class="description"><?= htmlspecialchars(excerpt($achievement['description'], 100)) ?></p>
                         <?php if ($achievement['achievement_date']): ?>
                             <p class="date"><?= date('d.m.Y', strtotime($achievement['achievement_date'])) ?></p>
                         <?php endif; ?>
@@ -128,13 +128,24 @@
                       <span class="day"><?= $newsDate->format('d') ?></span>
                       <span class="month"><?= getRussianMonth($newsDate->format('n')) ?></span>
                   </div>
-                  <img src="<?= $newsItem['image_path'] ?: 'images/news.jpg' ?>" 
+                  <img src="<?= $newsItem['image_path'] ?: 'images/news.png' ?>" 
                       alt="<?= htmlspecialchars($newsItem['title']) ?>">
                   <div class="news-content">
                       <h4><?= htmlspecialchars($newsItem['title']) ?></h4>
                       <p><?= htmlspecialchars($newsItem['content']) ?></p>
-                      <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link">Ары қарай оқу →</a>
-                      <!-- <a href="#" class="news-link">Читать далее →</a> -->
+
+                      <div class="news-meta">
+                          <span class="news-full-date">📅 <?= date('d.m.Y', strtotime($newsItem['news_date'])) ?></span>
+                          <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link">Ары қарай оқу →</a>
+                      </div>
+
+                      <?php if (!empty($newsItem['instagram_url'])): ?>
+                      <div class="instagram-link">
+                          <a href="<?= $newsItem['instagram_url'] ?>" target="_blank" class="btn-instagram">
+                              📷 Instagram-да көру
+                          </a>
+                      </div>
+                      <?php endif; ?>
                   </div>
               </article>
               <?php endforeach; ?>

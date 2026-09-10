@@ -80,7 +80,7 @@ if (!$news) {
             if ($related['id'] != $news_id):
           ?>
           <div class="related-item">
-            <img src="<?= $related['image_path'] ?: 'images/news.jpg' ?>" 
+            <img src="<?= $related['image_path'] ?: 'images/news.png' ?>" 
                  alt="<?= htmlspecialchars($related['title']) ?>">
             <h4><?= htmlspecialchars($related['title']) ?></h4>
             <p><?= date('d.m.Y', strtotime($related['news_date'])) ?></p>

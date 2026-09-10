@@ -23,7 +23,7 @@ function getEvents($limit = 6, $type = 'upcoming') {
 }
 
 // Получить достижения
-function getAchievements($limit = 3) {
+function getAchievements($limit = 3, $offset = 0) {
     global $pdo;
     
     if ($limit === null) {
@@ -31,13 +31,21 @@ function getAchievements($limit = 3) {
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
     } else {
-        $sql = "SELECT * FROM achievements ORDER BY achievement_date DESC LIMIT :limit";
+        $sql = "SELECT * FROM achievements ORDER BY achievement_date DESC LIMIT :limit OFFSET :offset";
         $stmt = $pdo->prepare($sql);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
     }
     
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Общее количество достижений (для пагинации)
+function getAchievementsCount() {
+    global $pdo;
+    $stmt = $pdo->query("SELECT COUNT(*) FROM achievements");
+    return (int)$stmt->fetchColumn();
 }
 
 // Получить новости
@@ -953,6 +961,27 @@ function excerpt($text, $length = 120) {
         return $text;
     }
     return mb_substr($text, 0, $length, 'UTF-8') . '…';
+}
+
+// Возвращает список номеров страниц для отображения, с null в местах "..."
+// Пример при 10 страницах и текущей = 5: [1, null, 4, 5, 6, null, 10]
+function paginationRange($current, $total, $delta = 2) {
+    $range = [];
+    for ($i = max(1, $current - $delta); $i <= min($total, $current + $delta); $i++) {
+        $range[] = $i;
+    }
+
+    $result = [];
+    $prev = null;
+    foreach (array_unique(array_merge([1], $range, [$total])) as $page) {
+        if ($page < 1 || $page > $total) continue;
+        if ($prev !== null && $page - $prev > 1) {
+            $result[] = null; // многоточие
+        }
+        $result[] = $page;
+        $prev = $page;
+    }
+    return $result;
 }
 
 ?>
