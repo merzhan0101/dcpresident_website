@@ -101,6 +101,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
         case 'delete':
             $id = $_POST['id'];
+
+            // Удаляем фото и галерею мероприятия перед удалением записи
+            $sql = "SELECT image_path, gallery_images FROM events WHERE id = ?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$id]);
+            $event = $stmt->fetch();
+
+            if ($event) {
+                if ($event['image_path'] && file_exists('../' . $event['image_path'])) {
+                    unlink('../' . $event['image_path']);
+                }
+                if ($event['gallery_images']) {
+                    $galleryFiles = json_decode($event['gallery_images'], true);
+                    if (is_array($galleryFiles)) {
+                        foreach ($galleryFiles as $galleryFile) {
+                            if (file_exists('../' . $galleryFile)) {
+                                unlink('../' . $galleryFile);
+                            }
+                        }
+                    }
+                }
+            }
+
             $sql = "DELETE FROM events WHERE id = ?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$id]);

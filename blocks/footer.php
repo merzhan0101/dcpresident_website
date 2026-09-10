@@ -41,6 +41,12 @@
         <strong>Telegram:</strong>
         <a href="https://t.me/presidentcup6" target="_blank">@PresidentCup6</a>
     </p>
+
+    <p>
+        <i class="fa-brands fa-tiktok"></i>
+        <strong>TikTok:</strong>
+        <a href="https://www.tiktok.com/@president.dc" target="_blank">@president.dc</a>
+    </p>
     </div>
 
   </div>

@@ -31,10 +31,10 @@ function sendEmailNotification($name, $email, $message) {
             </div>
             <div class='content'>
                 <div class='field'>
-                    <span class='label'>Имя:</span> $name
+                    <span class='label'>Имя:</span> " . htmlspecialchars($name) . "
                 </div>
                 <div class='field'>
-                    <span class='label'>Email:</span> $email
+                    <span class='label'>Email:</span> " . htmlspecialchars($email) . "
                 </div>
                 <div class='field'>
                     <span class='label'>Сообщение:</span><br>
@@ -60,10 +60,10 @@ function sendEmailNotification($name, $email, $message) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // Получаем и валидируем данные
-        $name = trim(htmlspecialchars($_POST['name'] ?? ''));
+        $name = trim($_POST['name'] ?? '');
         $email = filter_var(trim($_POST['email'] ?? ''), FILTER_VALIDATE_EMAIL);
-        $phone = trim(htmlspecialchars($_POST['phone'] ?? ''));
-        $message = trim(htmlspecialchars($_POST['message'] ?? ''));
+        $phone = trim($_POST['phone'] ?? '');
+        $message = trim($_POST['message'] ?? '');
         
         // Проверяем обязательные поля
         $errors = [];
@@ -93,7 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Если есть ошибки, показываем их
         if (!empty($errors)) {
-            session_start();
             $_SESSION['form_errors'] = $errors;
             $_SESSION['form_data'] = compact('name', 'email', 'message');
             header("Location: index.php#apply");
@@ -102,11 +101,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Получаем дополнительную информацию
         $ip_address = $_SERVER['REMOTE_ADDR'];
-        $user_agent = $_SERVER['HTTP_USER_AGENT'];
+        $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
         
         // Сохраняем в базу данных
-        $sql = "INSERT INTO applications (name, email, phone, message, ip_address, user_agent) 
-                VALUES (:name, :email, :phone, :message, :ip_address, :user_agent)";
+        $sql = "INSERT INTO applications (name, email, phone, message, ip_address, user_agent, subject) 
+                VALUES (:name, :email, :phone, :message, :ip_address, :user_agent, :subject)";
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
@@ -115,18 +114,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':phone' => $phone,
             ':message' => $message,
             ':ip_address' => $ip_address,
-            ':user_agent' => $user_agent
+            ':user_agent' => $user_agent,
+            ':subject' => 'Клубқа қосылу'
         ]);
         
         // Сохраняем в файл для backup
+        if (!is_dir('logs')) {
+            mkdir('logs', 0755, true);
+        }
         $log_entry = date('Y-m-d H:i:s') . " | $name | $email | $ip_address\n";
         file_put_contents('logs/applications.log', $log_entry, FILE_APPEND);
         
-        // Отправляем email уведомление
-        sendEmailNotification($name, $email, $message);
-        
-        // Отправляем ответное письмо пользователю
-        sendConfirmationEmail($name, $email);
+        // Отправка email временно отключена
+        // sendEmailNotification($name, $email, $message);
+        // sendConfirmationEmail($name, $email);
         
         // Перенаправляем на страницу успеха
         header("Location: application-success.php");
@@ -137,7 +138,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         error_log("Application form error: " . $e->getMessage());
         
         // Перенаправляем с ошибкой
-        session_start();
         $_SESSION['form_errors'] = ["Произошла ошибка при отправке формы. Пожалуйста, попробуйте позже."];
         header("Location: index.php#apply");
         exit;
@@ -169,7 +169,7 @@ function sendConfirmationEmail($name, $email) {
                 <h1>DC President</h1>
             </div>
             <div class='content'>
-                <h2>Уважаемый(ая) $name,</h2>
+                <h2>Уважаемый(ая) " . htmlspecialchars($name) . ",</h2>
                 <p>Благодарим вас за проявленный интерес к нашему дебатному клубу!</p>
                 <p>Мы получили вашу заявку и рассмотрим её в течение 24 часов.</p>
                 <p>С уважением,<br>Команда DC President</p>

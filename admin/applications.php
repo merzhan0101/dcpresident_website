@@ -3,6 +3,31 @@ session_start();
 require_once '../php/functions.php';
 requireAdmin();
 
+// ============================================================
+// AJAX: проверка новых заявок (для динамического обновления)
+// Явно запрещаем кэширование — иначе браузер может отдавать
+// один и тот же ответ повторно вместо свежего запроса к серверу
+// ============================================================
+if (isset($_GET['check_new'])) {
+    header('Content-Type: application/json');
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+
+    $lastId = isset($_GET['last_id']) ? (int)$_GET['last_id'] : 0;
+
+    try {
+        $sql = "SELECT * FROM applications WHERE id > ? ORDER BY created_at ASC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$lastId]);
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+    } catch (PDOException $e) {
+        error_log('applications.php check_new error: ' . $e->getMessage());
+        http_response_code(500);
+        echo json_encode([]);
+    }
+    exit;
+}
+
 // Обработка изменения статуса заявки
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
     $id = $_POST['id'];
@@ -27,6 +52,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit;
 }
 
+// Запрещаем кэширование самой страницы — иначе обычное обновление (F5)
+// может показать браузеру старую сохранённую копию вместо свежих данных
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+
 // Получение заявок
 $sql = "SELECT * FROM applications ORDER BY created_at DESC";
 $stmt = $pdo->prepare($sql);
@@ -39,7 +69,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заявки на вступление - DC President</title>
+    <title>Заявки - DC President</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="icon" type="image/png" href="/images/logo_president.png">
@@ -159,6 +189,39 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 grid-template-columns:1fr;
             }
         }
+
+        /* Подсветка новой заявки, появившейся динамически */
+        @keyframes newRowFade {
+            from { background: rgba(76, 175, 80, 0.35); }
+            to { background: transparent; }
+        }
+        .application-row.is-new {
+            animation: newRowFade 3s ease-out;
+        }
+
+        /* Всплывающее уведомление о новой заявке */
+        #newApplicationToast {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #4caf50;
+            color: white;
+            padding: 14px 22px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            font-weight: 600;
+            z-index: 5000;
+            display: none;
+            cursor: pointer;
+        }
+        #newApplicationToast.show {
+            display: block;
+            animation: toastPop 0.3s ease;
+        }
+        @keyframes toastPop {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -167,7 +230,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         <div class="main-content">
             <div class="admin-header">
-                <h1>Заявки на вступление</h1>
+                <h1>Управление заявками</h1>
             </div>
             
             <?php if (isset($_GET['success'])): ?>
@@ -226,7 +289,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <th>Действия</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="applicationsTableBody">
                         <?php foreach ($applications as $index=>$application): ?>
                         <tr 
                             class="application-row"
@@ -308,7 +371,9 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
     </div>
-    
+
+    <div id="newApplicationToast" onclick="location.reload()">🔔 Новая заявка! Нажмите, чтобы обновить</div>
+
     <script>
         function escapeHtml(text) {
             return String(text ?? '')
@@ -351,6 +416,13 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     href="mailto:${escapeHtml(data.email)}">
                                         ${escapeHtml(data.email)}
                                     </a>
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <span class="info-label">🏷️ Тема</span>
+                                <div class="info-value">
+                                    ${data.subject ? escapeHtml(data.subject) : '-'}
                                 </div>
                             </div>
 
@@ -448,7 +520,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
         // FILTER
         const searchInput = document.getElementById('searchInput');
         const statusFilter = document.getElementById('statusFilter');
-        const rows = document.querySelectorAll('.application-row');
+        let rows = document.querySelectorAll('.application-row');
 
         function filterApplications() {
             const search = searchInput.value.toLowerCase().trim();
@@ -474,6 +546,119 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         searchInput.addEventListener('input', filterApplications);
         statusFilter.addEventListener('change', filterApplications);
+
+        // ============================================================
+        // ДИНАМИЧЕСКОЕ ОБНОВЛЕНИЕ — проверка новых заявок каждые 15 сек
+        // ============================================================
+        let lastApplicationId = <?= !empty($applications) ? (int)max(array_column($applications, 'id')) : 0 ?>;
+        let totalApplications = <?= count($applications) ?>;
+        let newApplicationsCount = <?= count(array_filter($applications, function($app) { return $app['status'] === 'новая'; })) ?>;
+
+        const STATUS_LABELS = {
+            'новая': 'Новая',
+            'обработана': 'Обработана',
+            'отклонена': 'Отклонена'
+        };
+
+        function buildApplicationRow(app) {
+            const tr = document.createElement('tr');
+            tr.className = 'application-row is-new';
+            tr.dataset.name = (app.name || '').toLowerCase();
+            tr.dataset.email = (app.email || '').toLowerCase();
+            tr.dataset.phone = app.phone || '';
+            tr.dataset.status = app.status;
+
+            const created = new Date(app.created_at);
+            const createdStr = created.toLocaleDateString('ru-RU') + ' ' + created.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+            tr.innerHTML = `
+                <td>#</td>
+                <td>${escapeHtml(app.name)}</td>
+                <td>${escapeHtml(app.email)}</td>
+                <td>${escapeHtml(app.phone || '-')}</td>
+                <td style="max-width: 200px;">
+                    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        ${escapeHtml(app.message)}
+                    </div>
+                </td>
+                <td>${createdStr}</td>
+                <td>
+                    <form method="POST" style="display: inline;">
+                        <input type="hidden" name="action" value="update_status">
+                        <input type="hidden" name="id" value="${app.id}">
+                        <select name="status" class="status-select" onchange="this.form.submit()">
+                            <option value="новая" ${app.status === 'новая' ? 'selected' : ''}>Новая</option>
+                            <option value="обработана" ${app.status === 'обработана' ? 'selected' : ''}>Обработана</option>
+                            <option value="отклонена" ${app.status === 'отклонена' ? 'selected' : ''}>Отклонена</option>
+                        </select>
+                    </form>
+                </td>
+                <td>
+                    <button onclick="viewApplication(${app.id})" class="btn-action btn-edit">👁️</button>
+                    <form method="POST" style="display:inline;" onsubmit="return confirm('Удалить заявку?');">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="id" value="${app.id}">
+                        <button type="submit" class="btn-action btn-delete">🗑️</button>
+                    </form>
+                </td>
+            `;
+            return tr;
+        }
+
+        function renumberRows() {
+            document.querySelectorAll('#applicationsTableBody tr').forEach((row, i) => {
+                row.querySelector('td').textContent = i + 1;
+            });
+        }
+
+        function updateStatsDisplay() {
+            const stats = document.querySelectorAll('.toolbar-stats span');
+            if (stats[0]) stats[0].textContent = `Всего: ${totalApplications}`;
+            if (stats[1]) stats[1].textContent = `Новых: ${newApplicationsCount}`;
+        }
+
+        function showNewApplicationToast() {
+            const toast = document.getElementById('newApplicationToast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 6000);
+        }
+
+        function checkNewApplications() {
+            fetch(`applications.php?check_new=1&last_id=${lastApplicationId}&_=${Date.now()}`, {
+                cache: 'no-store'
+            })
+                .then(response => response.json())
+                .then(newApps => {
+                    if (!Array.isArray(newApps) || newApps.length === 0) return;
+
+                    const tbody = document.getElementById('applicationsTableBody');
+                    newApps.forEach(app => {
+                        const row = buildApplicationRow(app);
+                        tbody.insertBefore(row, tbody.firstChild);
+                        lastApplicationId = Math.max(lastApplicationId, parseInt(app.id));
+                        totalApplications++;
+                        if (app.status === 'новая') newApplicationsCount++;
+                    });
+
+                    renumberRows();
+                    updateStatsDisplay();
+                    filterApplications();
+
+                    // Обновляем список строк для фильтра/поиска
+                    rows = document.querySelectorAll('.application-row');
+
+                    showNewApplicationToast();
+                    document.title = `🔔 Новая заявка — DC President`;
+                })
+                .catch(err => console.error('Ошибка проверки новых заявок:', err));
+        }
+
+        // Возвращаем обычный заголовок вкладки при возврате на неё
+        window.addEventListener('focus', function () {
+            document.title = 'Заявки - DC President';
+        });
+
+        setInterval(checkNewApplications, 15000);
     </script>
 </body>
 </html>

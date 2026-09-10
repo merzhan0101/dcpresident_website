@@ -26,10 +26,16 @@ function getEvents($limit = 6, $type = 'upcoming') {
 function getAchievements($limit = 3) {
     global $pdo;
     
-    $sql = "SELECT * FROM achievements ORDER BY achievement_date DESC LIMIT :limit";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-    $stmt->execute();
+    if ($limit === null) {
+        $sql = "SELECT * FROM achievements ORDER BY achievement_date DESC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+    } else {
+        $sql = "SELECT * FROM achievements ORDER BY achievement_date DESC LIMIT :limit";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+    }
     
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -938,6 +944,15 @@ function getEventById($id) {
         error_log("Database error in getEventById: " . $e->getMessage());
         return null;
     }
+}
+
+// Обрезает текст до нужной длины для превью в карточках (с учётом эмодзи/UTF-8)
+function excerpt($text, $length = 120) {
+    $text = trim($text);
+    if (mb_strlen($text, 'UTF-8') <= $length) {
+        return $text;
+    }
+    return mb_substr($text, 0, $length, 'UTF-8') . '…';
 }
 
 ?>

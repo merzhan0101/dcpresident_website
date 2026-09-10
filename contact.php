@@ -88,6 +88,19 @@
 
                     <span class="social-arrow">→</span>
                 </a>
+                <a href="https://www.tiktok.com/@president.dc" class="social-link tiktok" target="_blank">
+                    <div class="social-left">
+                        <div class="social-icon">
+                            <i class="fab fa-tiktok"></i>
+                        </div>
+
+                        <div class="social-name">
+                            TikTok
+                        </div>
+                    </div>
+
+                    <span class="social-arrow">→</span>
+                </a>
               </div>
             </div>
           </div>

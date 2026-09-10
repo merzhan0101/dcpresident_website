@@ -3,7 +3,7 @@ session_start();
 require_once '../php/functions.php';
 requireAdmin();
 
-$sql = "SELECT id, name, email, phone, message, status, ip_address, created_at
+$sql = "SELECT id, name, email, phone, subject, message, status, ip_address, created_at
         FROM applications
         ORDER BY created_at DESC";
 
@@ -29,6 +29,7 @@ echo "\xEF\xBB\xBF";
             <th>Имя</th>
             <th>Email</th>
             <th>Телефон</th>
+            <th>Тема</th>
             <th>Сообщение</th>
             <th>Статус</th>
             <th>IP адрес</th>
@@ -42,6 +43,7 @@ echo "\xEF\xBB\xBF";
                 <td><?= htmlspecialchars($app['name']) ?></td>
                 <td><?= htmlspecialchars($app['email']) ?></td>
                 <td><?= htmlspecialchars($app['phone'] ?? '') ?></td>
+                <td><?= htmlspecialchars($app['subject'] ?? '') ?></td>
                 <td><?= nl2br(htmlspecialchars($app['message'])) ?></td>
                 <td><?= htmlspecialchars($app['status']) ?></td>
                 <td><?= htmlspecialchars($app['ip_address'] ?? '') ?></td>

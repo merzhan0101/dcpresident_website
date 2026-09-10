@@ -15,8 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
    $sql = "INSERT INTO applications
-        (name, email, phone, message)
-        VALUES (:name, :email, :phone, :message)";
+        (name, email, phone, message, subject)
+        VALUES (:name, :email, :phone, :message, :subject)";
     $stmt = $pdo->prepare($sql);
     $subjects = [
         'join' => 'Клубқа қосылу',
@@ -31,7 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ':name'    => $name,
         ':email'   => $email,
         ':phone'   => $phone,
-        ':message' => "Тақырып: $subjectText\n\n$message"
+        ':message' => $message,
+        ':subject' => $subjectText
     ]);
 
     header("Location: application-success.php");

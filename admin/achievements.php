@@ -23,29 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $image_path = uploadAchievementPhoto($_FILES['achievement_image']);
             }
 
-            // Дополнительные фото - загружаем обрезанные из Cropper.js
+            // Дополнительные фото
             $gallery_images = null;
-            if (isset($_POST['cropped_gallery']) && !empty($_POST['cropped_gallery'])) {
-                $uploadDir = '../images/achievements/';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0777, true);
-                }
-                
-                $uploadedFiles = [];
-                foreach ($_POST['cropped_gallery'] as $base64Image) {
-                    // Декодируем Base64
-                    $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64Image));
-                    
-                    $filename = uniqid('gallery_') . '.jpg';
-                    $targetPath = $uploadDir . $filename;
-                    
-                    file_put_contents($targetPath, $imageData);
-                    
-                    $uploadedFiles[] = 'images/achievements/' . $filename;
-                }
-                
-                if (!empty($uploadedFiles)) {
-                    $gallery_images = json_encode($uploadedFiles);
+            if (isset($_FILES['gallery_images']) && !empty($_FILES['gallery_images']['tmp_name'][0])) {
+                $uploaded = uploadMultipleImages($_FILES['gallery_images'], 'achievements');
+                if (!empty($uploaded)) {
+                    $gallery_images = json_encode($uploaded);
                 }
             }
 
@@ -57,64 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             header("Location: achievements.php?success=added");
             exit;
-
-        /*case 'add':
-            $title = trim($_POST['title']);
-            $description = trim($_POST['description']);
-            $full_content = trim($_POST['full_content']);
-            $tournament_name = trim($_POST['tournament_name']);
-            $position = trim($_POST['position']);
-            $achievement_date = $_POST['achievement_date'];
-            $instagram_url = trim($_POST['instagram_url']) ?: null;
-
-            $image_path = null;
-            if (isset($_FILES['achievement_image']) && $_FILES['achievement_image']['error'] === UPLOAD_ERR_OK) {
-                $image_path = uploadAchievementPhoto($_FILES['achievement_image']);
-            }
-
-            // Дополнительные фото - просто загружаем (без обрезки)
-            $gallery_images = null;
-            if (isset($_FILES['gallery_images']) && !empty($_FILES['gallery_images']['tmp_name'][0])) {
-                $uploadDir = '../images/achievements/';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0777, true);
-                }
-                
-                $uploadedFiles = [];
-                foreach ($_FILES['gallery_images']['tmp_name'] as $key => $tmpName) {
-                    if (empty($tmpName) || $_FILES['gallery_images']['error'][$key] !== UPLOAD_ERR_OK) {
-                        continue;
-                    }
-                    
-                    // Определяем расширение файла
-                    $originalName = $_FILES['gallery_images']['name'][$key];
-                    $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
-                    if (!in_array($extension, ['jpg', 'jpeg', 'png', 'webp'])) {
-                        $extension = 'jpg';
-                    }
-                    
-                    $filename = uniqid('gallery_') . '.' . $extension;
-                    $targetPath = $uploadDir . $filename;
-                    
-                    // Просто копируем файл
-                    move_uploaded_file($tmpName, $targetPath);
-                    
-                    $uploadedFiles[] = 'images/achievements/' . $filename;
-                }
-                
-                if (!empty($uploadedFiles)) {
-                    $gallery_images = json_encode($uploadedFiles);
-                }
-            }
-
-            $sql = "INSERT INTO achievements 
-                    (title, description, full_content, tournament_name, position, achievement_date, image_path, gallery_images, instagram_url) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$title, $description, $full_content, $tournament_name, $position, $achievement_date, $image_path, $gallery_images, $instagram_url]);
-            
-            header("Location: achievements.php?success=added");
-            exit;*/
             
         case 'edit':
             $id = $_POST['id'];
@@ -154,6 +79,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
         case 'delete':
             $id = $_POST['id'];
+
+            // Удаляем фото и галерею достижения перед удалением записи
+            $sql = "SELECT image_path, gallery_images FROM achievements WHERE id = ?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$id]);
+            $achievement = $stmt->fetch();
+
+            if ($achievement) {
+                if ($achievement['image_path'] && file_exists('../' . $achievement['image_path'])) {
+                    unlink('../' . $achievement['image_path']);
+                }
+                if ($achievement['gallery_images']) {
+                    $galleryFiles = json_decode($achievement['gallery_images'], true);
+                    if (is_array($galleryFiles)) {
+                        foreach ($galleryFiles as $galleryFile) {
+                            if (file_exists('../' . $galleryFile)) {
+                                unlink('../' . $galleryFile);
+                            }
+                        }
+                    }
+                }
+            }
+
             $sql = "DELETE FROM achievements WHERE id = ?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$id]);
@@ -334,11 +282,6 @@ $achievements = getAllAchievements();
                         style="width: 140px; height: 90px; object-fit: cover; border-radius: 8px;">
                 </div>
 
-                <!-- <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>Фото достижения</label>
-                    <input type="file" name="achievement_image" id="achievementImage" accept="image/*">
-                </div> -->
-
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <label>Фото достижения</label>
                     <input type="file" name="achievement_image" id="achievementImage" accept="image/*" 
@@ -351,22 +294,12 @@ $achievements = getAllAchievements();
 
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <label>Дополнительные фото (несколько)</label>
-                    <input type="file" name="gallery_images[]" id="galleryImages" accept="image/*" multiple onchange="handleGalleryFiles(this)">
-                    <div class="form-hint">Выберите несколько фото, удерживая Ctrl или Shift</div>
-                    
-                    <!-- Контейнер для превью загруженных фото -->
-                    <div id="galleryPreview" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;"></div>
-                    
-                    <!-- Скрытые поля для хранения обрезанных файлов -->
-                    <div id="galleryHiddenInputs"></div>
-                </div>
-
-                <!-- В модальном окне после загрузки основного фото -->
-                <!-- <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>Дополнительные фото (несколько)</label>
                     <input type="file" name="gallery_images[]" id="galleryImages" accept="image/*" multiple>
                     <div class="form-hint">Выберите несколько фото, удерживая Ctrl или Shift</div>
-                </div> -->
+                    
+                    <!-- Превью уже загруженной галереи (при редактировании) -->
+                    <div id="galleryPreview" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;"></div>
+                </div>
 
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <label>Ссылка на Instagram пост</label>
@@ -475,8 +408,6 @@ $achievements = getAllAchievements();
             document.getElementById('achievementForm').reset();
             document.getElementById('achievement_date').valueAsDate = new Date();
             document.getElementById('galleryPreview').innerHTML = '';
-            croppedGalleryFiles = [];
-            galleryFilesQueue = [];
         } else {
             title.textContent = 'Редактировать достижение';
             formAction.value = 'edit';
@@ -519,8 +450,6 @@ $achievements = getAllAchievements();
 
                 // Восстанавливаем уже загруженную галерею (доп. фото)
                 document.getElementById('currentGallery').value = data.gallery_images || '';
-                croppedGalleryFiles = [];
-                galleryFilesQueue = [];
                 const galleryPreview = document.getElementById('galleryPreview');
                 galleryPreview.innerHTML = '';
                 if (data.gallery_images) {
@@ -622,6 +551,17 @@ $achievements = getAllAchievements();
                     cropBoxMovable: true,
                     cropBoxResizable: true,
                     toggleDragModeOnDblclick: false,
+                    ready: function () {
+                        // Рамка стартует сверху (там обычно лица), а не по центру
+                        const canvasData = cropper.getCanvasData();
+                        const cropBoxData = cropper.getCropBoxData();
+                        cropper.setCropBoxData({
+                            left: cropBoxData.left,
+                            top: canvasData.top,
+                            width: cropBoxData.width,
+                            height: cropBoxData.width * 9 / 16
+                        });
+                    }
                 });
             };
         };
@@ -637,12 +577,6 @@ $achievements = getAllAchievements();
         }
         cropInput = null;
         cropTargetId = null;
-        
-        // Восстанавливаем кнопку "Применить" для основного фото
-        const applyBtn = document.querySelector('#cropModal .btn-apply');
-        if (applyBtn) {
-            applyBtn.onclick = applyCrop;
-        }
     }
 
     function applyCrop() {
@@ -660,9 +594,6 @@ $achievements = getAllAchievements();
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
             cropInput.files = dataTransfer.files;
-
-            // Сохраняем ссылку на input ДО того, как closeCropModal() обнулит cropInput
-            const targetInput = cropInput;
             
             const previewContainer = document.getElementById(cropTargetId);
             const previewImg = document.getElementById(cropTargetId + 'Img');
@@ -677,622 +608,9 @@ $achievements = getAllAchievements();
             
             closeCropModal();
             
-            const event = new Event('change', { bubbles: true });
-            targetInput.dispatchEvent(event);
-            
         }, 'image/jpeg', 0.92);
     }
 
-    // ===== GALLERY CROPPER (ДЛЯ ДОПОЛНИТЕЛЬНЫХ ФОТО) =====
-    let croppedGalleryFiles = [];
-    let galleryFilesQueue = [];
-
-    // ОСНОВНАЯ ФУНКЦИЯ ДЛЯ ГАЛЕРЕИ - ВЫЗЫВАЕТСЯ ИЗ INPUT
-    function handleGalleryFiles(input) {
-        const files = input.files;
-        if (!files || files.length === 0) {
-            console.log('Нет выбранных файлов');
-            return;
-        }
-        
-        console.log('Выбрано файлов:', files.length);
-        
-        // Очищаем предыдущие данные
-        croppedGalleryFiles = [];
-        galleryFilesQueue = [];
-        document.getElementById('galleryPreview').innerHTML = '';
-        document.getElementById('galleryHiddenInputs').innerHTML = '';
-        
-        // Добавляем файлы в очередь
-        for (let i = 0; i < files.length; i++) {
-            galleryFilesQueue.push(files[i]);
-            console.log('Файл в очереди:', files[i].name);
-        }
-        
-        // Начинаем обработку первого файла
-        processNextGalleryFile();
-    }
-
-    function processNextGalleryFile() {
-        console.log('Осталось файлов в очереди:', galleryFilesQueue.length);
-        
-        if (galleryFilesQueue.length === 0) {
-            console.log('Все файлы обработаны');
-            updateGalleryHiddenInputs();
-            return;
-        }
-        
-        const file = galleryFilesQueue[0];
-        console.log('Открываем обрезку для:', file.name);
-        
-        openCropModalForGallery(file, function(croppedFile) {
-            console.log('Файл обрезан:', croppedFile.name);
-            croppedGalleryFiles.push(croppedFile);
-            addGalleryPreview(croppedFile);
-            galleryFilesQueue.shift();
-            processNextGalleryFile();
-        });
-    }
-
-    function openCropModalForGallery(file, callback) {
-        console.log('openCropModalForGallery вызван для:', file.name);
-        
-        window.galleryCropCallback = callback;
-        
-        const modal = document.getElementById('cropModal');
-        if (!modal) {
-            console.error('Модальное окно #cropModal не найдено!');
-            return;
-        }
-        modal.classList.add('active');
-        console.log('Модальное окно открыто');
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            console.log('Изображение загружено');
-            const img = document.getElementById('cropImage');
-            if (!img) {
-                console.error('Элемент #cropImage не найден!');
-                return;
-            }
-            img.src = e.target.result;
-            
-            img.onload = function() {
-                console.log('Изображение отображено в модалке');
-                if (window.galleryCropper) {
-                    window.galleryCropper.destroy();
-                }
-                window.galleryCropper = new Cropper(img, {
-                    aspectRatio: 16 / 9,
-                    viewMode: 1,
-                    dragMode: 'move',
-                    autoCropArea: 0.9,
-                    restore: false,
-                    guides: true,
-                    center: true,
-                    highlight: false,
-                    cropBoxMovable: true,
-                    cropBoxResizable: true,
-                    toggleDragModeOnDblclick: false,
-                });
-                console.log('Cropper инициализирован');
-            };
-        };
-        reader.readAsDataURL(file);
-        
-        const applyBtn = document.querySelector('#cropModal .btn-apply');
-        if (applyBtn) {
-            applyBtn.onclick = function() {
-                applyGalleryCrop();
-            };
-            console.log('Кнопка "Применить" настроена для галереи');
-        }
-    }
-
-    function applyGalleryCrop() {
-        console.log('applyGalleryCrop вызван');
-        if (!window.galleryCropper) {
-            console.error('Cropper не инициализирован!');
-            return;
-        }
-        
-        const canvas = window.galleryCropper.getCroppedCanvas({
-            width: 800,
-            height: 450,
-        });
-        
-        canvas.toBlob(function(blob) {
-            console.log('Blob создан, размер:', blob.size);
-            const fileName = 'gallery_' + Date.now() + '.jpg';
-            const file = new File([blob], fileName, { type: 'image/jpeg' });
-            
-            if (window.galleryCropCallback) {
-                console.log('Вызываем callback');
-                window.galleryCropCallback(file);
-            } else {
-                console.error('Callback не найден!');
-            }
-            
-            closeCropModal();
-            
-        }, 'image/jpeg', 0.92);
-    }
-
-    function addGalleryPreview(file) {
-        const container = document.getElementById('galleryPreview');
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            const div = document.createElement('div');
-            div.className = 'gallery-preview-item';
-            div.style.cssText = 'position: relative; width: 100px; height: 75px; border-radius: 8px; overflow: hidden; border: 2px solid #333;';
-            
-            div.innerHTML = `
-                <img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">
-                <span style="position: absolute; top: -5px; right: -5px; background: #4caf50; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">✓</span>
-            `;
-            
-            container.appendChild(div);
-        };
-        
-        reader.readAsDataURL(file);
-    }
-
-    function updateGalleryHiddenInputs() {
-        const container = document.getElementById('galleryHiddenInputs');
-        container.innerHTML = '';
-        
-        for (let i = 0; i < croppedGalleryFiles.length; i++) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'cropped_gallery[]';
-                hiddenInput.value = e.target.result;
-                container.appendChild(hiddenInput);
-            };
-            reader.readAsDataURL(croppedGalleryFiles[i]);
-        }
-        
-        console.log('Скрытые поля обновлены. Файлов:', croppedGalleryFiles.length);
-    }
-
-    // Восстанавливаем кнопку "Применить" для основного фото при загрузке
-    document.addEventListener('DOMContentLoaded', function() {
-        const applyBtn = document.querySelector('#cropModal .btn-apply');
-        if (applyBtn) {
-            applyBtn.onclick = applyCrop;
-        }
-        console.log('Страница загружена. Все функции готовы.');
-    });
-
-
-
-
-
-        /*function openModal(action, id = null) {
-            const modal = document.getElementById('achievementModal');
-            const title = document.getElementById('modalTitle');
-            const formAction = document.getElementById('formAction');
-            
-            if (action === 'add') {
-                title.textContent = 'Добавить достижение';
-                formAction.value = 'add';
-                document.getElementById('achievementForm').reset();
-                document.getElementById('achievement_date').valueAsDate = new Date();
-            } else {
-                title.textContent = 'Редактировать достижение';
-                formAction.value = 'edit';
-                loadAchievementData(id);
-            }
-            
-            modal.style.display = 'flex';
-        }
-        
-        function closeModal() {
-            document.getElementById('achievementModal').style.display = 'none';
-        }
-        
-        function loadAchievementData(id) {
-            fetch(`../api/get_achievement.php?id=${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    const currentImage = document.getElementById('currentImage');
-                    const currentImageContainer = document.getElementById('currentImageContainer');
-                    const currentImagePreview = document.getElementById('currentImagePreview');
-
-                    if (data.image_path) {
-                        currentImage.value = data.image_path;
-                        currentImagePreview.src = '../' + data.image_path;
-                        currentImageContainer.style.display = 'block';
-                    } else {
-                        currentImage.value = '';
-                        currentImagePreview.src = '';
-                        currentImageContainer.style.display = 'none';
-                    }
-
-                    document.getElementById('achievementId').value = data.id;
-                    document.getElementById('title').value = data.title;
-                    document.getElementById('tournament_name').value = data.tournament_name || '';
-                    document.getElementById('position').value = data.position || '';
-                    document.getElementById('achievement_date').value = data.achievement_date;
-                    document.getElementById('description').value = data.description;
-                    document.getElementById('full_content').value = data.full_content || '';
-                });
-        }
-        
-        let deleteId = null;
-
-        function confirmDelete(id) {
-            deleteId = id;
-            document.getElementById('deleteModal').classList.add('active');
-        }
-
-        function closeDeleteModal() {
-            deleteId = null;
-            document.getElementById('deleteModal').classList.remove('active');
-        }
-
-        function submitDeleteForm() {
-            if (!deleteId) return;
-
-            document.getElementById('deleteId').value = deleteId;
-            document.getElementById('deleteForm').submit();
-        }
-
-        // FILTER
-        const searchInput=document.getElementById("searchInput");
-        const rows=document.querySelectorAll(".achievement-row");
-
-        function filterAchievements(){
-
-            const search=searchInput.value.toLowerCase().trim();
-
-            rows.forEach(row=>{
-
-                const title=row.dataset.title;
-
-                const searchOk=
-                    title.includes(search);
-
-                row.style.display=
-                    searchOk 
-                    ? ""
-                    : "none";
-
-            });
-
-        }
-
-        searchInput.addEventListener("input",filterAchievements);
-
-        // ===============================================================
-        window.onclick = function(event) {
-            const modal = document.getElementById('achievementModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
-
-
-        // Cropper.js переменные
-        let cropper = null;
-        let cropInput = null;
-        let cropTargetId = null;
-
-        function openCropModal(inputElement, targetId) {
-            const file = inputElement.files[0];
-            if (!file) return;
-            
-            // Сохраняем ссылку на input и target для callback
-            cropInput = inputElement;
-            cropTargetId = targetId;
-            
-            // Показываем модальное окно
-            const modal = document.getElementById('cropModal');
-            modal.classList.add('active');
-            
-            // Загружаем изображение
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.getElementById('cropImage');
-                img.src = e.target.result;
-                
-                img.onload = function() {
-                    // Инициализируем Cropper
-                    if (cropper) {
-                        cropper.destroy();
-                    }
-                    cropper = new Cropper(img, {
-                        aspectRatio: 16 / 9,  // Соотношение 16:9
-                        viewMode: 1,
-                        dragMode: 'move',
-                        autoCropArea: 0.9,
-                        restore: false,
-                        guides: true,
-                        center: true,
-                        highlight: false,
-                        cropBoxMovable: true,
-                        cropBoxResizable: true,
-                        toggleDragModeOnDblclick: false,
-                    });
-                };
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function closeCropModal() {
-            const modal = document.getElementById('cropModal');
-            modal.classList.remove('active');
-            if (cropper) {
-                cropper.destroy();
-                cropper = null;
-            }
-            cropInput = null;
-            cropTargetId = null;
-        }
-
-        function applyCrop() {
-            if (!cropper || !cropInput) return;
-            
-            // Получаем обрезанное изображение как Blob
-            const canvas = cropper.getCroppedCanvas({
-                width: 800,
-                height: 450,
-            });
-            
-            canvas.toBlob(function(blob) {
-                // Создаем новый файл
-                const fileName = 'cropped_' + Date.now() + '.jpg';
-                const file = new File([blob], fileName, { type: 'image/jpeg' });
-                
-                // Создаем новый FileList
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                cropInput.files = dataTransfer.files;
-                
-                // Обновляем превью
-                const previewContainer = document.getElementById(cropTargetId);
-                const previewImg = document.getElementById(cropTargetId + 'Img');
-                if (previewContainer && previewImg) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewImg.src = e.target.result;
-                        previewContainer.style.display = 'block';
-                    };
-                    reader.readAsDataURL(file);
-                }
-                
-                // Закрываем модалку
-                closeCropModal();
-                
-                // Триггерим событие change
-                const event = new Event('change', { bubbles: true });
-                cropInput.dispatchEvent(event);
-                
-            }, 'image/jpeg', 0.92);
-        }
-
-        function handleGalleryImages(input) {
-            const container = document.getElementById('galleryPreview');
-            container.innerHTML = '';
-            
-            if (!input.files) return;
-            
-            for (let i = 0; i < input.files.length; i++) {
-                const file = input.files[i];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const div = document.createElement('div');
-                    div.className = 'image-preview-container';
-                    div.style.width = '100px';
-                    div.style.height = '75px';
-                    div.innerHTML = `<img src="${e.target.result}" alt="Фото ${i+1}">`;
-                    container.appendChild(div);
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // ОБРЕЗКА ФОТО ДОПОЛНИТЕЛЬНЫХ
-        // Массив для хранения обрезанных файлов
-        let croppedGalleryFiles = [];
-        let currentGalleryFileIndex = 0;
-        let galleryFilesQueue = [];
-
-        function processNextGalleryFile() {
-            console.log('Осталось файлов в очереди:', galleryFilesQueue.length);
-            
-            if (galleryFilesQueue.length === 0) {
-                console.log('Все файлы обработаны');
-                updateGalleryHiddenInputs();
-                return;
-            }
-            
-            const file = galleryFilesQueue[0];
-            console.log('Открываем обрезку для:', file.name);
-            
-            // Открываем модалку для обрезки
-            openCropModalForGallery(file, function(croppedFile) {
-                console.log('Файл обрезан:', croppedFile.name);
-                croppedGalleryFiles.push(croppedFile);
-                addGalleryPreview(croppedFile);
-                galleryFilesQueue.shift();
-                processNextGalleryFile();
-            });
-        }
-
-        function openCropModalForGallery(file, callback) {
-            console.log('openCropModalForGallery вызван для:', file.name);
-            
-            // Сохраняем callback
-            window.galleryCropCallback = callback;
-            
-            // Показываем модальное окно
-            const modal = document.getElementById('cropModal');
-            if (!modal) {
-                console.error('Модальное окно #cropModal не найдено!');
-                return;
-            }
-            modal.classList.add('active');
-            console.log('Модальное окно открыто');
-            
-            // Загружаем изображение
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                console.log('Изображение загружено');
-                const img = document.getElementById('cropImage');
-                if (!img) {
-                    console.error('Элемент #cropImage не найден!');
-                    return;
-                }
-                img.src = e.target.result;
-                
-                img.onload = function() {
-                    console.log('Изображение отображено в модалке');
-                    if (window.galleryCropper) {
-                        window.galleryCropper.destroy();
-                    }
-                    window.galleryCropper = new Cropper(img, {
-                        aspectRatio: 16 / 9,
-                        viewMode: 1,
-                        dragMode: 'move',
-                        autoCropArea: 0.9,
-                        restore: false,
-                        guides: true,
-                        center: true,
-                        highlight: false,
-                        cropBoxMovable: true,
-                        cropBoxResizable: true,
-                        toggleDragModeOnDblclick: false,
-                    });
-                    console.log('Cropper инициализирован');
-                };
-            };
-            reader.readAsDataURL(file);
-            
-            // Изменяем кнопку "Применить" для галереи
-            const applyBtn = document.querySelector('#cropModal .btn-apply');
-            if (applyBtn) {
-                applyBtn.onclick = function() {
-                    applyGalleryCrop();
-                };
-                console.log('Кнопка "Применить" настроена');
-            }
-        }
-
-        function applyGalleryCrop() {
-            console.log('applyGalleryCrop вызван');
-            if (!window.galleryCropper) {
-                console.error('Cropper не инициализирован!');
-                return;
-            }
-            
-            const canvas = window.galleryCropper.getCroppedCanvas({
-                width: 800,
-                height: 450,
-            });
-            
-            canvas.toBlob(function(blob) {
-                console.log('Blob создан, размер:', blob.size);
-                const fileName = 'gallery_' + Date.now() + '.jpg';
-                const file = new File([blob], fileName, { type: 'image/jpeg' });
-                
-                if (window.galleryCropCallback) {
-                    console.log('Вызываем callback');
-                    window.galleryCropCallback(file);
-                } else {
-                    console.error('Callback не найден!');
-                }
-                
-                closeCropModal();
-                
-            }, 'image/jpeg', 0.92);
-        }
-
-        function addGalleryPreview(file) {
-            const container = document.getElementById('galleryPreview');
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                const div = document.createElement('div');
-                div.className = 'gallery-preview-item';
-                div.style.cssText = 'position: relative; width: 100px; height: 75px; border-radius: 8px; overflow: hidden; border: 2px solid #333;';
-                
-                div.innerHTML = `
-                    <img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">
-                    <span style="position: absolute; top: -5px; right: -5px; background: #4caf50; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">✓</span>
-                `;
-                
-                container.appendChild(div);
-            };
-            
-            reader.readAsDataURL(file);
-        }
-
-        function updateGalleryHiddenInputs() {
-            const container = document.getElementById('galleryHiddenInputs');
-            container.innerHTML = '';
-            
-            // Удаляем старый input[type="file"]
-            const oldInput = document.getElementById('galleryImages');
-            const parent = oldInput.parentNode;
-            
-            // Создаем новый input[type="file"]
-            const newInput = document.createElement('input');
-            newInput.type = 'file';
-            newInput.name = 'gallery_images[]';
-            newInput.id = 'galleryImages';
-            newInput.accept = 'image/*';
-            newInput.multiple = true;
-            newInput.style.cssText = 'display: block; margin-top: 10px;';
-            newInput.onchange = function() { handleGalleryFiles(this); };
-            
-            // Создаем скрытые поля для обрезанных файлов (для отправки на сервер)
-            for (let i = 0; i < croppedGalleryFiles.length; i++) {
-                // Преобразуем File в Base64 для отправки
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const hiddenInput = document.createElement('input');
-                    hiddenInput.type = 'hidden';
-                    hiddenInput.name = 'cropped_gallery[]';
-                    hiddenInput.value = e.target.result;
-                    container.appendChild(hiddenInput);
-                };
-                reader.readAsDataURL(croppedGalleryFiles[i]);
-            }
-            
-            // Заменяем старый input на новый
-            parent.replaceChild(newInput, oldInput);
-            
-            // Обновляем счетчик
-            document.getElementById('galleryCount').textContent = croppedGalleryFiles.length;
-
-            function handleGalleryFiles(input) {
-                const files = input.files;
-                if (!files || files.length === 0) {
-                    console.log('Нет выбранных файлов');
-                    return;
-                }
-                
-                console.log('Выбрано файлов:', files.length);
-                
-                // Очищаем предыдущие данные
-                croppedGalleryFiles = [];
-                galleryFilesQueue = [];
-                document.getElementById('galleryPreview').innerHTML = '';
-                document.getElementById('galleryHiddenInputs').innerHTML = '';
-                
-                // Добавляем файлы в очередь
-                for (let i = 0; i < files.length; i++) {
-                    galleryFilesQueue.push(files[i]);
-                    console.log('Файл в очереди:', files[i].name);
-                }
-                
-                // Начинаем обработку первого файла
-                processNextGalleryFile();
-            }
-        }*/
 
         // Отключаем отправку формы по Enter в однострочных полях (кроме textarea)
         document.getElementById('achievementForm').addEventListener('keydown', function(e) {

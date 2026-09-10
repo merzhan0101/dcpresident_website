@@ -148,6 +148,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
         case 'delete':
             $id = $_POST['id'];
+
+            // Удаляем фото и видео-тизер турнира перед удалением записи
+            $sql = "SELECT image_path, teaser_video FROM tournaments WHERE id = ?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$id]);
+            $tournament = $stmt->fetch();
+
+            if ($tournament) {
+                if ($tournament['image_path'] && file_exists('../' . $tournament['image_path'])) {
+                    unlink('../' . $tournament['image_path']);
+                }
+                if ($tournament['teaser_video'] && file_exists('../' . $tournament['teaser_video'])) {
+                    unlink('../' . $tournament['teaser_video']);
+                }
+            }
+
             $sql = "DELETE FROM tournaments WHERE id = ?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$id]);

@@ -45,9 +45,9 @@
               <p class="news-excerpt"><?= htmlspecialchars($newsItem['content']) ?></p>
               
               <!-- Карусель -->
-              <?php if (!empty($newsItem['gallery_images'])): ?>
-                <?= renderCarousel($newsItem['gallery_images'], 'news_' . $newsItem['id']) ?>
-              <?php endif; ?>
+              <!-- <\?php if (!empty($newsItem['gallery_images'])): ?>
+                <\?= renderCarousel($newsItem['gallery_images'], 'news_' . $newsItem['id']) ?>
+              <\?php endif; ?> -->
               
               <div class="news-meta">
                 <span class="news-full-date">📅 <?= date('d.m.Y', strtotime($newsItem['news_date'])) ?></span>

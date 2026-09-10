@@ -108,6 +108,8 @@ $members = getAllMembers();
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="icon" type="image/png" href="/images/logo_president.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
     <style>
         .admin-header {
             display: flex;
@@ -431,7 +433,7 @@ $members = getAllMembers();
                     </div>
                     <div class="upload-area">
                         <label>Фото участника</label>
-                        <input type="file" name="member_photo" id="memberPhoto" class="file-input" accept="image/*" onchange="previewPhoto(this)">
+                        <input type="file" name="member_photo" id="memberPhoto" class="file-input" accept="image/*">
                         <div class="photo-preview" id="photoPreview">
                             <p>Предпросмотр:</p>
                             <img id="previewImage" src="" alt="Предпросмотр">
@@ -493,6 +495,21 @@ $members = getAllMembers();
         </div>
     </div>
     
+    <!-- Модальное окно обрезки фото -->
+    <div id="cropModal" class="modal" style="z-index: 9999;">
+        <div class="modal-content" style="max-width: 600px;">
+            <h2>Обрезать фото</h2>
+            <p class="form-hint" style="margin-bottom: 12px; color: #ffb74d; font-weight: 600;">⚠️ Проверьте, что в рамку попадает лицо целиком — при необходимости подвиньте рамку мышью перед тем как применить.</p>
+            <div style="max-height: 420px; overflow: hidden; background: #000;">
+                <img id="cropImage" style="max-width: 100%; display: block;">
+            </div>
+            <div class="form-actions" style="margin-top: 15px;">
+                <button type="button" onclick="cancelCrop()" class="btn-admin" style="background: #666;">Отмена</button>
+                <button type="button" onclick="applyCrop()" class="btn-admin">Применить обрезку</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Форма для удаления -->
     <form method="POST" id="deleteForm" style="display: none;">
         <input type="hidden" name="action" value="delete">
@@ -584,24 +601,6 @@ $members = getAllMembers();
                 .catch(error => console.error('Error:', error));
         }
         
-        function previewPhoto(input) {
-            const preview = document.getElementById('photoPreview');
-            const previewImage = document.getElementById('previewImage');
-            
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    previewImage.src = e.target.result;
-                    preview.style.display = 'block';
-                }
-                
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                preview.style.display = 'none';
-            }
-        }
-        
         let deleteId = null;
 
         function confirmDelete(id) {
@@ -680,6 +679,74 @@ $members = getAllMembers();
                 e.preventDefault();
             }
         });
+
+        // ============================================================
+        // ОБРЕЗКА ФОТО УЧАСТНИКА
+        // ============================================================
+        let memberCropper = null;
+
+        document.getElementById('memberPhoto').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                const cropImage = document.getElementById('cropImage');
+                cropImage.src = evt.target.result;
+                document.getElementById('cropModal').style.display = 'flex';
+
+                if (memberCropper) {
+                    memberCropper.destroy();
+                }
+                memberCropper = new Cropper(cropImage, {
+                    aspectRatio: 1,      // квадрат — хорошо смотрится и в круглом аватаре, и в карточке участника
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    background: false,
+                    ready: function () {
+                        const canvasData = memberCropper.getCanvasData();
+                        const cropBoxData = memberCropper.getCropBoxData();
+                        memberCropper.setCropBoxData({
+                            left: cropBoxData.left,
+                            top: canvasData.top,
+                            width: cropBoxData.width,
+                            height: cropBoxData.width
+                        });
+                    }
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function cancelCrop() {
+            document.getElementById('cropModal').style.display = 'none';
+            document.getElementById('memberPhoto').value = '';
+            if (memberCropper) {
+                memberCropper.destroy();
+                memberCropper = null;
+            }
+        }
+
+        function applyCrop() {
+            if (!memberCropper) return;
+
+            memberCropper.getCroppedCanvas({ width: 600, height: 600 }).toBlob(function (blob) {
+                const croppedFile = new File([blob], 'member_photo.jpg', { type: 'image/jpeg' });
+
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(croppedFile);
+                document.getElementById('memberPhoto').files = dataTransfer.files;
+
+                // Показываем превью результата в уже существующем блоке предпросмотра
+                const previewUrl = URL.createObjectURL(blob);
+                document.getElementById('previewImage').src = previewUrl;
+                document.getElementById('photoPreview').style.display = 'block';
+
+                document.getElementById('cropModal').style.display = 'none';
+                memberCropper.destroy();
+                memberCropper = null;
+            }, 'image/jpeg', 0.9);
+        }
     </script>
 </body>
 </html>

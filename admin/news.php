@@ -114,6 +114,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
         case 'delete':
             $id = $_POST['id'];
+
+            // Удаляем фото и галерею новости перед удалением записи
+            $sql = "SELECT image_path, gallery_images FROM news WHERE id = ?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$id]);
+            $newsItem = $stmt->fetch();
+
+            if ($newsItem) {
+                if ($newsItem['image_path'] && file_exists('../' . $newsItem['image_path'])) {
+                    unlink('../' . $newsItem['image_path']);
+                }
+                if ($newsItem['gallery_images']) {
+                    $galleryFiles = json_decode($newsItem['gallery_images'], true);
+                    if (is_array($galleryFiles)) {
+                        foreach ($galleryFiles as $galleryFile) {
+                            if (file_exists('../' . $galleryFile)) {
+                                unlink('../' . $galleryFile);
+                            }
+                        }
+                    }
+                }
+            }
+
             $sql = "DELETE FROM news WHERE id = ?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$id]);

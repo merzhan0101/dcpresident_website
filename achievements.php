@@ -22,7 +22,7 @@
     <div class="container">
       <div class="achievements-grid-page">
         <?php 
-        $achievements = getAchievements(12);
+        $achievements = getAchievements(null);
         if (empty($achievements)): ?>
           <div class="no-achievements">
             <p>Әзірге жетістіктер жоқ</p>
