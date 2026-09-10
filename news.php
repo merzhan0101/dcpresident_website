@@ -37,7 +37,7 @@
               <span class="month"><?= getRussianMonth($newsDate->format('n')) ?></span>
             </div>
             <div class="news-image-page">
-              <img src="<?= $newsItem['image_path'] ?: 'images/news.jpg' ?>" 
+              <img src="<?= $newsItem['image_path'] ?: 'images/news.png' ?>" 
                    alt="<?= htmlspecialchars($newsItem['title']) ?>">
             </div>
             <div class="news-content-page">
