@@ -5,6 +5,7 @@ requireAdmin();
 
 // Обработка действий
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    requireCsrfToken();
     $action = $_POST['action'] ?? '';
     
     switch ($action) {
@@ -270,6 +271,7 @@ $achievements = getAllAchievements();
         <div class="modal-content">
             <h2 id="modalTitle">Добавить достижение</h2>
             <form method="POST" id="achievementForm" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generateCsrfToken()) ?>">
                 <input type="hidden" name="action" id="formAction" value="add">
                 <input type="hidden" name="id" id="achievementId">
                 <input type="hidden" name="current_image" id="currentImage">
@@ -364,6 +366,7 @@ $achievements = getAllAchievements();
     </div>
     
     <form method="POST" id="deleteForm" style="display: none;">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generateCsrfToken()) ?>">
         <input type="hidden" name="action" value="delete">
         <input type="hidden" name="id" id="deleteId">
     </form>

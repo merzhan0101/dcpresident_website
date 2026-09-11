@@ -5,6 +5,7 @@ requireAdmin();
 
 // Обработка действий
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    requireCsrfToken();
     $action = $_POST['action'] ?? '';
     
     switch ($action) {
@@ -426,6 +427,7 @@ $members = getAllMembers();
         <div class="modal-content">
             <h2 id="modalTitle">Добавить участника</h2>
             <form method="POST" id="memberForm" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generateCsrfToken()) ?>">
                 <input type="hidden" name="action" id="formAction" value="add">
                 <input type="hidden" name="id" id="memberId">
                 <input type="hidden" name="current_photo" id="currentPhoto">
@@ -510,6 +512,7 @@ $members = getAllMembers();
     
     <!-- Форма для удаления -->
     <form method="POST" id="deleteForm" style="display: none;">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generateCsrfToken()) ?>">
         <input type="hidden" name="action" value="delete">
         <input type="hidden" name="id" id="deleteId">
     </form>

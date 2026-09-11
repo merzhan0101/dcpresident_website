@@ -984,4 +984,61 @@ function paginationRange($current, $total, $delta = 2) {
     return $result;
 }
 
+// ============================================================
+// CSRF-ЗАЩИТА
+// ============================================================
+
+// Возвращает текущий CSRF-токен, создавая его при первом обращении
+function generateCsrfToken() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+// Проверяет, что присланный токен совпадает с токеном в сессии
+function verifyCsrfToken($token) {
+    return isset($_SESSION['csrf_token']) && is_string($token) && hash_equals($_SESSION['csrf_token'], $token);
+}
+
+// Прерывает выполнение, если CSRF-токен неверный/отсутствует
+function requireCsrfToken() {
+    if (!verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        http_response_code(403);
+        die('Қате сұрау. Бетті жаңартып, әрекетті қайта көріңіз.');
+    }
+}
+
+// ============================================================
+// ЗАЩИТА ОТ ПОДБОРА ПАРОЛЯ (BRUTE-FORCE)
+// ============================================================
+
+define('LOGIN_MAX_ATTEMPTS', 5);
+define('LOGIN_LOCKOUT_MINUTES', 15);
+
+// Сколько неудачных попыток входа было с этого IP за последние LOGIN_LOCKOUT_MINUTES минут
+function getRecentFailedLoginAttempts($ip) {
+    global $pdo;
+    $sql = "SELECT COUNT(*) FROM login_attempts WHERE ip_address = ? AND attempted_at > (NOW() - INTERVAL " . LOGIN_LOCKOUT_MINUTES . " MINUTE)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$ip]);
+    return (int)$stmt->fetchColumn();
+}
+
+// Записывает неудачную попытку входа
+function recordFailedLoginAttempt($ip) {
+    global $pdo;
+    $sql = "INSERT INTO login_attempts (ip_address) VALUES (?)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$ip]);
+}
+
+// Очищает историю неудачных попыток для IP (вызывать при успешном входе)
+function clearFailedLoginAttempts($ip) {
+    global $pdo;
+    $sql = "DELETE FROM login_attempts WHERE ip_address = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$ip]);
+}
+
 ?>

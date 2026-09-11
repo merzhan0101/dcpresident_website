@@ -30,6 +30,7 @@ if (isset($_GET['check_new'])) {
 
 // Обработка изменения статуса заявки
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
+    requireCsrfToken();
     $id = $_POST['id'];
     $status = $_POST['status'];
     
@@ -42,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+    requireCsrfToken();
     $id = (int)$_POST['id'];
 
     $sql = "DELETE FROM applications WHERE id = ?";
@@ -310,6 +312,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?= date('d.m.Y H:i', strtotime($application['created_at'])) ?></td>
                             <td>
                                 <form method="POST" style="display: inline;">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generateCsrfToken()) ?>">
                                     <input type="hidden" name="action" value="update_status">
                                     <input type="hidden" name="id" value="<?= $application['id'] ?>">
                                     <select name="status" class="status-select" onchange="this.form.submit()">
@@ -322,6 +325,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td>
                                 <button onclick="viewApplication(<?= $application['id'] ?>)" class="btn-action btn-edit">👁️</button>
                                 <form method="POST" style="display:inline;" onsubmit="return confirm('Удалить заявку?');">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generateCsrfToken()) ?>">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="id" value="<?= $application['id'] ?>">
                                     <button type="submit" class="btn-action btn-delete">🗑️</button>
@@ -459,6 +463,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <span class="info-label">📌 Статус</span>
 
                                 <form method="POST">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generateCsrfToken()) ?>">
                                     <input type="hidden" name="action" value="update_status">
                                     <input type="hidden" name="id" value="${data.id}">
 
@@ -584,6 +589,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <td>${createdStr}</td>
                 <td>
                     <form method="POST" style="display: inline;">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generateCsrfToken()) ?>">
                         <input type="hidden" name="action" value="update_status">
                         <input type="hidden" name="id" value="${app.id}">
                         <select name="status" class="status-select" onchange="this.form.submit()">
@@ -596,6 +602,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <td>
                     <button onclick="viewApplication(${app.id})" class="btn-action btn-edit">👁️</button>
                     <form method="POST" style="display:inline;" onsubmit="return confirm('Удалить заявку?');">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generateCsrfToken()) ?>">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="id" value="${app.id}">
                         <button type="submit" class="btn-action btn-delete">🗑️</button>
@@ -658,7 +665,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
             document.title = 'Заявки - DC President';
         });
 
-        setInterval(checkNewApplications, 15000);
+        setInterval(checkNewApplications, 5000);
     </script>
 </body>
 </html>

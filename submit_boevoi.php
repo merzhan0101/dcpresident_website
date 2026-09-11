@@ -1,6 +1,5 @@
 <?php
 session_start();
-require_once 'php/smtp_mailer.php';
 // Подключаем базу данных
 include 'php/database.php';
 
@@ -49,7 +48,12 @@ function sendEmailNotification($name, $email, $message) {
     </body>
     </html>";
     
-    return sendSmtpMail($to, $subject, $email_body, $email);
+    $headers = "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html; charset=utf-8\r\n";
+    $headers .= "From: DC President <info@presidentdc.kz>\r\n";
+    $headers .= "Reply-To: $email\r\n";
+    
+    return mail($to, $subject, $email_body, $headers);
 }
 
 // Основная логика обработки формы
@@ -178,6 +182,10 @@ function sendConfirmationEmail($name, $email) {
     </body>
     </html>";
     
-    sendSmtpMail($email, $subject, $email_body);
+    $headers = "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html; charset=utf-8\r\n";
+    $headers .= "From: DC President <info@presidentdc.kz>\r\n";
+    
+    mail($email, $subject, $email_body, $headers);
 }
 ?>

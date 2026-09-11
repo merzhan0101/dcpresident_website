@@ -2,25 +2,42 @@
 session_start();
 include '../php/functions.php';
 
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
-    
-    $user = getUserByUsername($username);
-    
-    if ($user && verifyPassword($password, $user['password_hash'])) {
-        $_SESSION['user'] = $user;
-        updateLastLogin($user['id']);
-        
-        if ($user['role'] === 'admin') {
-            header("Location: dashboard.php");
-            // header("Location: admin/dashboard.php");
-        } else {
-            header("Location: index.php");
-        }
-        exit;
+    requireCsrfToken();
+
+    $attempts = getRecentFailedLoginAttempts($ip);
+
+    if ($attempts >= LOGIN_MAX_ATTEMPTS) {
+        $error = "Тым көп сәтсіз әрекет. " . LOGIN_LOCKOUT_MINUTES . " минуттан кейін қайта көріңіз.";
     } else {
-        $error = "Неверное имя пользователя или пароль";
+        $username = trim($_POST['username'] ?? '');
+        $password = $_POST['password'] ?? '';
+        
+        $user = getUserByUsername($username);
+        
+        if ($user && verifyPassword($password, $user['password_hash'])) {
+            clearFailedLoginAttempts($ip);
+            session_regenerate_id(true);
+            $_SESSION['user'] = $user;
+            updateLastLogin($user['id']);
+            
+            if ($user['role'] === 'admin') {
+                header("Location: dashboard.php");
+                // header("Location: admin/dashboard.php");
+            } else {
+                header("Location: index.php");
+            }
+            exit;
+        } else {
+            recordFailedLoginAttempt($ip);
+            $remaining = LOGIN_MAX_ATTEMPTS - $attempts - 1;
+            $error = "Неверное имя пользователя или пароль";
+            if ($remaining <= 2 && $remaining >= 0) {
+                $error .= " (қалған әрекет саны: $remaining)";
+            }
+        }
     }
 }
 ?>
@@ -113,6 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="login-container">
         <form method="POST" class="login-form">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generateCsrfToken()) ?>">
             <h2>🔐 Вход в панель управления</h2>
             
             <?php if (isset($error)): ?>
