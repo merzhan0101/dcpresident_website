@@ -2,6 +2,7 @@
 <html lang="ru">
 
 <?php include 'php/functions.php'; ?>
+<?php $pageTitle = 'Турнирлер'; $pageDescription = 'President дебат клубының турнирлері'; ?>
 <?php include 'blocks/head.php'; ?>
 
 <link rel="stylesheet" href="css/tournaments.css">
@@ -40,7 +41,7 @@
           <?php foreach ($tournaments as $tournament): ?>
           <div class="tournament-card" data-level="<?= $tournament['level'] ?>">
             <div class="tournament-image">
-              <img src="<?= $tournament['image_path'] ?: 'images/tournament-default.jpg' ?>" 
+              <img src="<?= $tournament['image_path'] ?: 'images/tournament-default.png' ?>" 
                    alt="<?= htmlspecialchars($tournament['title']) ?>">
               <span class="tournament-status <?= $tournament['status'] ?>"><?= ucfirst($tournament['status']) ?></span>
               <span class="tournament-level <?= $tournament['level'] ?>"><?= ucfirst($tournament['level']) ?></span>

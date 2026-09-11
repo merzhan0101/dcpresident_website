@@ -2,6 +2,7 @@
 <html lang="ru">
 
 <?php include 'php/functions.php'; ?>
+<?php $pageTitle = 'Клуб туралы'; $pageDescription = 'DC President — 2019 жылдан бері жұмыс істейтін Торайғыров университетінің пікірсайыс клубы. Біздің құндылықтарымыз бен басшылығымыз туралы толығырақ.'; ?>
 <?php include 'blocks/head.php'; ?>
 
 <link rel="stylesheet" href="css/blocks.css">
@@ -98,19 +99,19 @@
             <h3>Сандар сөйлесін</h3>
             <div class="stats-grid">
                 <div class="stat-item">
-                    <div class="stat-number"><?= count(getAllActiveMembers()) ?>+</div>
+                    <div class="stat-number"><?= count(getAllActiveMembers()) ?></div>
                     <div class="stat-label">Қатысушылар</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">25+</div>
-                    <div class="stat-label">Турнирлер өткізілді</div>
+                    <div class="stat-number"><?= count(getAllTournaments()) ?></div>
+                    <div class="stat-label">Турнир өткізілді</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">15+</div>
-                    <div class="stat-label">Турнирлердегі жеңістер</div>
+                    <div class="stat-number"><?= getAchievementsCount() ?></div>
+                    <div class="stat-label">Жетістіктер саны</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">3</div>
+                    <div class="stat-number"><?= (new DateTime('2019-09-19'))->diff(new DateTime())->y ?></div>
                     <div class="stat-label">Жұмыс жылы</div>
                 </div>
             </div>

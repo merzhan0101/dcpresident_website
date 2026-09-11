@@ -2,6 +2,7 @@
 <html lang="ru">
 
 <?php include 'php/functions.php'; ?>
+<?php $pageTitle = 'Жетістіктер'; $pageDescription = 'President дебат клубының жеткен жетістіктері'; ?>
 <?php include 'blocks/head.php'; ?>
 <?php include 'blocks/carousel.php'; ?>
 
@@ -38,7 +39,7 @@
           <?php foreach ($achievements as $achievement): ?>
           <div class="achievement-card-page">
             <div class="achievement-image">
-              <img src="<?= $achievement['image_path'] ?: 'images/cups.jpg' ?>" 
+              <img src="<?= $achievement['image_path'] ?: 'images/achievement-default.png' ?>" 
                    alt="<?= htmlspecialchars($achievement['title']) ?>">
             </div>
             <div class="achievement-content-page">

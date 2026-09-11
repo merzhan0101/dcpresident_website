@@ -81,7 +81,7 @@ if (!$achievement) {
             if ($related['id'] != $achievement_id):
           ?>
           <div class="related-item">
-            <img src="<?= $related['image_path'] ?: 'images/cups.jpg' ?>" 
+            <img src="<?= $related['image_path'] ?: 'images/achievement-default.png' ?>" 
                  alt="<?= htmlspecialchars($related['title']) ?>">
             <h4><?= htmlspecialchars($related['title']) ?></h4>
             <p><?= date('d.m.Y', strtotime($related['achievement_date'])) ?></p>

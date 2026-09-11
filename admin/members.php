@@ -12,23 +12,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $name = trim($_POST['full_name']);
             $generation = $_POST['generation'];
             $faculty = trim($_POST['faculty']);
-            // $birth_day = $_POST['birth_day'];
-            // $birth_month = $_POST['birth_month'];
             $birth_day = !empty($_POST['birth_day']) ? (int)$_POST['birth_day'] : null;
             $birth_month = !empty($_POST['birth_month']) ? (int)$_POST['birth_month'] : null;
             $role = $_POST['role'];
+            $gender = $_POST['gender'] === 'әйел' ? 'әйел' : 'ер';
             $bio = trim($_POST['bio']);
             
-            // Обработка загрузки фото
+            // Обработка загрузки фото — если не загружено, ставим фото по умолчанию по полу
             $image_path = null;
             if (isset($_FILES['member_photo']) && $_FILES['member_photo']['error'] === UPLOAD_ERR_OK) {
                 $image_path = uploadMemberPhoto($_FILES['member_photo']);
+            } else {
+                $image_path = $gender === 'әйел' ? 'images/woman.jpg' : 'images/man.jpg';
             }
             
-            $sql = "INSERT INTO members (full_name, generation, faculty, birth_day, birth_month, role, bio, image_path) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO members (full_name, generation, faculty, birth_day, birth_month, role, gender, bio, image_path) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$name, $generation, $faculty, $birth_day, $birth_month, $role, $bio, $image_path]);
+            $stmt->execute([$name, $generation, $faculty, $birth_day, $birth_month, $role, $gender, $bio, $image_path]);
             
             header("Location: members.php?success=added");
             exit;
@@ -38,21 +39,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $name = trim($_POST['full_name']);
             $generation = $_POST['generation'];
             $faculty = trim($_POST['faculty']);
-            // $birth_day = $_POST['birth_day'];
-            // $birth_month = $_POST['birth_month'];
             $birth_day = !empty($_POST['birth_day']) ? (int)$_POST['birth_day'] : null;
             $birth_month = !empty($_POST['birth_month']) ? (int)$_POST['birth_month'] : null;
             $role = $_POST['role'];
+            $gender = $_POST['gender'] === 'әйел' ? 'әйел' : 'ер';
             $bio = trim($_POST['bio']);
             $is_active = isset($_POST['is_active']) ? 1 : 0;
             
             // Обработка загрузки фото
             $image_path = $_POST['current_photo'] ?? null;
             if (isset($_FILES['member_photo']) && $_FILES['member_photo']['error'] === UPLOAD_ERR_OK) {
-                // Удаляем старое фото если оно есть
-                /*if ($image_path && file_exists('../' . $image_path)) {
-                    unlink('../' . $image_path);
-                }*/
                 if (
                     $image_path &&
                     file_exists('../' . $image_path) &&
@@ -65,11 +61,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     unlink('../' . $image_path);
                 }
                 $image_path = uploadMemberPhoto($_FILES['member_photo']);
+            } elseif (empty($image_path)) {
+                // Если фото вообще не было и не загружено — подставляем по полу
+                $image_path = $gender === 'әйел' ? 'images/woman.jpg' : 'images/man.jpg';
             }
             
-            $sql = "UPDATE members SET full_name=?, generation=?, faculty=?, birth_day=?, birth_month=?, role=?, bio=?, is_active=?, image_path=? WHERE id=?";
+            $sql = "UPDATE members SET full_name=?, generation=?, faculty=?, birth_day=?, birth_month=?, role=?, gender=?, bio=?, is_active=?, image_path=? WHERE id=?";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$name, $generation, $faculty, $birth_day, $birth_month, $role, $bio, $is_active, $image_path, $id]);
+            $stmt->execute([$name, $generation, $faculty, $birth_day, $birth_month, $role, $gender, $bio, $is_active, $image_path, $id]);
             
             header("Location: members.php?success=updated");
             exit;
@@ -77,13 +76,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'delete':
             $id = $_POST['id'];
             
-            // Удаляем фото участника если оно есть
+            // Удаляем фото участника, но НЕ трогаем общие дефолтные картинки
             $sql = "SELECT image_path FROM members WHERE id = ?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$id]);
             $member = $stmt->fetch();
             
-            if ($member && $member['image_path'] && file_exists('../' . $member['image_path'])) {
+            if (
+                $member && $member['image_path'] &&
+                file_exists('../' . $member['image_path']) &&
+                !in_array($member['image_path'], [
+                    'images/man.jpg',
+                    'images/woman.jpg',
+                    'images/avatar-default.jpg'
+                ])
+            ) {
                 unlink('../' . $member['image_path']);
             }
             
@@ -108,8 +115,6 @@ $members = getAllMembers();
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="icon" type="image/png" href="/images/logo_president.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
     <style>
         .admin-header {
             display: flex;
@@ -433,7 +438,7 @@ $members = getAllMembers();
                     </div>
                     <div class="upload-area">
                         <label>Фото участника</label>
-                        <input type="file" name="member_photo" id="memberPhoto" class="file-input" accept="image/*">
+                        <input type="file" name="member_photo" id="memberPhoto" class="file-input" accept="image/*" onchange="previewPhoto(this)">
                         <div class="photo-preview" id="photoPreview">
                             <p>Предпросмотр:</p>
                             <img id="previewImage" src="" alt="Предпросмотр">
@@ -469,6 +474,14 @@ $members = getAllMembers();
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>Жынысы *</label>
+                        <select name="gender" id="gender" required>
+                            <option value="ер">Ер</option>
+                            <option value="әйел">Әйел</option>
+                        </select>
+                        <div class="form-hint">Фото жүктелмесе, осыған қарай әдепкі сурет қойылады</div>
+                    </div>
+                    <div class="form-group">
                         <label>День рождения</label>
                         <input type="number" name="birth_day" id="birthDay" min="1" max="31">
                     </div>
@@ -495,21 +508,6 @@ $members = getAllMembers();
         </div>
     </div>
     
-    <!-- Модальное окно обрезки фото -->
-    <div id="cropModal" class="modal" style="z-index: 9999;">
-        <div class="modal-content" style="max-width: 600px;">
-            <h2>Обрезать фото</h2>
-            <p class="form-hint" style="margin-bottom: 12px; color: #ffb74d; font-weight: 600;">⚠️ Проверьте, что в рамку попадает лицо целиком — при необходимости подвиньте рамку мышью перед тем как применить.</p>
-            <div style="max-height: 420px; overflow: hidden; background: #000;">
-                <img id="cropImage" style="max-width: 100%; display: block;">
-            </div>
-            <div class="form-actions" style="margin-top: 15px;">
-                <button type="button" onclick="cancelCrop()" class="btn-admin" style="background: #666;">Отмена</button>
-                <button type="button" onclick="applyCrop()" class="btn-admin">Применить обрезку</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Форма для удаления -->
     <form method="POST" id="deleteForm" style="display: none;">
         <input type="hidden" name="action" value="delete">
@@ -580,6 +578,7 @@ $members = getAllMembers();
                     document.getElementById('generation').value = data.generation;
                     document.getElementById('faculty').value = data.faculty;
                     document.getElementById('role').value = data.role;
+                    document.getElementById('gender').value = data.gender || 'ер';
                     document.getElementById('birthDay').value = data.birth_day || '';
                     document.getElementById('birthMonth').value = data.birth_month || '';
                     document.getElementById('bio').value = data.bio || '';
@@ -599,6 +598,24 @@ $members = getAllMembers();
                     }
                 })
                 .catch(error => console.error('Error:', error));
+        }
+        
+        function previewPhoto(input) {
+            const preview = document.getElementById('photoPreview');
+            const previewImage = document.getElementById('previewImage');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+            }
         }
         
         let deleteId = null;
@@ -679,74 +696,6 @@ $members = getAllMembers();
                 e.preventDefault();
             }
         });
-
-        // ============================================================
-        // ОБРЕЗКА ФОТО УЧАСТНИКА
-        // ============================================================
-        let memberCropper = null;
-
-        document.getElementById('memberPhoto').addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function (evt) {
-                const cropImage = document.getElementById('cropImage');
-                cropImage.src = evt.target.result;
-                document.getElementById('cropModal').style.display = 'flex';
-
-                if (memberCropper) {
-                    memberCropper.destroy();
-                }
-                memberCropper = new Cropper(cropImage, {
-                    aspectRatio: 1,      // квадрат — хорошо смотрится и в круглом аватаре, и в карточке участника
-                    viewMode: 1,
-                    autoCropArea: 1,
-                    background: false,
-                    ready: function () {
-                        const canvasData = memberCropper.getCanvasData();
-                        const cropBoxData = memberCropper.getCropBoxData();
-                        memberCropper.setCropBoxData({
-                            left: cropBoxData.left,
-                            top: canvasData.top,
-                            width: cropBoxData.width,
-                            height: cropBoxData.width
-                        });
-                    }
-                });
-            };
-            reader.readAsDataURL(file);
-        });
-
-        function cancelCrop() {
-            document.getElementById('cropModal').style.display = 'none';
-            document.getElementById('memberPhoto').value = '';
-            if (memberCropper) {
-                memberCropper.destroy();
-                memberCropper = null;
-            }
-        }
-
-        function applyCrop() {
-            if (!memberCropper) return;
-
-            memberCropper.getCroppedCanvas({ width: 600, height: 600 }).toBlob(function (blob) {
-                const croppedFile = new File([blob], 'member_photo.jpg', { type: 'image/jpeg' });
-
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(croppedFile);
-                document.getElementById('memberPhoto').files = dataTransfer.files;
-
-                // Показываем превью результата в уже существующем блоке предпросмотра
-                const previewUrl = URL.createObjectURL(blob);
-                document.getElementById('previewImage').src = previewUrl;
-                document.getElementById('photoPreview').style.display = 'block';
-
-                document.getElementById('cropModal').style.display = 'none';
-                memberCropper.destroy();
-                memberCropper = null;
-            }, 'image/jpeg', 0.9);
-        }
     </script>
 </body>
 </html>

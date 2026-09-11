@@ -27,7 +27,7 @@
     <p>
         <i class="fa-solid fa-envelope"></i>
         <strong>Email:</strong>
-        <a href="mailto:president.dc@toraighyrov.edu.kz">president.dc@toraighyrov.edu.kz</a>
+        <a href="mailto:info@presidentdc.kz">info@presidentdc.kz</a>
     </p>
 
     <p>

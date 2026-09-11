@@ -2,6 +2,7 @@
 <html lang="ru">
 
 <?php include 'php/functions.php'; ?>
+<?php $pageTitle = 'Байланыс'; $pageDescription = 'President дебат клубымен байланысу'; ?>
 <?php include 'blocks/head.php'; ?>
 
 <link rel="stylesheet" href="css/blocks.css">
@@ -38,7 +39,7 @@
             <div class="contact-icon">📧</div>
             <div class="contact-details">
               <h4>Email</h4>
-              <p>president.dc@toraighyrov.edu.kz</p>
+              <p>info@presidentdc.kz</p>
             </div>
           </div>
 

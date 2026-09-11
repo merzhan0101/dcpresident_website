@@ -33,7 +33,7 @@ if (!$tournament) {
     <div class="container">
       <div class="tournament-hero">
         <div class="tournament-main-image">
-          <img src="<?= $tournament['image_path'] ?: 'images/tournament-default.jpg' ?>" 
+          <img src="<?= $tournament['image_path'] ?: 'images/tournament-default.png' ?>" 
                alt="<?= htmlspecialchars($tournament['title']) ?>">
           <div class="tournament-badges">
             <span class="tournament-status <?= $tournament['status'] ?>"><?= ucfirst($tournament['status']) ?></span>

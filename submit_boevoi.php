@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once 'php/smtp_mailer.php';
 // Подключаем базу данных
 include 'php/database.php';
 
@@ -8,7 +9,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 // Функция для отправки email уведомления
 function sendEmailNotification($name, $email, $message) {
-    $to = "president.dc@toraighyrov.edu.kz";
+    $to = "info@presidentdc.kz";
     $subject = "Новая заявка в дебатный клуб DC President";
     
     $email_body = "
@@ -48,12 +49,7 @@ function sendEmailNotification($name, $email, $message) {
     </body>
     </html>";
     
-    $headers = "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: text/html; charset=utf-8\r\n";
-    $headers .= "From: DC President <noreply@toraighyrov.edu.kz>\r\n";
-    $headers .= "Reply-To: $email\r\n";
-    
-    return mail($to, $subject, $email_body, $headers);
+    return sendSmtpMail($to, $subject, $email_body, $email);
 }
 
 // Основная логика обработки формы
@@ -125,9 +121,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $log_entry = date('Y-m-d H:i:s') . " | $name | $email | $ip_address\n";
         file_put_contents('logs/applications.log', $log_entry, FILE_APPEND);
         
-        // Отправка email временно отключена
-        // sendEmailNotification($name, $email, $message);
-        // sendConfirmationEmail($name, $email);
+        // Отправляем email уведомление
+        sendEmailNotification($name, $email, $message);
+        
+        // Отправляем ответное письмо пользователю
+        sendConfirmationEmail($name, $email);
         
         // Перенаправляем на страницу успеха
         header("Location: application-success.php");
@@ -180,10 +178,6 @@ function sendConfirmationEmail($name, $email) {
     </body>
     </html>";
     
-    $headers = "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: text/html; charset=utf-8\r\n";
-    $headers .= "From: DC President <president.dc@toraighyrov.edu.kz>\r\n";
-    
-    mail($email, $subject, $email_body, $headers);
+    sendSmtpMail($email, $subject, $email_body);
 }
 ?>

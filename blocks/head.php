@@ -2,7 +2,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>DC President</title>
+  <title><?= isset($pageTitle) ? htmlspecialchars($pageTitle) . '' : 'DC President' ?></title>
+  <meta name="description" content="<?= isset($pageDescription) ? htmlspecialchars($pageDescription) : 'DC President — Торайғыров университетінің пікірсайыс клубы' ?>">
   
   <!-- Логотип вкладки -->
   <link rel="icon" type="image/png" href="images/logo_president.png">

@@ -12,7 +12,7 @@
   <section class="hero">
     <div class="container">
       <div class="hero-text">
-        <h1><span>Ойлан. Дәлелде. Қорға.</span></h1>
+        <h1><span>Ойлан. Дәлелде. Жеңіске жет!</span></h1>
         <p>
           Өз ойыңды еркін жеткізуді, сенімді сөйлеуді және логикалық дәлелдеуді үйрен.<br>
           Пікірталас мәдениетін бірге дамытайық!
@@ -58,7 +58,7 @@
                 <?php else: ?>
                     <?php foreach ($events as $event): ?>
                     <div class="event-card">
-                        <img src="<?= $event['image_path'] ?: 'images/school_debate.jpg' ?>" 
+                        <img src="<?= $event['image_path'] ?: 'images/event-default.jpg' ?>" 
                             alt="<?= htmlspecialchars($event['title']) ?>">
                         <h3><?= htmlspecialchars($event['title']) ?></h3>
                         <p><?= date('d.m.Y', strtotime($event['event_date'])) ?> 
@@ -128,7 +128,7 @@
                       <span class="day"><?= $newsDate->format('d') ?></span>
                       <span class="month"><?= getRussianMonth($newsDate->format('n')) ?></span>
                   </div>
-                  <img src="<?= $newsItem['image_path'] ?: 'images/news.png' ?>" 
+                  <img src="<?= $newsItem['image_path'] ?: 'images/news-default.png' ?>" 
                       alt="<?= htmlspecialchars($newsItem['title']) ?>">
                   <div class="news-content">
                       <h4><?= htmlspecialchars($newsItem['title']) ?></h4>

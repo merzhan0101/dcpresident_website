@@ -2,6 +2,7 @@
 <html lang="ru">
 
 <?php include 'php/functions.php'; ?>
+<?php $pageTitle = 'Іс-шаралар'; $pageDescription = 'President дебат клубының іс-шаралары'; ?>
 <?php include 'blocks/head.php'; ?>
 <?php include 'blocks/carousel.php'; ?>
 
@@ -31,12 +32,12 @@
           <?php foreach ($events as $event): ?>
             <div class="event-card-page">
                 <div class="event-image">
-                    <img src="<?= $event['image_path'] ?: 'images/school_debate.jpg' ?>" 
+                    <img src="<?= $event['image_path'] ?: 'images/event-default.jpg' ?>" 
                         alt="<?= htmlspecialchars($event['title']) ?>">
                 </div>
                 <div class="event-info">
                     <h3><?= htmlspecialchars($event['title']) ?></h3>
-                    <p class="event-description"><?= htmlspecialchars($event['description']) ?></p>
+                    <p class="event-description"><?= htmlspecialchars(excerpt($event['description'], 140)) ?></p>
                     
                     <div class="event-meta">
                         <span class="event-date">

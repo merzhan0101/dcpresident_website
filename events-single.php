@@ -84,7 +84,7 @@ if (!$event) {
             if ($related['id'] != $event_id):
           ?>
           <div class="related-item">
-            <img src="<?= $related['image_path'] ?: 'images/school_debate.jpg' ?>" 
+            <img src="<?= $related['image_path'] ?: 'images/event-default.jpg' ?>" 
                  alt="<?= htmlspecialchars($related['title']) ?>">
             <h4><?= htmlspecialchars($related['title']) ?></h4>
             <p><?= date('d.m.Y', strtotime($related['event_date'])) ?></p>
