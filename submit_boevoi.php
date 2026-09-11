@@ -9,12 +9,12 @@ header('Content-Type: text/html; charset=utf-8');
 // Функция для отправки email уведомления
 function sendEmailNotification($name, $email, $message) {
     $to = "info@presidentdc.kz";
-    $subject = "Новая заявка в дебатный клуб DC President";
+    $subject = "DC President пікірсайыс клубына жаңа өтінім";
     
     $email_body = "
     <html>
     <head>
-        <title>Новая заявка в дебатный клуб</title>
+        <title>Жаңа өтінім</title>
         <style>
             body { font-family: Montserrat, sans-serif; }
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -27,21 +27,21 @@ function sendEmailNotification($name, $email, $message) {
     <body>
         <div class='container'>
             <div class='header'>
-                <h1>DC President - Новая заявка</h1>
+                <h1>DC President - Жаңа өтінім</h1>
             </div>
             <div class='content'>
                 <div class='field'>
-                    <span class='label'>Имя:</span> " . htmlspecialchars($name) . "
+                    <span class='label'>Есімі:</span> " . htmlspecialchars($name) . "
                 </div>
                 <div class='field'>
                     <span class='label'>Email:</span> " . htmlspecialchars($email) . "
                 </div>
                 <div class='field'>
-                    <span class='label'>Сообщение:</span><br>
+                    <span class='label'>Хабарлама:</span><br>
                     " . nl2br(htmlspecialchars($message)) . "
                 </div>
                 <div class='field'>
-                    <span class='label'>Время отправки:</span> " . date('d.m.Y H:i:s') . "
+                    <span class='label'>Жіберілген уақыты:</span> " . date('d.m.Y H:i:s') . "
                 </div>
             </div>
         </div>
@@ -152,12 +152,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Функция для отправки подтверждения пользователю
 function sendConfirmationEmail($name, $email) {
-    $subject = "Ваша заявка в DC President принята!";
+    $subject = "Сіздің DC President-ке өтініміз қабылданды!";
     
     $email_body = "
     <html>
     <head>
-        <title>Подтверждение заявки</title>
+        <title>Өтінім қабылданды</title>
         <style>
             body { font-family: Montserrat, sans-serif; }
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -171,12 +171,12 @@ function sendConfirmationEmail($name, $email) {
                 <h1>DC President</h1>
             </div>
             <div class='content'>
-                <h2>Уважаемый(ая) " . htmlspecialchars($name) . ",</h2>
-                <p>Благодарим вас за проявленный интерес к нашему дебатному клубу!</p>
-                <p>Мы получили вашу заявку и рассмотрим её в течение 24 часов.</p>
-                <p>С уважением,<br>Команда DC President</p>
+                <h2>Құрметті " . htmlspecialchars($name) . ",</h2>
+                <p>Пікірсайыс клубымызға қызығушылық танытқаныңыз үшін алғыс білдіреміз!</p>
+                <p>Сіздің өтініміңізді алдық және оны 24 сағат ішінде қарастырамыз.</p>
+                <p>Құрметпен,<br>DC President командасы</p>
                 <hr>
-                <p><small>Это автоматическое письмо, пожалуйста, не отвечайте на него.</small></p>
+                <p><small>Бұл автоматты хабарлама, оған жауап бермеңіз.</small></p>
             </div>
         </div>
     </body>
