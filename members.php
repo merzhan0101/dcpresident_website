@@ -20,51 +20,49 @@
   <section class="members-page">
     <div class="container">
 
-    <!-- Ближайшие дни рождения -->
-<!-- Ближайшие дни рождения -->
-<div class="birthdays-section">
-  <h2>🎉 Алдағы туған күндер</h2>
-  <div class="birthdays-grid">
-    <?php 
-    $upcomingBirthdays = getUpcomingBirthdays(5);
-    if (empty($upcomingBirthdays)): ?>
-      <div class="no-birthdays">
-        <p>Жақын арада туған күндер жоқ</p>
-      </div>
-    <?php else: ?>
-      <?php foreach ($upcomingBirthdays as $member): 
-        $daysUntil = daysUntilBirthday($member['birth_month'], $member['birth_day']);
-        // Пропускаем некорректные даты
-        if ($daysUntil === null) continue;
-      ?>
-      <div class="birthday-card">
-        <div class="birthday-avatar">
-          <img src="<?= $member['image_path'] ?: ($member['role'] == 'президент' ? 'images/woman.jpg' : 'images/man.jpg') ?>" 
-               alt="<?= htmlspecialchars($member['full_name']) ?>">
-          <div class="birthday-badge">🎂</div>
+      <!-- Ближайшие дни рождения -->
+      <!-- <div class="birthdays-section">
+        <h2>🎉 Алдағы туған күндер</h2>
+        <div class="birthdays-grid">
+          <\?php 
+          $upcomingBirthdays = getUpcomingBirthdays(5);
+          if (empty($upcomingBirthdays)): ?>
+            <div class="no-birthdays">
+              <p>Жақын арада туған күндер жоқ</p>
+            </div>
+          <\?php else: ?>
+            <\?php foreach ($upcomingBirthdays as $member): 
+              $daysUntil = daysUntilBirthday($member['birth_month'], $member['birth_day']);
+              // Пропускаем некорректные даты
+              if ($daysUntil === null) continue;
+            ?>
+            <div class="birthday-card">
+              <div class="birthday-avatar">
+                <img src="<\?= $member['image_path'] ?: ($member['role'] == 'президент' ? 'images/woman.jpg' : 'images/man.jpg') ?>" 
+                    alt="<\?= htmlspecialchars($member['full_name']) ?>">
+                <div class="birthday-badge">🎂</div>
+              </div>
+              <div class="birthday-info">
+                <h4><\?= htmlspecialchars($member['full_name']) ?></h4>
+                <p class="birthday-date">
+                  <\?= $member['birth_day'] ?> <\?= getRussianMonthName($member['birth_month']) ?>
+                </p>
+                <p class="birthday-days">
+                  <\?php if ($daysUntil == 0): ?>
+                    <span class="today">🎉 Бүгін!</span>
+                  <\?php elseif ($daysUntil == 1): ?>
+                    <span class="tomorrow">Ертең!</span>
+                  <\?php else: ?>
+                    <\?= $daysUntil ?> күннен <\?= getRussianDaysWord($daysUntil) ?>
+                  <\?php endif; ?>
+                </p>
+                <p class="birthday-role"><\?= ucfirst($member['role']) ?></p>
+              </div>
+            </div>
+            <\?php endforeach; ?>
+          <\?php endif; ?>
         </div>
-        <div class="birthday-info">
-          <h4><?= htmlspecialchars($member['full_name']) ?></h4>
-          <p class="birthday-date">
-            <?= $member['birth_day'] ?> <?= getRussianMonthName($member['birth_month']) ?>
-          </p>
-          <p class="birthday-days">
-            <?php if ($daysUntil == 0): ?>
-              <span class="today">🎉 Бүгін!</span>
-            <?php elseif ($daysUntil == 1): ?>
-              <span class="tomorrow">Ертең!</span>
-            <?php else: ?>
-              <?= $daysUntil ?> күннен <?= getRussianDaysWord($daysUntil) ?>
-            <?php endif; ?>
-          </p>
-          <p class="birthday-role"><?= ucfirst($member['role']) ?></p>
-        </div>
-      </div>
-      <?php endforeach; ?>
-    <?php endif; ?>
-  </div>
-</div>
-
+      </div> -->
 
       <!-- Фильтры -->
       <div class="members-filters">
