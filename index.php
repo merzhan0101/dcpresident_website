@@ -12,7 +12,7 @@
   <section class="hero">
     <div class="container">
       <div class="hero-text">
-        <h1><span>Ойлан. Дәлелде. Жеңіске жет!</span></h1>
+        <h1><span>Ойлан. Дәлелде. Қорға.</span></h1>
         <p>
           Өз ойыңды еркін жеткізуді, сенімді сөйлеуді және логикалық дәлелдеуді үйрен.<br>
           Пікірталас мәдениетін бірге дамытайық!
@@ -42,6 +42,15 @@
     </div>
   </section>
 
+  <!-- INSTAGRAM FEED -->
+  <section class="instagram-feed-section">
+    <div class="container">
+        <h2 class="section-title">Instagram-дағы соңғы жаңалықтар</h2>
+        <script src="https://elfsightcdn.com/platform.js" async></script>
+        <div class="elfsight-app-9a2cf366-f64c-4e8f-b62c-b502c916a0b4" data-elfsight-app-lazy></div>
+    </div>
+  </section>
+
   <!-- EVENTS -->
     <section class="events">
         <div class="container">
@@ -50,26 +59,30 @@
               <a href="events.php" class="text-main-color">Барлық іс-шаралар</a>
             </div>
             
-            <div class="events-grid" id="upcoming-events">
-                <?php 
-                $events = getEvents(3, 'all');
-                if (empty($events)): ?>
-                    <p class="no-events">Іс-шаралар жоқ</p>
-                <?php else: ?>
-                    <?php foreach ($events as $event): ?>
-                    <div class="event-card">
-                        <img src="<?= $event['image_path'] ?: 'images/event-default.jpg' ?>" 
-                            alt="<?= htmlspecialchars($event['title']) ?>">
-                        <h3><?= htmlspecialchars($event['title']) ?></h3>
-                        <p><?= date('d.m.Y', strtotime($event['event_date'])) ?> 
-                        <?= $event['event_time'] ? '— ' . date('H:i', strtotime($event['event_time'])) : '' ?></p>
-                        <div class="event-actions">
-                            <span class="tag <?= strtolower($event['status']) ?>"><?= $event['status'] ?></span>
-                            <a href="events-single.php?id=<?= $event['id'] ?>" class="btn-event">Толығырақ →</a>
+            <div class="hcarousel">
+                <button class="hcarousel-btn" onclick="hcarouselScroll('upcoming-events', -1)">❮</button>
+                <div class="events-grid hcarousel-track" id="upcoming-events">
+                    <?php 
+                    $events = getEvents(10, 'all');
+                    if (empty($events)): ?>
+                        <p class="no-events">Іс-шаралар жоқ</p>
+                    <?php else: ?>
+                        <?php foreach ($events as $event): ?>
+                        <div class="event-card">
+                            <img src="<?= $event['image_path'] ?: 'images/event-default.jpg' ?>" 
+                                alt="<?= htmlspecialchars($event['title']) ?>">
+                            <h3><?= htmlspecialchars($event['title']) ?></h3>
+                            <p><?= date('d.m.Y', strtotime($event['event_date'])) ?> 
+                            <?= $event['event_time'] ? '— ' . date('H:i', strtotime($event['event_time'])) : '' ?></p>
+                            <div class="event-actions">
+                                <span class="tag <?= strtolower($event['status']) ?>"><?= $event['status'] ?></span>
+                                <a href="events-single.php?id=<?= $event['id'] ?>" class="btn-event">Толығырақ →</a>
+                            </div>
                         </div>
-                    </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+                <button class="hcarousel-btn" onclick="hcarouselScroll('upcoming-events', 1)">❯</button>
             </div>
         </div>
     </section>
@@ -81,24 +94,26 @@
             <div class="achievements-link">
               <a href="achievements.php" class="text-main-color">Барлық жетістіктер</a>
             </div>
-            <div class="achievements-grid">
-                <?php 
-                $achievements = getAchievements(3);
-                foreach ($achievements as $achievement): ?>
-                <div class="achievement-card">
-                    <img src="<?= $achievement['image_path'] ?: 'images/cups.jpg' ?>" 
-                        alt="<?= htmlspecialchars($achievement['title']) ?>">
-                    <div class="achievement-content">
-                        <h4><?= htmlspecialchars($achievement['title']) ?></h4>
-                        <?php if ($achievement['tournament_name']): ?>
-                            <p class="tournament"><?= htmlspecialchars($achievement['tournament_name']) ?></p>
-                        <?php endif; ?>
-                        <?php if ($achievement['position']): ?>
-                            <p class="position"><?= htmlspecialchars($achievement['position']) ?></p>
-                        <?php endif; ?>
-                        <p class="description"><?= htmlspecialchars(excerpt($achievement['description'], 100)) ?></p>
-                        <?php if ($achievement['achievement_date']): ?>
-                            <p class="date"><?= date('d.m.Y', strtotime($achievement['achievement_date'])) ?></p>
+            <div class="hcarousel">
+                <button class="hcarousel-btn" onclick="hcarouselScroll('achievements-track', -1)">❮</button>
+                <div class="achievements-grid hcarousel-track" id="achievements-track">
+                    <?php 
+                    $achievements = getAchievements(10);
+                    foreach ($achievements as $achievement): ?>
+                    <div class="achievement-card">
+                        <img src="<?= $achievement['image_path'] ?: 'images/achievement-default.png' ?>" 
+                            alt="<?= htmlspecialchars($achievement['title']) ?>">
+                        <div class="achievement-content">
+                            <h4><?= htmlspecialchars($achievement['title']) ?></h4>
+                            <?php if ($achievement['tournament_name']): ?>
+                                <p class="tournament"><?= htmlspecialchars($achievement['tournament_name']) ?></p>
+                            <?php endif; ?>
+                            <?php if ($achievement['position']): ?>
+                                <p class="position"><?= htmlspecialchars($achievement['position']) ?></p>
+                            <?php endif; ?>
+                            <p class="description"><?= htmlspecialchars(excerpt($achievement['description'], 100)) ?></p>
+                            <?php if ($achievement['achievement_date']): ?>
+                                <p class="date"><?= date('d.m.Y', strtotime($achievement['achievement_date'])) ?></p>
                         <?php endif; ?>
 
                         <a href="achievement-single.php?id=<?= $achievement['id'] ?>" class="achievement-link">Толығырақ →</a>
@@ -106,6 +121,8 @@
                     </div>
                 </div>
                 <?php endforeach; ?>
+                </div>
+                <button class="hcarousel-btn" onclick="hcarouselScroll('achievements-track', 1)">❯</button>
             </div>
         </div>
     </section>
@@ -117,38 +134,42 @@
           <div class="news-link">
             <a href="news.php" class="text-main-color">Барлық жаңалықтар</a>
           </div>
-          <div class="news-list">
-              <?php 
-              $news = getNews(3); // Берем больше новостей
-              foreach ($news as $newsItem): 
-                  $newsDate = new DateTime($newsItem['news_date']);
-              ?>
-              <article class="news-item">
-                  <div class="news-date-block">
-                      <span class="day"><?= $newsDate->format('d') ?></span>
-                      <span class="month"><?= getRussianMonth($newsDate->format('n')) ?></span>
-                  </div>
-                  <img src="<?= $newsItem['image_path'] ?: 'images/news-default.png' ?>" 
-                      alt="<?= htmlspecialchars($newsItem['title']) ?>">
-                  <div class="news-content">
-                      <h4><?= htmlspecialchars($newsItem['title']) ?></h4>
-                      <p><?= htmlspecialchars($newsItem['content']) ?></p>
-
-                      <div class="news-meta">
-                          <span class="news-full-date">📅 <?= date('d.m.Y', strtotime($newsItem['news_date'])) ?></span>
-                          <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link">Ары қарай оқу →</a>
+          <div class="hcarousel">
+              <button class="hcarousel-btn" onclick="hcarouselScroll('news-track', -1)">❮</button>
+              <div class="news-list hcarousel-track" id="news-track">
+                  <?php 
+                  $news = getNews(10);
+                  foreach ($news as $newsItem): 
+                      $newsDate = new DateTime($newsItem['news_date']);
+                  ?>
+                  <article class="news-item">
+                      <div class="news-date-block">
+                          <span class="day"><?= $newsDate->format('d') ?></span>
+                          <span class="month"><?= getRussianMonth($newsDate->format('n')) ?></span>
                       </div>
+                      <img src="<?= $newsItem['image_path'] ?: 'images/news-default.png' ?>" 
+                          alt="<?= htmlspecialchars($newsItem['title']) ?>">
+                      <div class="news-content">
+                          <h4><?= htmlspecialchars($newsItem['title']) ?></h4>
+                          <p><?= htmlspecialchars(excerpt($newsItem['content'], 160)) ?></p>
 
-                      <?php if (!empty($newsItem['instagram_url'])): ?>
-                      <div class="instagram-link">
-                          <a href="<?= $newsItem['instagram_url'] ?>" target="_blank" class="btn-instagram">
-                              📷 Instagram-да көру
-                          </a>
+                          <div class="news-meta">
+                              <span class="news-full-date">📅 <?= date('d.m.Y', strtotime($newsItem['news_date'])) ?></span>
+                              <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link">Ары қарай оқу →</a>
+                          </div>
+
+                          <?php if (!empty($newsItem['instagram_url'])): ?>
+                          <div class="instagram-link">
+                              <a href="<?= $newsItem['instagram_url'] ?>" target="_blank" class="btn-instagram">
+                                  📷 Instagram-да көру
+                              </a>
+                          </div>
+                          <?php endif; ?>
                       </div>
-                      <?php endif; ?>
-                  </div>
-              </article>
-              <?php endforeach; ?>
+                  </article>
+                  <?php endforeach; ?>
+              </div>
+              <button class="hcarousel-btn" onclick="hcarouselScroll('news-track', 1)">❯</button>
           </div>
       </div>
   </section>
@@ -173,4 +194,12 @@
 
 <?php include 'blocks/footer.php'; ?>
 
-<!--<script src="js/script.js"></script>-->
+<script>
+function hcarouselScroll(id, direction) {
+    const track = document.getElementById(id);
+    if (!track) return;
+    const card = track.querySelector(':scope > *');
+    const cardWidth = card ? card.offsetWidth + 25 : 320;
+    track.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
+}
+</script>

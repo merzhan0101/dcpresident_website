@@ -1041,4 +1041,35 @@ function clearFailedLoginAttempts($ip) {
     $stmt->execute([$ip]);
 }
 
+// Возвращает HTML для встраивания поста/рилса Instagram по ссылке.
+// Скрипт embed.js нужно подключить ОДИН раз на странице (см. renderInstagramEmbedScript())
+function renderInstagramEmbed($url) {
+    if (empty($url)) return '';
+    $parts = parse_url(trim($url));
+    $path = $parts['path'] ?? '';
+    // /reels/ (со вкладки Reels) не распознаётся embed-страницей Instagram —
+    // приводим к канонической форме /reel/ (без "s")
+    $path = preg_replace('#^/reels/#', '/reel/', $path);
+    // Убираем query-параметры (?utm_source=... и т.п.) и лишние слэши
+    $cleanPath = rtrim($path, '/');
+    $embedUrl = htmlspecialchars('https://www.instagram.com' . $cleanPath . '/embed/captioned/');
+    $viewUrl = htmlspecialchars('https://www.instagram.com' . $cleanPath . '/');
+
+    // Прямой iframe на embed-страницу Instagram — не зависит от их JS-скрипта,
+    // работает надёжнее, чем вариант с <blockquote> + embed.js
+    return '<div class="instagram-iframe-wrap">
+        <iframe src="' . $embedUrl . '" width="340" height="600" frameborder="0" scrolling="no" allowtransparency="true" loading="lazy" style="border:none; max-width:100%; border-radius:12px;"></iframe>
+        <p style="text-align:center; margin-top:8px;">
+            <a href="' . $viewUrl . '" target="_blank" rel="noopener" style="color: var(--red); font-weight: 600; text-decoration: none; font-size: 14px;">
+                📷 Instagram-да ашу
+            </a>
+        </p>
+    </div>';
+}
+
+// embed.js больше не требуется — оставлено для обратной совместимости, если где-то ещё вызывается
+function renderInstagramEmbedScript() {
+    return '';
+}
+
 ?>

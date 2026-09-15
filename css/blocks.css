@@ -830,7 +830,7 @@
 
 .form-group input,
 .form-group textarea {
-  width: 95%;
+  width: 100%;
   padding: 12px;
   background: var(--bg);
   border: 1px solid #333;
@@ -1436,6 +1436,18 @@
 /* ================= INSTAGRAM LINK ================= */
 .instagram-link {
     margin-top: 15px;
+}
+
+.instagram-embed-wrapper {
+    margin: 15px 0;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.instagram-embed-wrapper iframe {
+    max-width: 100% !important;
 }
 
 .btn-instagram {
