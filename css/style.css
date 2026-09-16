@@ -1152,6 +1152,14 @@ footer {
 
 @media (max-width: 768px) {
   .hcarousel-btn {
-    display: none;
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  .event-card,
+  .achievement-card,
+  .news-item {
+    width: calc(100vw - 70px);
   }
 }
