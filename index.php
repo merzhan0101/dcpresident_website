@@ -12,7 +12,7 @@
   <section class="hero">
     <div class="container">
       <div class="hero-text">
-        <h1><span>Ойлан. Дәлелде. Қорға.</span></h1>
+        <h1><span>Ойлан. Дәлелде. Жеңіске жет!</span></h1>
         <p>
           Өз ойыңды еркін жеткізуді, сенімді сөйлеуді және логикалық дәлелдеуді үйрен.<br>
           Пікірталас мәдениетін бірге дамытайық!
@@ -137,37 +137,30 @@
           <div class="hcarousel">
               <button class="hcarousel-btn" onclick="hcarouselScroll('news-track', -1)">❮</button>
               <div class="news-list hcarousel-track" id="news-track">
-                  <?php 
-                  $news = getNews(10);
-                  foreach ($news as $newsItem): 
-                      $newsDate = new DateTime($newsItem['news_date']);
-                  ?>
-                  <article class="news-item">
-                      <div class="news-date-block">
-                          <span class="day"><?= $newsDate->format('d') ?></span>
-                          <span class="month"><?= getRussianMonth($newsDate->format('n')) ?></span>
-                      </div>
-                      <img src="<?= $newsItem['image_path'] ?: 'images/news-default.png' ?>" 
-                          alt="<?= htmlspecialchars($newsItem['title']) ?>">
-                      <div class="news-content">
-                          <h4><?= htmlspecialchars($newsItem['title']) ?></h4>
-                          <p><?= htmlspecialchars(excerpt($newsItem['content'], 160)) ?></p>
+                <?php 
+                $news = getNews(10);
+                foreach ($news as $newsItem): 
+                    $newsDate = new DateTime($newsItem['news_date']);
+                ?>
+                <article class="news-item">
+                    <img src="<?= $newsItem['image_path'] ?: 'images/news-default.png' ?>" 
+                        alt="<?= htmlspecialchars($newsItem['title']) ?>">
+                    <div class="news-content">
+                        <h4><?= htmlspecialchars($newsItem['title']) ?></h4>
+                        <p><?= htmlspecialchars(excerpt($newsItem['content'], 100)) ?></p>
+                        <p class="news-full-date">📅 <?= date('d.m.Y', strtotime($newsItem['news_date'])) ?></p>
+                        <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link">Ары қарай оқу →</a>
 
-                          <div class="news-meta">
-                              <span class="news-full-date">📅 <?= date('d.m.Y', strtotime($newsItem['news_date'])) ?></span>
-                              <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link">Ары қарай оқу →</a>
-                          </div>
-
-                          <?php if (!empty($newsItem['instagram_url'])): ?>
-                          <div class="instagram-link">
-                              <a href="<?= $newsItem['instagram_url'] ?>" target="_blank" class="btn-instagram">
-                                  📷 Instagram-да көру
-                              </a>
-                          </div>
-                          <?php endif; ?>
-                      </div>
-                  </article>
-                  <?php endforeach; ?>
+                        <?php if (!empty($newsItem['instagram_url'])): ?>
+                        <div class="instagram-link">
+                            <a href="<?= $newsItem['instagram_url'] ?>" target="_blank" class="btn-instagram">
+                                📷 Instagram-да көру
+                            </a>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </article>
+                <?php endforeach; ?>
               </div>
               <button class="hcarousel-btn" onclick="hcarouselScroll('news-track', 1)">❯</button>
           </div>
