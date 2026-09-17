@@ -2,6 +2,7 @@
 <html lang="ru">
 
 <?php include 'php/functions.php'; ?>
+<?php include 'php/recaptcha_config.php'; ?>
 <?php include 'blocks/head.php'; ?>
 
 <body>
@@ -178,12 +179,15 @@
         <input type="email" name="email" placeholder="Пошта" required>
         <input type="tel" name="phone" placeholder="Телефон / WhatsApp" required>
         <textarea name="message" placeholder="Неліктен клубқа қосылғыңыз келеді?" required></textarea>
+        <div class="g-recaptcha" data-sitekey="<?= htmlspecialchars(RECAPTCHA_SITE_KEY) ?>"></div>
         <button type="submit" class="btn">Жіберу</button>
       </form>
     </div>
   </section>
 
 </main>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
 <?php include 'blocks/footer.php'; ?>
 

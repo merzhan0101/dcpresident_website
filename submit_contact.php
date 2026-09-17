@@ -1,5 +1,6 @@
 <?php
 include 'php/database.php';
+include 'php/recaptcha_config.php';
 header('Content-Type: text/html; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -11,6 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($name) || !$email || empty($phone) || empty($message)) {
         echo "Заполните все обязательные поля";
+        exit;
+    }
+
+    if (!verifyRecaptcha($_POST['g-recaptcha-response'] ?? '')) {
+        echo "Робот емес екеніңізді растаңыз";
         exit;
     }
 

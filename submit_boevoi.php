@@ -2,6 +2,7 @@
 session_start();
 // Подключаем базу данных
 include 'php/database.php';
+include 'php/recaptcha_config.php';
 
 // Устанавливаем кодировку
 header('Content-Type: text/html; charset=utf-8');
@@ -69,19 +70,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors = [];
         
         if (empty($name)) {
-            $errors[] = "Пожалуйста, введите ваше имя";
+            $errors[] = "Есіміңізді енгізіңіз";
         }
         
         if (!$email) {
-            $errors[] = "Пожалуйста, введите корректный email адрес";
+            $errors[] = "Дұрыс email мекенжайын енгізіңіз";
         }
 
         if (empty($phone)) {
-            $errors[] = "Пожалуйста, введите телефон";
+            $errors[] = "Телефон нөмірін енгізіңіз";
         }
         
         if (empty($message)) {
-            $errors[] = "Пожалуйста, напишите, почему хотите вступить в клуб";
+            $errors[] = "Неліктен клубқа қосылғыңыз келетінін жазыңыз";
+        }
+
+        if (!verifyRecaptcha($_POST['g-recaptcha-response'] ?? '')) {
+            $errors[] = "Робот емес екеніңізді растаңыз (капчаны белгілеңіз)";
         }
         
         // Проверка на спам (honeypot)

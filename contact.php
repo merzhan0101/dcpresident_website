@@ -2,6 +2,7 @@
 <html lang="ru">
 
 <?php include 'php/functions.php'; ?>
+<?php include 'php/recaptcha_config.php'; ?>
 <?php $pageTitle = 'Байланыс'; $pageDescription = 'President дебат клубымен байланысу'; ?>
 <?php include 'blocks/head.php'; ?>
 
@@ -153,6 +154,8 @@
               <label for="message">Хабарлама *</label>
               <textarea id="message" name="message" rows="5" required></textarea>
             </div>
+
+            <div class="g-recaptcha" style="margin-bottom: 15px;" data-sitekey="<?= htmlspecialchars(RECAPTCHA_SITE_KEY) ?>"></div>
             
             <button type="submit" class="btn btn-large">Хабарлама жіберу</button>
           </form>
@@ -173,5 +176,7 @@
     </div>
   </section>
 </main>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
 <?php include 'blocks/footer.php'; ?>
