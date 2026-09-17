@@ -55,12 +55,6 @@ if (!$news) {
           <?= renderCarousel($news['gallery_images'], 'news_single_' . $news['id']) ?>
         <?php endif; ?>
         
-        <?php if (!empty($news['instagram_url'])): ?>
-        <div class="instagram-embed-wrapper">
-          <?= renderInstagramEmbed($news['instagram_url']) ?>
-        </div>
-        <?php endif; ?>
-        
         <div class="news-content-full">
           <?= nl2br(htmlspecialchars($news['full_content'] ?: $news['content'])) ?>
         </div>

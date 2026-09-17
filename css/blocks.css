@@ -1432,22 +1432,9 @@
   }
 }
 
-/* test */
 /* ================= INSTAGRAM LINK ================= */
 .instagram-link {
     margin-top: 15px;
-}
-
-.instagram-embed-wrapper {
-    margin: 15px 0;
-    display: flex;
-    justify-content: center;
-    overflow: hidden;
-    border-radius: 12px;
-}
-
-.instagram-embed-wrapper iframe {
-    max-width: 100% !important;
 }
 
 .btn-instagram {
