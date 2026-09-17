@@ -107,13 +107,13 @@
           </div>
 
           <div class="contact-item">
-            <div class="contact-icon">🕒</div>
-            <div class="contact-details">
-              <h4>Кездесу уақыты</h4>
-              <p>Дс-Ср-Жм, 18:00<br>А-8 аудиториясы, бас ғимарат</p>
+              <div class="contact-icon">🕒</div>
+              <div class="contact-details">
+                <h4>Кездесу уақыты</h4>
+                <p>Дс-Сс-Бб, 18:00<br>А-8 аудиториясы, бас ғимарат</p>
+              </div>
             </div>
           </div>
-        </div>
 
         <!-- Форма обратной связи -->
         <div class="contact-form-section">
