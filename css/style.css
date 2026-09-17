@@ -233,7 +233,7 @@ button.active:hover {
 }
 
 .hero h1 {
-  font-size: 40px;
+  font-size: 48px;
 }
 
 .hero h1 span {
@@ -296,7 +296,9 @@ button.active:hover {
   margin-bottom: 30px;
 }
 
-.events-grid {
+.events-grid,
+.achievements-grid,
+.news-list {
   display: flex;
   gap: 25px;
   overflow-x: auto;
@@ -305,16 +307,22 @@ button.active:hover {
   padding: 5px 5px 15px;
 }
 
-.events-grid::-webkit-scrollbar {
+.events-grid::-webkit-scrollbar,
+.achievements-grid::-webkit-scrollbar,
+.news-list::-webkit-scrollbar {
   height: 6px;
 }
 
-.events-grid::-webkit-scrollbar-thumb {
+.events-grid::-webkit-scrollbar-thumb,
+.achievements-grid::-webkit-scrollbar-thumb,
+.news-list::-webkit-scrollbar-thumb {
   background: var(--red);
   border-radius: 3px;
 }
 
-.event-card {
+.event-card,
+.achievement-card,
+.news-item {
   background-color: #1f1f1f;
   padding: 15px;
   width: 320px;
@@ -323,14 +331,18 @@ button.active:hover {
   border-radius: 10px;
 }
 
-.event-card img {
+.event-card img,
+.achievement-card img,
+.news-item img {
   width: 100%;
   height: 200px;
   object-fit: cover;
   border-radius: 10px;
 }
 
-.event-card .tag {
+.event-card .tag,
+.achievement-card .tag, 
+.news-item .tag {
   display: inline-block;
   padding: 4px 10px;
   font-size: 13px;
@@ -408,7 +420,7 @@ button.active:hover {
   border-radius: 3px;
 }
 
-.achievement-card {
+/*.achievement-card {
   background: var(--bg);
   border-radius: 10px;
   overflow: hidden;
@@ -431,7 +443,7 @@ button.active:hover {
   height: 200px;
   object-fit: cover;
   border-bottom: 3px solid var(--red);
-}
+}*/
 
 .achievement-content {
   padding: 20px;
@@ -562,7 +574,7 @@ button.active:hover {
   border-radius: 3px;
 }
 
-.news-item {
+/*.news-item {
   display: flex;
   flex-direction: column;
   width: 350px;
@@ -575,20 +587,20 @@ button.active:hover {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
+.news-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(181, 0, 0, 0.15);
+}
+
 .news-item img {
   width: 100%;
   height: 200px;
   object-fit: cover;
   border-right: none;
-}
+}*/
 
 .news-content {
   padding: 20px;
-}
-
-.news-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(181, 0, 0, 0.15);
 }
 
 .news-content > a.news-link {
@@ -1148,15 +1160,44 @@ footer {
 }
 
 @media (max-width: 768px) {
+  .hcarousel {
+    position: relative;
+  }
+
   .hcarousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
     width: 34px;
     height: 34px;
     font-size: 14px;
+    opacity: 0.9;
+  }
+
+  .hcarousel-btn:first-child {
+    left: 2px;
+  }
+
+  .hcarousel-btn:last-child {
+    right: 2px;
   }
 
   .event-card,
   .achievement-card,
   .news-item {
     width: calc(100vw - 70px);
+  }
+}
+
+@media (max-width: 768px) {
+  .achievements-grid {
+    max-width: none;
+    margin: 0;
+  }
+
+  .achievement-card,
+  .news-item {
+    margin: 0;
   }
 }

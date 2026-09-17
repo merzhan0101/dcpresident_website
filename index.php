@@ -191,8 +191,24 @@
 function hcarouselScroll(id, direction) {
     const track = document.getElementById(id);
     if (!track) return;
-    const card = track.querySelector(':scope > *');
-    const cardWidth = card ? card.offsetWidth + 25 : 320;
-    track.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
+    const cards = Array.from(track.children);
+    if (cards.length === 0) return;
+
+    // Находим карточку, ближе всего к левому краю видимой области трека
+    const trackLeft = track.getBoundingClientRect().left;
+    let currentIndex = 0;
+    let minDiff = Infinity;
+    cards.forEach((card, i) => {
+        const diff = Math.abs(card.getBoundingClientRect().left - trackLeft);
+        if (diff < minDiff) {
+            minDiff = diff;
+            currentIndex = i;
+        }
+    });
+
+    // Прицельно скроллим к реальному соседнему блоку — без ручного расчёта
+    // пикселей, поэтому ошибка накопиться не может
+    const targetIndex = Math.min(Math.max(currentIndex + direction, 0), cards.length - 1);
+    cards[targetIndex].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
 }
 </script>
