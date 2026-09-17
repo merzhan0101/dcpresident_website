@@ -52,7 +52,7 @@
               
               <div class="news-meta">
                 <span class="news-full-date">📅 <?= date('d.m.Y', strtotime($newsItem['news_date'])) ?></span>
-                <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link-page">Ары қарай оқу →</a>
+                <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link-page">Толығырақ →</a>
               </div>
               
               <!-- Кнопка для Instagram -->

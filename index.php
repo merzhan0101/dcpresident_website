@@ -149,7 +149,7 @@
                         <h4><?= htmlspecialchars($newsItem['title']) ?></h4>
                         <p><?= htmlspecialchars(excerpt($newsItem['content'], 100)) ?></p>
                         <p class="news-full-date">📅 <?= date('d.m.Y', strtotime($newsItem['news_date'])) ?></p>
-                        <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link">Ары қарай оқу →</a>
+                        <a href="news-single.php?id=<?= $newsItem['id'] ?>" class="news-link">Толығырақ →</a>
 
                         <?php if (!empty($newsItem['instagram_url'])): ?>
                         <div class="instagram-link">
