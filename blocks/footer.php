@@ -43,6 +43,13 @@
     </p>
 
     <p>
+        <i class="fa-brands fa-whatsapp"></i>
+        <strong>WhatsApp:</strong>
+        <a href="https://wa.me/77058316658" target="_blank">WhatsApp-қа жазу</a>
+    </p>
+
+
+    <p>
         <i class="fa-brands fa-tiktok"></i>
         <strong>TikTok:</strong>
         <a href="https://www.tiktok.com/@president.dc" target="_blank">@president.dc</a>

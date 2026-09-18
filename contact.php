@@ -77,7 +77,7 @@
 
                     <span class="social-arrow">→</span>
                 </a>
-                <!-- <a href="https://wa.me/77059921909" class="social-link whatsapp" target="_blank">
+                <a href="https://wa.me/77058316658" class="social-link whatsapp" target="_blank">
                     <div class="social-left">
                         <div class="social-icon">
                             <i class="fab fa-whatsapp"></i>
@@ -89,7 +89,7 @@
                     </div>
 
                     <span class="social-arrow">→</span>
-                </a> -->
+                </a>
                 <a href="https://www.tiktok.com/@president.dc" class="social-link tiktok" target="_blank">
                     <div class="social-left">
                         <div class="social-icon">
